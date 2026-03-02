@@ -1,0 +1,16 @@
+[Unit]
+Description=DentalTripChina Next.js Application
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+WorkingDirectory=/var/www/dentaltripchina/app
+Environment=NODE_ENV=production
+EnvironmentFile=/var/www/dentaltripchina/app/.env.production
+ExecStart=/usr/bin/npm run start -- --port 3000
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

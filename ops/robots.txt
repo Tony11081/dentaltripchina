@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+
+Disallow: /wp-admin/
+Disallow: /wp-includes/
+Disallow: /wp-login.php
+Disallow: /wp-register.php
+Disallow: /thank-you/
+Disallow: /?s=
+Disallow: /search/
+Disallow: /tag/
+
+Sitemap: https://dentaltripchina.com/sitemap_index.xml

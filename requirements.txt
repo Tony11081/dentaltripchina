@@ -1,0 +1,1485 @@
+DentalTripChina.com
+Website Architecture & Developer Specification
+v1.0  |  2026  |  Read this before writing a single line of code
+
+WordPress + own server
+Stack
+dentaltripchina.com
+Domain
+English (en-GB / en-AU)
+Language
+2–3 weeks MVP
+Launch Target
+
+PURPOSE
+This document is the single source of truth for building DentalTripChina.com. It covers server setup, WordPress configuration, plugin list with exact settings, complete URL/permalink structure, database schema for custom post types, page templates, form logic, redirect rules, schema markup, performance checklist, and launch procedure. A developer with this document alone should be able to build and launch the full site.
+
+1. Server Setup & Hosting Configuration
+1.1 Server Requirements
+
+Component
+Minimum / Recommended
+Notes
+OS
+Ubuntu 22.04 LTS
+Stable, widely supported, free
+Web Server
+Nginx (preferred) or Apache
+Nginx: better performance under high concurrency
+PHP
+8.2+ (8.3 recommended)
+WordPress 6.x requires PHP 7.4+; use 8.2+ for performance
+MySQL / MariaDB
+MySQL 8.0 or MariaDB 10.6+
+MariaDB is a drop-in replacement, often faster
+RAM
+2 GB minimum / 4 GB recommended
+Caching plugins reduce RAM pressure significantly
+Storage
+20 GB SSD minimum
+Media uploads will grow; plan for 50 GB long-term
+CPU
+2 vCPU minimum
+Traffic will be low at launch; 2 vCPU is sufficient
+SSL
+Let's Encrypt (free) or Cloudflare
+Must be HTTPS-only; enforce via redirect
+PHP Extensions
+curl, gd, mbstring, xml, zip, intl, opcache
+Required by WordPress core and plugins
+
+1.2 Nginx Configuration (Copy-Paste Ready)
+
+nginx.conf
+server {
+    listen 80;
+    server_name dentaltripchina.com www.dentaltripchina.com;
+    return 301 https://dentaltripchina.com$request_uri;
+}
+
+server {
+    listen 443 ssl http2;
+    server_name www.dentaltripchina.com;
+    ssl_certificate     /etc/letsencrypt/live/dentaltripchina.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/dentaltripchina.com/privkey.pem;
+    return 301 https://dentaltripchina.com$request_uri;
+}
+
+server {
+    listen 443 ssl http2;
+    server_name dentaltripchina.com;
+    root /var/www/dentaltripchina/public;
+
+    ssl_certificate     /etc/letsencrypt/live/dentaltripchina.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/dentaltripchina.com/privkey.pem;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers HIGH:!aNULL:!MD5;
+
+    # WordPress permalinks
+    location / {
+        try_files $uri $uri/ /index.php?$args;
+    }
+
+    location ~ \.php$ {
+        fastcgi_pass unix:/run/php/php8.2-fpm.sock;
+        fastcgi_index index.php;
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+    }
+
+    # Block access to sensitive files
+    location ~ /\.ht { deny all; }
+    location = /wp-config.php { deny all; }
+
+    # Gzip compression
+    gzip on;
+    gzip_types text/css application/javascript image/svg+xml;
+
+    # Browser caching for static assets
+    location ~* \.(jpg|jpeg|png|gif|ico|css|js|woff2)$ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+}
+
+
+1.3 PHP-FPM Configuration (php.ini key settings)
+
+php.ini
+; /etc/php/8.2/fpm/php.ini — key settings to change
+upload_max_filesize = 64M
+post_max_size       = 64M
+max_execution_time  = 120
+memory_limit        = 256M
+max_input_vars      = 3000
+opcache.enable      = 1
+opcache.memory_consumption = 128
+opcache.max_accelerated_files = 10000
+opcache.revalidate_freq = 2
+
+
+1.4 Domain & DNS Configuration
+
+Record Type
+Name
+Value
+Purpose
+A
+@
+YOUR.SERVER.IP
+dentaltripchina.com → server
+A
+www
+YOUR.SERVER.IP
+www redirect (Nginx handles 301 to non-www)
+CNAME
+—
+—
+Not needed if using A records
+MX
+@
+mail provider
+Email (use Google Workspace or Zoho)
+TXT
+@
+SPF record
+Email deliverability: v=spf1 include:_spf.google.com ~all
+TXT
+_dmarc
+DMARC policy
+v=DMARC1; p=none; rua=mailto:you@domain.com
+
+gochinamedtrip.com
+Set this domain's A record to the same server IP. Then in Nginx, add a separate server block that 301-redirects gochinamedtrip.com and www.gochinamedtrip.com to https://dentaltripchina.com. This is a permanent redirect — not a WordPress redirect.
+
+1.5 Cloudflare Setup (Recommended — Free Tier)
+	•	Point nameservers to Cloudflare after DNS setup
+	•	SSL/TLS mode: Full (strict) — requires valid SSL cert on server
+	•	Enable: Auto Minify (HTML, CSS, JS), Brotli compression
+	•	Page Rules: Cache Everything for static pages (homepage, procedure pages)
+	•	Security: WAF — enable free ruleset, set sensitivity to Medium
+	•	Speed: Enable Rocket Loader for JS (test first — can break some plugins)
+
+2. WordPress Installation & Core Configuration
+2.1 Installation Commands
+
+bash
+# Create directory
+mkdir -p /var/www/dentaltripchina/public
+cd /var/www/dentaltripchina/public
+
+# Download WordPress
+wget https://wordpress.org/latest.tar.gz
+tar -xzf latest.tar.gz --strip-components=1
+rm latest.tar.gz
+
+# Set permissions
+chown -R www-data:www-data /var/www/dentaltripchina/public
+find . -type d -exec chmod 755 {} \;
+find . -type f -exec chmod 644 {} \;
+
+# Create database
+mysql -u root -p
+CREATE DATABASE dtc_wp CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE USER 'dtc_user'@'localhost' IDENTIFIED BY 'STRONG_PASSWORD_HERE';
+GRANT ALL PRIVILEGES ON dtc_wp.* TO 'dtc_user'@'localhost';
+FLUSH PRIVILEGES;
+EXIT;
+
+# Run WordPress installer
+# Navigate to https://dentaltripchina.com/wp-admin/install.php
+
+
+2.2 wp-config.php Critical Settings
+
+php — wp-config.php
+// Database credentials
+define('DB_NAME',     'dtc_wp');
+define('DB_USER',     'dtc_user');
+define('DB_PASSWORD', 'STRONG_PASSWORD_HERE');
+define('DB_HOST',     'localhost');
+define('DB_CHARSET',  'utf8mb4');
+
+// Security keys — generate at: https://api.wordpress.org/secret-key/1.1/salt/
+define('AUTH_KEY',         'unique-phrase-here');
+define('SECURE_AUTH_KEY',  'unique-phrase-here');
+// ... (add all 8 keys)
+
+// Performance
+define('WP_MEMORY_LIMIT',       '256M');
+define('WP_MAX_MEMORY_LIMIT',   '512M');
+define('WP_POST_REVISIONS',     5);       // Limit revision history
+define('AUTOSAVE_INTERVAL',     300);     // Autosave every 5 min
+define('EMPTY_TRASH_DAYS',      14);
+
+// Security
+define('DISALLOW_FILE_EDIT',  true);      // Disable theme/plugin editor
+define('DISALLOW_FILE_MODS',  false);     // Allow plugin/theme updates
+define('FORCE_SSL_ADMIN',     true);      // Force HTTPS for admin
+define('WP_DEBUG',            false);     // NEVER true on production
+
+// Custom uploads path (optional but recommended)
+define('UPLOADS', 'wp-content/uploads');
+
+// Table prefix — change from default wp_ for security
+$table_prefix = 'dtc_';
+
+
+2.3 WordPress Admin Settings (Settings Menu)
+
+Settings Page
+Setting
+Value
+General
+Site Title
+DentalTripChina.com
+General
+Tagline
+World-Class Dental Care in China — Save 70%+
+General
+Site Address (URL)
+https://dentaltripchina.com
+General
+Admin Email
+your-admin@email.com
+General
+Timezone
+Asia/Shanghai (UTC+8) — where operators are based
+General
+Date Format
+F j, Y (e.g. January 15, 2026)
+Reading
+Your homepage displays
+A static page → Homepage (create blank page first)
+Reading
+Blog pages show at most
+12 posts
+Reading
+Search engine visibility
+UNCHECKED (allow indexing)
+Discussion
+Allow comments
+Off by default — enable per-post only
+Discussion
+Comment moderation
+On — approve first comment manually
+Permalinks
+Custom Structure
+/post-name/ (see Section 3 for full structure)
+Media
+Large size max width
+1920 px
+Media
+Organize uploads
+YES — year/month folders
+
+3. URL & Permalink Architecture
+3.1 Permalink Base Setting
+
+WordPress Permalink Config
+# WordPress Settings > Permalinks
+# Custom Structure:
+/%postname%/
+
+# This gives clean URLs like:
+# dentaltripchina.com/dental-implants-china/
+# dentaltripchina.com/blog/how-much-dental-implant-cost-china/
+
+# Category base: leave empty (default)
+# Tag base: leave empty (default)
+
+
+3.2 Complete URL Map — Every Page Defined
+
+ID
+Type
+Full URL
+WP Page/CPT Slug
+Template File
+—
+STATIC PAGES
+
+
+
+P01
+Page
+/
+homepage
+front-page.php
+P02
+Page
+/about/
+about
+page-about.php
+P03
+Page
+/how-it-works/
+how-it-works
+page-how-it-works.php
+P04
+Page
+/hospitals/
+hospitals
+page-hospitals.php
+P05
+Page
+/pricing/
+pricing
+page-pricing.php
+P06
+Page
+/contact/
+contact
+page-contact.php
+P07
+Page
+/testimonials/
+testimonials
+page-testimonials.php
+P08
+Page
+/thank-you/
+thank-you
+page-thank-you.php (noindex)
+—
+PROCEDURES (CPT)
+
+
+
+PR01
+CPT: procedure
+/dental-implants-china/
+dental-implants-china
+single-procedure.php
+PR02
+CPT: procedure
+/all-on-4-china/
+all-on-4-china
+single-procedure.php
+PR03
+CPT: procedure
+/veneers-china/
+veneers-china
+single-procedure.php
+PR04
+CPT: procedure
+/root-canal-china/
+root-canal-china
+single-procedure.php
+PR05
+CPT: procedure
+/lasik-china/
+lasik-china
+single-procedure.php
+PR06
+CPT: procedure
+/health-checkup-china/
+health-checkup-china
+single-procedure.php
+PR07
+CPT: procedure
+/cosmetic-surgery-china/
+cosmetic-surgery-china
+single-procedure.php
+—
+CITY GUIDES (CPT)
+
+
+
+CG01
+CPT: city
+/medical-tourism-shanghai/
+medical-tourism-shanghai
+single-city.php
+CG02
+CPT: city
+/medical-tourism-beijing/
+medical-tourism-beijing
+single-city.php
+—
+SERVICE PAGES
+
+
+
+SV01
+Page
+/transport/
+transport
+page-transport.php
+SV02
+Page
+/hotels/
+hotels
+page-hotels.php
+SV03
+Page
+/china-visa-free-medical-tourism/
+china-visa-free-medical-tourism
+page-visa.php
+—
+BLOG (Posts)
+
+
+
+B00
+Archive
+/blog/
+blog (Page)
+home.php or archive.php
+B01+
+Post
+/blog/{slug}/
+auto-generated from title
+single.php
+B-CAT
+Category
+/blog/category/{slug}/
+e.g. /blog/category/dental/
+archive.php (noindex)
+
+3.3 Redirect Rules — Configure in RankMath or .htaccess/Nginx
+
+nginx / redirect rules
+# 301 Permanent Redirects — add in RankMath > Redirections
+# OR in Nginx server block for gochinamedtrip.com:
+
+# gochinamedtrip.com → dentaltripchina.com
+server {
+    listen 443 ssl http2;
+    server_name gochinamedtrip.com www.gochinamedtrip.com;
+    ssl_certificate /etc/letsencrypt/live/gochinamedtrip.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/gochinamedtrip.com/privkey.pem;
+    return 301 https://dentaltripchina.com$request_uri;
+}
+
+# www → non-www (already in main config)
+# http → https (already in main config)
+
+# Future redirects if URLs change — add in RankMath > Redirections:
+# /dental/  →  /dental-implants-china/   (301)
+# /lasik/   →  /lasik-china/              (301)
+
+
+4. Plugin Stack — Complete List & Configuration
+4.1 Required Plugins (Install on Day 1)
+
+Plugin
+Version
+Cost
+Purpose & Key Settings
+RankMath Pro
+Latest
+~$59/yr
+SEO titles, meta, schema, redirects, sitemap, keyword tracking. Set: Separator: |, Homepage title: Medical Tourism China — Save 70% | DentalTripChina.com
+WP Rocket
+Latest
+~$59/yr
+Full-page caching, file minification, lazy load, preloading. Alternatively: LiteSpeed Cache (free if on LiteSpeed server). Configure: cache mobile separately, exclude /contact/ from cache
+WPForms Pro
+Latest
+~$199/yr
+Inquiry form, transport quote form, GDPR consent. Alternatively: Gravity Forms $59/yr. See Section 6 for exact field configuration.
+Wordfence Security
+Free
+Free
+Firewall, malware scanner, login protection. Settings: enable firewall, limit login attempts to 5, block known bad IPs, enable 2FA for admin
+UpdraftPlus
+Free
+Free
+Automated backups. Settings: daily backup, store to Google Drive or S3, keep 14 copies
+Redirection
+Free
+Free
+Manage 301 redirects if not using RankMath's redirect module. Useful for logging 404s.
+WP Mail SMTP
+Free
+Free
+Reliable email delivery for form notifications. Connect to: Google SMTP / SendGrid / Postmark. Without this, WordPress emails go to spam.
+Classic Editor or Gutenberg
+Built-in
+Free
+Use Gutenberg (native). Do NOT install Elementor or Divi — they add bloat and slow load times.
+Safe SVG
+Free
+Free
+Allows SVG icon uploads. Needed for custom icons and JCI badges.
+Smush or ShortPixel
+Free tier
+Free
+Automatic image compression on upload. Target: WebP format, 85% quality. Required for Core Web Vitals.
+
+4.2 Optional Plugins (Add as Needed)
+
+Plugin
+Cost
+When to Add
+HubSpot WordPress Plugin
+Free
+When you need CRM. Connects inquiry form submissions directly to HubSpot deals pipeline.
+TablePress
+Free
+For complex pricing/comparison tables that need to be editable without code.
+Really Simple SSL
+Free
+If SSL redirect isn't handled in Nginx. Redundant if Nginx config is correct.
+Cookie Notice (GDPR)
+Free
+When live to UK/EU audience. Simple cookie consent banner.
+Google Site Kit
+Free
+Connects GA4 + Search Console data into WP dashboard. Optional — direct platform access is better.
+WP-Optimize
+Free
+Database cleanup: remove post revisions, spam comments, transients. Run monthly.
+Polylang
+Free
+Only if adding non-English languages in future (e.g. French for European market).
+
+4.3 Plugins to NEVER Install
+	•	Elementor, Divi, WPBakery, Visual Composer — page builders that add massive CSS/JS bloat and kill PageSpeed scores
+	•	Jetpack — does too many things poorly. Use dedicated plugins for each need.
+	•	Any SEO plugin other than RankMath — running two SEO plugins breaks everything
+	•	Broken Link Checker — runs continuously and destroys server performance
+	•	WordPress.com stats / Site Stats — Jetpack-dependent, unnecessary with GA4
+
+5. Theme Architecture & Template Files
+5.1 Recommended Base Theme
+
+Theme
+Kadence (free) or GeneratePress (free) — both are ultra-lightweight, block-editor compatible, and developer-friendly
+Child Theme
+ALWAYS create a child theme before any customisation. Theme updates will not overwrite your changes.
+Block System
+Kadence Blocks (free) or GenerateBlocks (free) for Gutenberg layout blocks
+Custom CSS
+/wp-content/themes/YOUR-CHILD-THEME/style.css — all custom CSS goes here
+Custom Functions
+/wp-content/themes/YOUR-CHILD-THEME/functions.php — all PHP customisation
+
+5.2 Template File Structure
+
+Directory Structure
+/wp-content/themes/dtc-child/
+├── style.css                  # Child theme header + custom CSS
+├── functions.php              # Custom functions, CPT registration, shortcodes
+├── front-page.php             # Homepage template
+├── page.php                   # Default page template
+├── page-about.php             # About page
+├── page-hospitals.php         # Partner hospitals (loops through hospital CPT)
+├── page-pricing.php           # Pricing page
+├── page-contact.php           # Contact / consultation page
+├── page-testimonials.php      # Testimonials page
+├── page-transport.php         # Transport quote page
+├── page-thank-you.php         # Form success page (noindex)
+├── single-procedure.php       # Template for all procedure pages (PR01-PR07)
+├── single-city.php            # Template for city guide pages (CG01-CG02)
+├── single.php                 # Blog post template
+├── archive.php                # Blog archive / category pages
+├── header.php                 # Site header + nav
+├── footer.php                 # Site footer + legal disclaimer
+├── sidebar.php                # (Not used — no sidebars on this site)
+├── 404.php                    # Custom 404 page with search + popular procedures
+│
+├── /template-parts/
+│   ├── hero.php               # Reusable hero section component
+│   ├── trust-bar.php          # 4-icon trust strip
+│   ├── objection-handler.php  # Safety Q&A section
+│   ├── hospital-card.php      # Single hospital card component
+│   ├── procedure-card.php     # Single procedure card component
+│   ├── price-comparison.php   # Price comparison table
+│   ├── testimonial-card.php   # Patient testimonial card
+│   ├── cta-band.php           # Final CTA section with form
+│   ├── faq-section.php        # FAQ accordion with schema markup
+│   └── whatsapp-button.php    # Sticky WhatsApp button
+│
+├── /assets/
+│   ├── /css/
+│   │   ├── main.css           # Primary stylesheet
+│   │   └── forms.css          # Form-specific styles
+│   ├── /js/
+│   │   ├── main.js            # Site JS (nav toggle, smooth scroll)
+│   │   └── forms.js           # Form validation and submission
+│   └── /icons/                # SVG icon files
+
+NOTE: All assets enqueued via wp_enqueue_scripts in functions.php
+      Never link CSS/JS directly in header.php
+
+
+5.3 functions.php — Core Registrations
+
+php — functions.php
+<?php
+// ── Enqueue assets ──────────────────────────────────────
+function dtc_enqueue_assets() {
+    wp_enqueue_style('dtc-main', get_stylesheet_directory_uri() . '/assets/css/main.css', [], '1.0.0');
+    wp_enqueue_script('dtc-main', get_stylesheet_directory_uri() . '/assets/js/main.js', [], '1.0.0', true);
+    // Pass AJAX URL to JS
+    wp_localize_script('dtc-main', 'dtc_ajax', ['url' => admin_url('admin-ajax.php'), 'nonce' => wp_create_nonce('dtc_nonce')]);
+}
+add_action('wp_enqueue_scripts', 'dtc_enqueue_assets');
+
+// ── Register Custom Post Types ───────────────────────────
+function dtc_register_cpts() {
+
+    // Procedure CPT
+    register_post_type('procedure', [
+        'labels'      => ['name' => 'Procedures', 'singular_name' => 'Procedure'],
+        'public'      => true,
+        'has_archive' => false,
+        'rewrite'     => ['slug' => '', 'with_front' => false], // URLs at root: /dental-implants-china/
+        'supports'    => ['title', 'editor', 'thumbnail', 'custom-fields', 'excerpt'],
+        'show_in_rest' => true,
+        'menu_icon'   => 'dashicons-heart',
+    ]);
+
+    // Hospital CPT
+    register_post_type('hospital', [
+        'labels'      => ['name' => 'Hospitals', 'singular_name' => 'Hospital'],
+        'public'      => true,
+        'has_archive' => false,
+        'rewrite'     => ['slug' => 'hospital', 'with_front' => false],
+        'supports'    => ['title', 'editor', 'thumbnail', 'custom-fields'],
+        'show_in_rest' => true,
+        'menu_icon'   => 'dashicons-building',
+    ]);
+
+    // City Guide CPT
+    register_post_type('city', [
+        'labels'      => ['name' => 'City Guides', 'singular_name' => 'City Guide'],
+        'public'      => true,
+        'has_archive' => false,
+        'rewrite'     => ['slug' => '', 'with_front' => false], // Root-level URLs
+        'supports'    => ['title', 'editor', 'thumbnail', 'custom-fields'],
+        'show_in_rest' => true,
+        'menu_icon'   => 'dashicons-location',
+    ]);
+}
+add_action('init', 'dtc_register_cpts');
+
+// ── Theme support ────────────────────────────────────────
+function dtc_theme_setup() {
+    add_theme_support('title-tag');
+    add_theme_support('post-thumbnails');
+    add_theme_support('html5', ['search-form', 'comment-form', 'gallery', 'caption']);
+    register_nav_menus(['primary' => 'Primary Navigation', 'footer' => 'Footer Navigation']);
+}
+add_action('after_setup_theme', 'dtc_theme_setup');
+
+// ── Disable XML-RPC (security) ───────────────────────────
+add_filter('xmlrpc_enabled', '__return_false');
+
+// ── Remove WordPress version from head (security) ────────
+remove_action('wp_head', 'wp_generator');
+
+
+6. Custom Post Types — Data Schema
+6.1 Procedure CPT — Custom Fields (use ACF or custom meta)
+
+Field Name (meta key)
+Field Type
+Required
+Usage
+_proc_price_china_usd
+Number
+Yes
+China price in USD. Displayed large and green on page.
+_proc_price_us_usd
+Number
+Yes
+US comparison price. Shown struck-through.
+_proc_price_uk_usd
+Number
+Yes
+UK comparison price.
+_proc_price_au_usd
+Number
+No
+Australia comparison price.
+_proc_savings_pct
+Number
+Yes
+Savings percentage (e.g. 75). Shown as badge.
+_proc_duration_days
+Text
+Yes
+e.g. '3-5 days'. Shown in trip planner section.
+_proc_service_package
+Text
+Yes
+Service package name (e.g. 'Dental Basic — $499').
+_proc_partner_hospitals
+Relationship
+Yes
+Links to Hospital CPT posts. Renders as hospital cards.
+_proc_faqs
+Repeater
+Yes
+question / answer pairs. Used for FAQ accordion + schema.
+_proc_hero_headline
+Text
+Yes
+Custom H1 override if different from post title.
+_proc_meta_desc
+Textarea
+Yes
+Custom meta description (backup to RankMath field).
+_proc_schema_type
+Select
+Yes
+MedicalProcedure / SurgicalProcedure — for schema markup.
+
+6.2 Hospital CPT — Custom Fields
+
+Field Name (meta key)
+Field Type
+Required
+Usage
+_hosp_city
+Select
+Yes
+shanghai / beijing. Used for filtering on /hospitals/ page.
+_hosp_jci_year
+Number
+Yes
+Year of JCI accreditation. Shown on badge: 'JCI Accredited Since XXXX'
+_hosp_jci_verify_url
+URL
+Yes
+Direct link to JCI.org verification entry. Must open in new tab.
+_hosp_specialties
+Checkbox
+Yes
+dental / lasik / checkup / cosmetic / general. Used for procedure page linking.
+_hosp_address
+Text
+Yes
+Full English address. Used in schema LocalBusiness markup.
+_hosp_phone
+Text
+No
+International format phone number.
+_hosp_website
+URL
+No
+Hospital official website. External link.
+_hosp_international_dept
+Boolean
+Yes
+Has dedicated international department? Shown as badge.
+_hosp_english_staff
+Boolean
+Yes
+English-speaking staff available? Shown as badge.
+_hosp_key_stat
+Text
+Yes
+One impressive stat. e.g. '450 beds | Opened 2023'
+_hosp_lat
+Number
+Yes
+Latitude for Google Maps embed.
+_hosp_lng
+Number
+Yes
+Longitude for Google Maps embed.
+_hosp_gallery
+Gallery
+No
+Multiple photos of facility interior.
+
+6.3 Blog Post — Taxonomy & Meta
+
+Categories (taxonomy)
+dental / lasik / health-checkup / cosmetic / destination-guides / visa-travel / cost-comparisons / patient-stories
+Tags (taxonomy)
+Free tags. Use sparingly — procedure name + city combination. e.g. 'dental implants Shanghai'
+_post_reading_time
+Auto-calculated. Show in post header as '7 min read'
+_post_last_updated
+Date field. Show below author: 'Last updated: January 2026'. Critical for medical content E-E-A-T.
+_post_related_procedure
+Relationship to Procedure CPT. Shows relevant CTA at end of post.
+_post_author_bio
+Text field or User profile bio. Required for E-E-A-T. Never 'Admin'.
+
+7. Form Specifications & Logic
+7.1 Main Inquiry Form (used on /contact/ and all page CTAs)
+
+#
+Field Label
+Field Type
+Required
+Notes
+1
+Full Name
+Text
+Yes
+Placeholder: 'Your full name'
+2
+Email Address
+Email
+Yes
+Validate format. Placeholder: 'your@email.com'
+3
+WhatsApp Number
+Phone
+Yes
+Include country code dropdown (+44, +1, +61 etc). This is the primary communication channel.
+4
+Country of Residence
+Dropdown
+Yes
+Options: United Kingdom / Australia / Canada / United States / Germany / France / Netherlands / Other Europe / Other. Used to personalise follow-up.
+5
+Procedure of Interest
+Multi-checkbox
+Yes
+Dental Implants / All-on-4 Full Mouth / Veneers / Root Canal / LASIK Eye Surgery / Health Checkup / Cosmetic Procedure / Not sure yet
+6
+Preferred City
+Radio
+No
+Shanghai / Beijing / Flexible / Not decided
+7
+Approximate Travel Dates
+Text
+No
+Placeholder: 'e.g. April 2026 or flexible'
+8
+Tell us more
+Textarea
+No
+Rows: 4. Placeholder: 'Any specific concerns, questions, or context that would help us prepare your quote...'
+9
+GDPR Consent
+Checkbox
+Yes
+Label: 'I agree to be contacted regarding my enquiry. I understand my data will not be shared with third parties.' Link to privacy policy.
+10
+Honeypot
+Hidden text
+—
+Hidden from users, traps bots. Name: '_gotcha' or similar. If filled, discard submission silently.
+
+Form Submission Behaviour
+	•	On submit: validate all required fields client-side (JS) before AJAX POST to server
+	•	On server: validate again server-side (never trust client-side only), check honeypot, verify nonce
+	•	On success: replace form HTML with thank-you message — DO NOT redirect (kills GA4 goal tracking)
+	•	Thank-you message: 'Thank you, [First Name]! We will respond to your WhatsApp or email within 2 hours. Check your spam folder if you don't hear from us.'
+	•	Trigger: send email notification to operator (via WP Mail SMTP), send auto-reply to patient
+	•	GA4 event: fire custom event 'inquiry_form_submit' with properties: procedure, country, city
+	•	CRM: if HubSpot connected, create new Contact + Deal automatically
+
+7.2 Transport Quote Request Form (on /transport/)
+
+#
+Field Label
+Field Type
+Required
+Notes / Options
+1
+Full Name
+Text
+Yes
+
+2
+Email or WhatsApp
+Text
+Yes
+Combined field — accept either format
+3
+City
+Radio
+Yes
+Shanghai / Beijing / Other (specify)
+4
+Airport
+Conditional dropdown
+Yes
+If Shanghai: Pudong (PVG) / Hongqiao (SHA). If Beijing: Capital (PEK) / Daxing (PKX)
+5
+Destination (Hospital/Hotel/Area)
+Text
+Yes
+Placeholder: 'Hospital name or area name — e.g. Jiahui Hospital, Xuhui District'
+6
+Arrival Date
+Date picker
+Yes
+Minimum date: tomorrow
+7
+Arrival Time (Flight)
+Time input
+No
+Used to determine late-night surcharge
+8
+Return Transfer?
+Radio
+Yes
+Yes (need return) / No (one-way only)
+9
+Number of Passengers
+Select
+Yes
+1 / 2 / 3 / 4 / 5+
+10
+Luggage
+Radio
+Yes
+Light (1-2 bags) / Standard (3-4 bags) / Heavy (5+ bags)
+11
+Vehicle Preference
+Radio
+No
+Standard (Sedan) / Business (MPV) / Premium (Luxury) / No preference
+12
+Special Requirements
+Checkboxes
+No
+Wheelchair access / Child seat / None
+13
+GDPR Consent
+Checkbox
+Yes
+Same as inquiry form
+
+	•	On submit: operator receives itemised quote request. Response: manual email/WhatsApp within 2 hours.
+	•	Conditional logic: show airport dropdown ONLY after city is selected
+	•	Conditional logic: show return date picker ONLY if 'Yes — need return' is selected
+	•	Auto-reply: 'We received your transport request. Expect your quote within 2 hours.'
+
+8. SEO Configuration — RankMath Settings
+8.1 RankMath Global Settings
+
+RankMath config
+# RankMath > General Settings
+
+# Breadcrumbs
+Enable breadcrumbs: YES
+Separator: >
+Homepage label: Home
+
+# 404 Monitor
+Enable 404 monitor: YES
+Log limit: 100 entries
+
+# Redirections
+Enable redirections: YES
+Auto-redirect attachments: YES
+
+# Schema
+Default schema type for pages: WebPage
+Default schema type for posts: Article
+
+# Local SEO (add for MedicalOrganization schema)
+Business Name: DentalTripChina.com
+Business Type: MedicalOrganization
+Address: (use business address or 'Online service')
+
+
+8.2 Title & Meta Template Strings
+
+Page Type
+Title Template
+Meta Description Template
+Homepage
+Medical Tourism China — Save 70%+ | DentalTripChina
+World-class dental implants, LASIK, and health checkups in China. JCI-accredited hospitals. English support. Save 70-85% vs UK/US prices. Free quote in 2 hours.
+Procedure page
+%title% Cost in China (2026) | DentalTripChina
+Get %title% in China at JCI-accredited hospitals. Compare prices vs US and UK. Full English coordination included. Request free cost estimate.
+City guide
+Medical Tourism %city% — Hospitals, Prices & Guide | DentalTripChina
+Complete guide to medical tourism in %city%. JCI-accredited hospitals, costs, visa information, and English patient support.
+Blog post
+%title% | DentalTripChina
+Auto or custom per post — 150-160 chars, includes primary keyword
+Contact page
+Free Medical Tourism Consultation | DentalTripChina
+Get a free cost estimate for dental, LASIK, or health checkup in China. Response within 2 hours. No obligation.
+thank-you
+noindex, nofollow — exclude from sitemap
+No meta needed — this page must not be indexed
+
+8.3 Schema Markup — Implementation Per Page Type
+
+Page
+Schema Type
+Key Fields to Populate
+Homepage
+MedicalOrganization + WebSite
+name, url, logo, contactPoint (WhatsApp), sameAs (social profiles), potentialAction (SearchAction for sitelinks search)
+All Procedure pages
+MedicalProcedure + FAQPage
+name, description, bodyLocation, procedureType, preparation, followup, howPerformed. FAQPage: mainEntity array of Question/Answer
+Hospital pages
+Hospital
+name, url, address (PostalAddress), telephone, medicalSpecialty, isAccreditedBy (JCI reference)
+Blog posts
+Article + BreadcrumbList
+headline, author (Person: name, url), datePublished, dateModified, image, publisher (Organization). BreadcrumbList: Home > Blog > Post Title
+Contact page
+ContactPage
+name, url, contactOption
+All inner pages
+BreadcrumbList
+Home > [Section] > [Page Title]. Implement on every page except homepage.
+Price comparison sections
+Offer (within MedicalProcedure)
+price, priceCurrency, availability, seller (DentalTripChina)
+
+8.4 robots.txt
+
+robots.txt
+# /robots.txt — place at server root or let WordPress handle via RankMath
+
+User-agent: *
+Allow: /
+
+# Block WordPress admin and sensitive areas
+Disallow: /wp-admin/
+Disallow: /wp-includes/
+Disallow: /wp-login.php
+Disallow: /wp-register.php
+
+# Block thank-you and utility pages
+Disallow: /thank-you/
+Disallow: /?s=
+Disallow: /search/
+
+# Block tag archives (thin content)
+Disallow: /tag/
+
+# Sitemap location
+Sitemap: https://dentaltripchina.com/sitemap_index.xml
+
+
+9. Analytics & Tracking Setup
+9.1 Google Analytics 4 — Event Configuration
+
+javascript — GA4 events
+// Add to functions.php or load via Google Tag Manager
+// GA4 Measurement ID: G-XXXXXXXXXX (replace with real ID)
+
+// Custom events to track:
+// 1. Inquiry form submission
+gtag('event', 'inquiry_submit', {
+    'procedure':  formData.procedure,
+    'country':    formData.country,
+    'city':       formData.city,
+});
+
+// 2. WhatsApp button click (sticky + inline)
+gtag('event', 'whatsapp_click', {
+    'location': 'sticky_button', // or 'cta_section' / 'contact_page'
+});
+
+// 3. Phone/email click
+gtag('event', 'contact_click', { 'method': 'email' });
+
+// 4. Procedure page view
+gtag('event', 'procedure_view', {
+    'procedure_name': document.title,
+});
+
+// 5. Price comparison scroll (scroll depth 75% on pricing pages)
+// Use GTM trigger: scroll depth 75%
+
+// CONVERSION EVENTS (mark in GA4 as conversions):
+// - inquiry_submit  ← most important
+// - whatsapp_click
+
+
+9.2 Google Search Console Setup
+	•	Add property: dentaltripchina.com (domain property, not URL prefix)
+	•	Verify via DNS TXT record (most reliable method)
+	•	Submit sitemap: https://dentaltripchina.com/sitemap_index.xml
+	•	Link to GA4 property (GSC Settings > Associations)
+	•	Set preferred domain: dentaltripchina.com (no www)
+	•	Monitor weekly: Coverage report (fix crawl errors), Performance (keyword rankings), Core Web Vitals
+
+9.3 Noindex Pages — Must Exclude from Search
+
+noindex config
+# Pages that must have noindex, nofollow meta tag
+# Add via RankMath > Advanced tab on each page, or
+# add programmatically in functions.php
+
+/thank-you/              # Form success page — not content
+/wp-admin/               # Handled by WordPress automatically
+/?s=                     # Search results pages
+/tag/*                   # Tag archive pages (thin content)
+/page/2/ and deeper      # Paginated archives (can noindex if preferred)
+
+# Categories: noindex OR add unique intro content
+# Decision: add 200-word unique intros to category pages and index them
+# This creates additional SEO-rankable archive pages
+
+
+10. Performance Optimisation Checklist
+10.1 Core Web Vitals Targets
+
+Metric
+Target
+Fail Threshold
+How to Achieve
+LCP (Largest Contentful Paint)
+< 2.5s
+> 4.0s
+Preload hero image, use WebP, serve from CDN, no render-blocking CSS
+CLS (Cumulative Layout Shift)
+< 0.1
+> 0.25
+Set explicit width+height on all images, no dynamic content insertion above fold
+INP (Interaction to Next Paint)
+< 200ms
+> 500ms
+Defer non-critical JS, avoid heavy third-party scripts loading synchronously
+FCP (First Contentful Paint)
+< 1.8s
+> 3.0s
+Eliminate render-blocking resources, inline critical CSS, preconnect to Google Fonts
+TTFB (Time to First Byte)
+< 800ms
+> 1800ms
+PHP OPcache enabled, object caching (Redis/Memcached), full-page caching plugin
+
+10.2 Image Optimisation Rules
+	•	Format: WebP for all images. AVIF where browser support allows. Never BMP or TIFF.
+	•	Hero images: max 200KB. Body images: max 100KB. Thumbnails: max 30KB.
+	•	Dimensions: upload at max display size (never let WordPress shrink by 80%). Hero: 1920×1080. Card thumbnails: 800×600.
+	•	Lazy loading: use loading='lazy' on ALL images below the fold. Hero image: loading='eager' + fetchpriority='high'.
+	•	Alt text: required on every image. Descriptive, keyword-relevant where natural.
+	•	Plugin: Smush or ShortPixel — configure to auto-convert to WebP and strip EXIF data.
+
+10.3 CSS & JavaScript Rules
+	•	No page builder — Gutenberg + Kadence Blocks only. No Elementor, Divi, or WPBakery.
+	•	Minify CSS and JS via WP Rocket (combine and minify setting).
+	•	Defer all non-critical JS: add defer or async attribute.
+	•	Remove unused CSS: WP Rocket > Remove Unused CSS (enable, test carefully — can break things).
+	•	Google Fonts: preconnect link in <head>, then load one font family only (Inter). Use display=swap.
+	•	Third-party scripts (GA4, HubSpot): load via Google Tag Manager to centralise and defer.
+
+10.4 Caching Configuration (WP Rocket)
+
+WP Rocket config
+# WP Rocket key settings
+
+Cache > Enable caching: YES
+Cache > Separate cache for mobile: YES
+Cache > Cache lifespan: 10 hours
+
+File Optimisation > Minify CSS: YES
+File Optimisation > Combine CSS: YES (test — disable if breaks layout)
+File Optimisation > Minify JS: YES
+File Optimisation > Defer JS execution: YES
+File Optimisation > Delay JS execution: YES — delay all (with exclusions for critical scripts)
+
+Media > Enable LazyLoad (images): YES
+Media > Enable LazyLoad (iframes/videos): YES
+Media > Add missing image dimensions: YES
+Media > Disable WordPress embeds: YES (unless embedding YouTube testimonials)
+
+Preload > Activate Preloading: YES
+Preload > Preload Links: YES
+
+Advanced Rules > Never cache: /contact/, /thank-you/, /wp-admin/, /cart/ (if any)
+Advanced Rules > Always purge: on form plugin updates
+
+# Exclude from cache (WP Rocket exclusion rules):
+# /contact/     — always fresh (form nonces expire)
+# /thank-you/   — never cached
+# /wp-login.php — never cached
+
+
+11. Security Configuration
+11.1 Wordfence Settings
+	•	Firewall: Enable Web Application Firewall (WAF), mode: Learning then Extended Protection
+	•	Login Security: Limit login attempts to 5. Lock out for 4 hours after 5 failures.
+	•	Two-Factor Authentication: Enable for admin account (required).
+	•	Login page CAPTCHA: Enable reCAPTCHA v3 on login form.
+	•	Malware Scanner: Run weekly. Email alert on any detection.
+	•	Block known bad IPs: Enable. Wordfence maintains a live threat IP feed.
+
+11.2 Additional Security Hardening
+
+nginx security headers
+# Add to Nginx config or .htaccess equivalent
+
+# Security headers
+add_header X-Content-Type-Options nosniff;
+add_header X-Frame-Options SAMEORIGIN;
+add_header X-XSS-Protection '1; mode=block';
+add_header Referrer-Policy 'strict-origin-when-cross-origin';
+add_header Permissions-Policy 'camera=(), microphone=(), geolocation=(self)';
+
+# Hide sensitive paths
+location = /wp-config.php { deny all; }
+location = /xmlrpc.php    { deny all; }
+location ~ /\.git         { deny all; }
+location ~ /\.env         { deny all; }
+
+# Rate limit login page
+location = /wp-login.php {
+    limit_req zone=login burst=5 nodelay;
+    fastcgi_pass unix:/run/php/php8.2-fpm.sock;
+    include fastcgi_params;
+}
+
+
+11.3 Backup Strategy
+	•	Plugin: UpdraftPlus — daily automated backup
+	•	Backup includes: database + wp-content (uploads, themes, plugins)
+	•	Remote storage: Google Drive or AWS S3 (not same server as site)
+	•	Retention: keep 14 daily backups. Keep 4 weekly backups.
+	•	Test restore: perform a test restore to staging environment monthly
+	•	Before any major update: manual backup first, then update
+
+12. WhatsApp Integration — Implementation
+12.1 Sticky Button Code
+
+HTML + CSS — WhatsApp button
+<!-- Add to footer.php or via wp_footer hook in functions.php -->
+
+<!-- WhatsApp Sticky Button -->
+<a
+  id="whatsapp-sticky"
+  href="https://wa.me/YOURPHONENUMBER?text=Hi%2C%20I%27m%20interested%20in%20medical%20care%20in%20China.%20Can%20you%20help%3F"
+  target="_blank"
+  rel="noopener"
+  aria-label="Chat with us on WhatsApp"
+  onclick="gtag('event', 'whatsapp_click', {'location': 'sticky_button'});"
+>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="28" height="28">
+    <!-- WhatsApp SVG path -->
+    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15..."/>
+  </svg>
+  <span class="wa-label">Chat with us</span>
+</a>
+
+<!-- CSS: add to main.css -->
+#whatsapp-sticky {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 56px;
+  height: 56px;
+  background-color: #25D366;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+  z-index: 9999;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  text-decoration: none;
+}
+#whatsapp-sticky:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+}
+.wa-label {
+  display: none; /* Hidden by default, shown on hover via CSS for desktop */
+}
+@media (max-width: 767px) {
+  #whatsapp-sticky { bottom: 16px; right: 16px; }
+}
+
+
+12.2 Pre-Filled Message Templates
+
+Trigger Location
+Pre-filled WhatsApp Message (URL-encoded)
+Sticky button (all pages)
+Hi, I'm interested in medical care in China. Can you help?
+Dental implants page
+Hi, I'd like to know more about dental implants in China. Can you send pricing and hospital info?
+All-on-4 page
+Hi, I'm interested in All-on-4 full mouth reconstruction in China. Can you help?
+LASIK page
+Hi, I'm interested in LASIK eye surgery in China. What's the process and cost?
+Health checkup page
+Hi, I'd like information about a comprehensive health checkup in China.
+Contact page
+Hi, I'd like to request a free consultation about medical care in China.
+
+URL encode each message at: https://www.urlencoder.org/ and insert into href attribute.
+
+13. Pre-Launch Checklist — Go / No-Go Criteria
+13.1 Technical Checklist
+
+#
+Check
+How to Verify
+Status
+1
+HTTPS enforced on all URLs (including gochinamedtrip.com redirect)
+Visit http:// versions in browser
+[ ] Pass
+2
+www redirects to non-www
+Visit www.dentaltripchina.com
+[ ] Pass
+3
+gochinamedtrip.com 301 redirects to dentaltripchina.com
+curl -I https://gochinamedtrip.com
+[ ] Pass
+4
+Google PageSpeed Mobile score > 85
+pagespeed.web.dev
+[ ] Pass
+5
+Google PageSpeed Desktop score > 90
+pagespeed.web.dev
+[ ] Pass
+6
+Inquiry form submits, sends email to operator, sends auto-reply to user
+Submit test form
+[ ] Pass
+7
+Transport quote form submits correctly
+Submit test form
+[ ] Pass
+8
+WhatsApp sticky button visible and opens correct message
+Test on mobile + desktop
+[ ] Pass
+9
+All internal links resolve (no 404s)
+Screaming Frog or Ahrefs site audit
+[ ] Pass
+10
+Sitemap accessible: /sitemap_index.xml
+Visit URL in browser
+[ ] Pass
+11
+robots.txt correct (noindex pages blocked)
+Visit /robots.txt
+[ ] Pass
+12
+GA4 tracking fires on page load
+GA4 DebugView in Chrome
+[ ] Pass
+13
+GA4 conversion event fires on form submit
+GA4 DebugView + submit test form
+[ ] Pass
+14
+Legal disclaimer in footer on every page
+Spot check 5 pages
+[ ] Pass
+15
+Schema markup valid
+schema.org Validator
+[ ] Pass
+16
+All images have alt text
+Screaming Frog image audit
+[ ] Pass
+17
+thank-you page is noindex
+View page source, check meta robots
+[ ] Pass
+18
+Admin username is NOT 'admin'
+WP Users panel
+[ ] Pass
+19
+2FA enabled for admin account
+Log in and verify
+[ ] Pass
+20
+Backup tested (restore confirmed working)
+UpdraftPlus restore test
+[ ] Pass
+21
+Sitemap submitted to Google Search Console
+GSC > Sitemaps
+[ ] Pass
+22
+Search Console property verified
+GSC > Domain property
+[ ] Pass
+23
+GDPR consent checkbox on all forms
+Check all forms
+[ ] Pass
+24
+First 3 blog posts published with full SEO config
+Check RankMath score > 80
+[ ] Pass
+
+LAUNCH RULE
+All 24 items must be checked PASS before going live. No exceptions. Fix all issues first, then launch.
+
+13.2 Post-Launch — First 48 Hours
+	•	Submit sitemap to Google Search Console
+	•	Request indexing on homepage, 3 procedure pages, and /blog/ in Search Console
+	•	Share site in: r/medicaltourism (genuine participation, not spam), r/expats community
+	•	Post first TikTok/YouTube video with website link in bio
+	•	Test all forms on real mobile devices (iPhone + Android)
+	•	Monitor Wordfence for any security alerts
+	•	Check GA4 Real-Time view to confirm tracking
+	•	Set up GA4 weekly email digest report
+
+13.3 First Month — Ongoing Tasks
+
+Frequency
+Task
+Daily
+Monitor WP Mail SMTP for form notification delivery. Check Wordfence for security alerts.
+Weekly
+Publish 2 new blog posts. Check Search Console for new keywords ranking. Respond to all form inquiries < 2 hours.
+Weekly
+Check 404 report in RankMath > Redirections. Fix any broken links.
+Monthly
+Run WP-Optimize database cleanup. Update all plugins (after testing on staging). Review PageSpeed scores.
+Monthly
+UpdraftPlus: verify backup integrity. Attempt test restore on staging server.
+Monthly
+Review GA4 conversion funnel. Identify drop-off pages. Update content or CTA placement.
+
+14. Quick Reference Summary
+
+Primary Domain
+dentaltripchina.com
+Redirect Domain
+gochinamedtrip.com → 301 to dentaltripchina.com
+Server OS
+Ubuntu 22.04 LTS
+Web Server
+Nginx with PHP 8.2 FPM
+Database
+MySQL 8.0 / MariaDB 10.6 — db: dtc_wp, prefix: dtc_
+WordPress
+Latest stable, installed at /var/www/dentaltripchina/public
+Theme
+Kadence (free) + dtc-child child theme
+SEO Plugin
+RankMath Pro
+Caching
+WP Rocket
+Forms
+WPForms Pro
+Security
+Wordfence + 2FA on admin
+Backups
+UpdraftPlus → Google Drive, daily, 14-day retention
+CDN
+Cloudflare (free tier) — Full (strict) SSL mode
+Analytics
+Google Analytics 4 (GA4) + Google Search Console
+Custom Post Types
+procedure / hospital / city
+Blog URL structure
+/blog/{slug}/
+Procedure URL structure
+/{slug}/ (root level — no /procedure/ prefix)
+Noindex pages
+/thank-you/, /tag/*, /?s=
+WhatsApp Number
+Insert real number: wa.me/YOURPHONENUMBER
+Admin email
+Use a non-Gmail for reliability (Zoho, Google Workspace)
+
+DentalTripChina.com  |  Website Architecture & Developer Specification  |  v1.0  |  2026
