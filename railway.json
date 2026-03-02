@@ -1,0 +1,6 @@
+{
+  "name": "dentaltripchina",
+  "description": "Dental Trip China - Medical Tourism Service",
+  "buildCommand": "npm run build",
+  "startCommand": "npm start"
+}
