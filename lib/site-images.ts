@@ -28,29 +28,42 @@ const portraitBase = [
   "Do not include certificates, eye charts, paperwork, book covers, nameplates, ID badges, screens, or printed documents with marks that resemble text."
 ].join(" ");
 
-function buildPrompt(core: string, variant: "editorial" | "portrait" = "editorial") {
-  return `${core} ${variant === "portrait" ? portraitBase : editorialBase}`;
+const photoBase = [
+  "Premium website photography for a medical-travel website.",
+  "Photorealistic editorial photo with natural light, premium interiors, credible healthcare and hospitality environments, and restrained sage, ivory, and blue-gray tones.",
+  "Calm, trustworthy, polished, non-graphic, no gore, no watermarks.",
+  "Prefer real people, real architecture, and real objects instead of diagrams, UI mockups, or infographics.",
+  "Absolutely no readable text anywhere: no words, letters, numbers, labels, captions, signage, paperwork text, screen text, logos, badges, passports, certificates, or document close-ups.",
+  "Do not include visible monitors, kiosks, dashboards, nameplates, plaques, certificates, airport boards, TV screens, or printed documents in the shot."
+].join(" ");
+
+function buildPrompt(core: string, variant: "editorial" | "portrait" | "photo" = "editorial") {
+  if (variant === "portrait") return `${core} ${portraitBase}`;
+  if (variant === "photo") return `${core} ${photoBase}`;
+  return `${core} ${editorialBase}`;
 }
 
 export const pageImageAssets = {
   homeHero: {
     id: "page-home-hero",
     src: "/generated/pages/home-hero.webp",
-    alt: "Editorial illustration of a patient planning medical travel in China",
+    alt: "Photorealistic scene of an international patient planning medical travel in China",
     aspect: "4:3",
     quality: "normal",
     prompt: buildPrompt(
-      "Create a flagship homepage scene showing an international patient planning treatment in China with a calm consultation desk, hospital shortlist folders, travel cues, and cost-planning icons arranged in a clean icon-only composition."
+      "Create a flagship homepage scene showing an international patient in a premium consultation lounge planning treatment in China with a coordinator, subtle hospital-shortlist materials, travel cues, and a calm high-trust atmosphere. Keep objects generic and text-free.",
+      "photo"
     )
   },
   aboutHero: {
     id: "page-about-hero",
     src: "/generated/pages/about-hero.webp",
-    alt: "Editorial illustration about transparent medical travel coordination",
+    alt: "Photorealistic scene of transparent medical travel coordination",
     aspect: "4:3",
     quality: "normal",
     prompt: buildPrompt(
-      "Create a premium coordination scene showing a transparent medical-travel operations desk, compliance folder, provider shortlist, and patient support notes with no dramatic treatment imagery."
+      "Create a realistic coordination-office scene showing a premium medical-travel team reviewing provider options, patient support materials, and compliance folders in a bright professional workspace, with no visible text.",
+      "photo"
     )
   },
   howItWorksHero: {
@@ -66,101 +79,111 @@ export const pageImageAssets = {
   travelSupportHero: {
     id: "page-travel-support-hero",
     src: "/generated/pages/travel-support-hero.webp",
-    alt: "Editorial illustration of treatment-first travel support in China",
+    alt: "Photorealistic scene of treatment-first travel support in China",
     aspect: "4:3",
     quality: "normal",
     prompt: buildPrompt(
-      "Create a calm travel-support scene for medical visitors showing airport pickup coordination, a recovery-friendly stay plan, appointment calendar cues, and a secure document folder."
+      "Create a realistic medical-travel support scene with a concierge helping an international patient coordinate airport pickup, hotel stay, and hospital visits in a calm premium setting. No screens or documents with readable text.",
+      "photo"
     )
   },
   hotelsHero: {
     id: "page-hotels-hero",
     src: "/generated/pages/hotels-hero.webp",
-    alt: "Editorial illustration of a recovery-friendly hotel stay",
+    alt: "Photorealistic scene of a recovery-friendly hotel stay",
     aspect: "4:3",
     quality: "normal",
     prompt: buildPrompt(
-      "Create a quiet recovery-hotel scene with a restful room, blackout curtains, luggage, accessible circulation, and subtle hospital-transfer cues for a medical traveler."
+      "Create a realistic recovery-hotel room scene with soft daylight, blackout curtains, accessible circulation, luggage, tea service, and a restful premium atmosphere for a medical traveler.",
+      "photo"
     )
   },
   transportHero: {
     id: "page-transport-hero",
     src: "/generated/pages/transport-hero.webp",
-    alt: "Editorial illustration of airport and hospital transfer coordination",
+    alt: "Photorealistic scene of airport and hospital transfer coordination",
     aspect: "4:3",
     quality: "normal",
     prompt: buildPrompt(
-      "Create a reliable airport-transfer scene showing arrival, luggage handling, a coordinated car route, and a hospital drop-off plan in a polished service style."
+      "Create a realistic airport-transfer scene with a premium driver greeting an international patient, luggage handling, an executive vehicle, and a hospital arrival drop-off in a polished service style. No visible signage text.",
+      "photo"
     )
   },
   visaHero: {
     id: "page-visa-hero",
     src: "/generated/pages/visa-hero.webp",
-    alt: "Editorial illustration of travel documents and medical trip preparation",
+    alt: "Photorealistic scene of medical trip preparation and secure travel documents",
     aspect: "4:3",
     quality: "normal",
     prompt: buildPrompt(
-      "Create a documentation-focused scene with a passport-shaped object, secure travel folder, checklist symbols, and itinerary cues for medical trip preparation, without official seals or document text."
+      "Create a realistic pre-travel planning scene with a patient and coordinator preparing for a China medical trip, using generic folders, luggage, and itinerary cues. Avoid any document close-ups, passport text, stamps, or visible screens.",
+      "photo"
     )
   },
   testimonialsHero: {
     id: "page-testimonials-hero",
     src: "/generated/pages/testimonials-hero.webp",
-    alt: "Editorial illustration of verified patient stories and milestones",
+    alt: "Photorealistic scene suggesting patient confidence and recovery milestones",
     aspect: "4:3",
     quality: "normal",
     prompt: buildPrompt(
-      "Create a privacy-safe social-proof scene using anonymous patient journey symbols, trust markers, milestone steps, and quote-card shapes without any identifiable faces or readable words."
+      "Create a realistic but privacy-safe patient-confidence scene with international patients in a premium clinic lounge or recovery setting, showing reassurance, support, and trust without quoting text, badges, or identifiable paperwork.",
+      "photo"
     )
   },
   hospitalsHero: {
     id: "page-hospitals-hero",
     src: "/generated/pages/hospitals-hero.webp",
-    alt: "Editorial illustration comparing trusted hospitals in Shanghai and Beijing",
+    alt: "Photorealistic scene comparing trusted hospitals in Shanghai and Beijing",
     aspect: "4:3",
     quality: "normal",
     prompt: buildPrompt(
-      "Create a premium hospital-comparison scene with two elegant healthcare campuses, international reception cues, and institutional trust symbols for Shanghai and Beijing."
+      "Create a single photorealistic premium hospital-arrival scene that communicates international-standard care in China, with elegant architecture, calm reception flow, and strong institutional credibility. No collage, no split layout, no screens, no plaques, and no readable signage.",
+      "photo"
     )
   },
   contactHero: {
     id: "page-contact-hero",
     src: "/generated/pages/contact-hero.webp",
-    alt: "Editorial illustration of responsive medical travel communication channels",
+    alt: "Photorealistic scene of responsive medical travel communication",
     aspect: "4:3",
     quality: "normal",
     prompt: buildPrompt(
-      "Create a communication-hub scene showing email, messaging, patient notes, uploaded records, and planning folders in a trustworthy medical coordination environment."
+      "Create a realistic communication scene with a medical-travel coordinator at a premium desk responding to a patient inquiry by phone or laptop, surrounded by generic planning materials and no readable screens.",
+      "photo"
     )
   },
   pricingHero: {
     id: "page-pricing-hero",
     src: "/generated/pages/pricing-hero.webp",
-    alt: "Editorial illustration of transparent treatment budgeting and price comparison",
+    alt: "Photorealistic scene of transparent treatment budgeting and price comparison",
     aspect: "4:3",
     quality: "normal",
     prompt: buildPrompt(
-      "Create a budgeting scene for treatment planning with unlabeled comparison bars, coins, stacked cost blocks, a calendar, and travel-cost icons arranged as a premium price-transparency visual."
+      "Create a realistic treatment-budget planning scene with a patient and coordinator reviewing generic cost printouts, calculator, coffee, and travel planning materials on a premium consultation table. No readable numbers or text.",
+      "photo"
     )
   },
   trustCenterHero: {
     id: "page-trust-center-hero",
     src: "/generated/pages/trust-center-hero.webp",
-    alt: "Editorial illustration of a healthcare trust center",
+    alt: "Photorealistic scene of a healthcare trust center",
     aspect: "4:3",
     quality: "normal",
     prompt: buildPrompt(
-      "Create a trust-center overview scene combining doctor verification, hospital credentials, privacy handling, pricing clarity, and post-operative support pathways in one coherent composition."
+      "Create a realistic trust-center scene with a premium hospital consultation area, credential review materials, staff discussion, and a calm compliance-led environment. Keep every surface and document text-free.",
+      "photo"
     )
   },
   verificationBanner: {
     id: "page-verification-banner",
     src: "/generated/pages/verification-banner.webp",
-    alt: "Editorial illustration of credential verification and registry checks",
+    alt: "Photorealistic scene of credential verification and registry checks",
     aspect: "4:3",
     quality: "normal",
     prompt: buildPrompt(
-      "Create a verification-focused scene with credential folders, registry-check icons, official-stamp shapes, verified markers, and structured evidence blocks, without any readable seals or text."
+      "Create a realistic credential-review scene with a compliance specialist and clinician checking generic folders and accreditation materials in a premium office or hospital setting, with no visible text or logos.",
+      "photo"
     )
   },
   trustDashboardBanner: {
@@ -176,11 +199,12 @@ export const pageImageAssets = {
   costCalculatorBanner: {
     id: "page-cost-calculator-banner",
     src: "/generated/pages/cost-calculator-banner.webp",
-    alt: "Editorial illustration of low, median, and high budget planning",
+    alt: "Photorealistic scene of low, median, and high budget planning",
     aspect: "4:3",
     quality: "normal",
     prompt: buildPrompt(
-      "Create a cost-calculator scene with three-tier budget blocks, treatment icons, hotel and flight symbols, and contingency cues arranged as a clear planning visual without labels."
+      "Create a realistic budget-planning scene with a clean desk, calculator, generic paper stacks, travel and treatment planning cues, and a patient discussing low, median, and high budget scenarios. No readable numbers or text.",
+      "photo"
     )
   },
   eligibilityBanner: {
@@ -239,31 +263,34 @@ export const hospitalImageAssets = {
   "jiahui-international-hospital": {
     id: "hospital-jiahui",
     src: "/generated/hospitals/jiahui-international-hospital.webp",
-    alt: "Editorial illustration of Jiahui International Hospital campus and reception",
+    alt: "Photorealistic scene of Jiahui International Hospital campus and reception",
     aspect: "4:3",
     quality: "normal",
     prompt: buildPrompt(
-      "Create an architectural healthcare scene for Jiahui International Hospital in Shanghai with a modern campus exterior, international reception cues, and warm daylight. No building signage."
+      "Create a single wide-angle photorealistic premium hospital campus scene inspired by an international hospital in Shanghai, with modern architecture, landscaped grounds, and a calm reception arrival flow. No collage, no split layout, no building signage, no logos, no screens, and no plaques.",
+      "photo"
     )
   },
   "beijing-united-family-hospital": {
     id: "hospital-bufh",
     src: "/generated/hospitals/beijing-united-family-hospital.webp",
-    alt: "Editorial illustration of Beijing United Family Hospital exterior and outpatient arrival",
+    alt: "Photorealistic scene of Beijing United Family Hospital exterior and outpatient arrival",
     aspect: "4:3",
     quality: "normal",
     prompt: buildPrompt(
-      "Create an architectural healthcare scene for Beijing United Family Hospital with a polished entrance, outpatient arrival flow, and international-service atmosphere. No readable signage."
+      "Create a photorealistic international-hospital exterior scene in Beijing with a polished entrance, outpatient arrival flow, and premium service atmosphere. No readable signage, no logos, no screens, and no plaques.",
+      "photo"
     )
   },
   "tongren-eye-center": {
     id: "hospital-tongren-eye",
     src: "/generated/hospitals/tongren-eye-center.webp",
-    alt: "Editorial illustration of Beijing Tongren Eye Center diagnostics environment",
+    alt: "Photorealistic scene of an ophthalmology diagnostics environment in Beijing",
     aspect: "4:3",
     quality: "normal",
     prompt: buildPrompt(
-      "Create an ophthalmology-focused hospital scene for Tongren Eye Center with diagnostic instruments, a clean specialist environment, and calm patient-intake cues. No readable signage."
+      "Create a photorealistic ophthalmology diagnostics environment in Beijing with premium eye-care equipment, a specialist room, and calm patient-intake cues. No readable signage, no device text, no screens in focus, and no wall plaques.",
+      "photo"
     )
   }
 } as const satisfies Record<string, SiteImageAsset>;
@@ -272,71 +299,78 @@ export const procedureImageAssets = {
   "dental-implants-china": {
     id: "procedure-dental-implants",
     src: "/generated/procedures/dental-implants-china.webp",
-    alt: "Editorial illustration of dental implant planning in China",
+    alt: "Photorealistic scene of dental implant planning in China",
     aspect: "4:3",
     quality: "normal",
     prompt: buildPrompt(
-      "Create a calm dental-implant planning scene with consultation tools, implant-model icons, CBCT-inspired geometry, and travel-planning cues, without showing surgery or blood."
+      "Create a photorealistic dental-implant consultation scene with a premium clinician, generic implant models on the table, and a calm cross-border care atmosphere. No surgery, no blood, no screens, no x-ray monitors, and no visible charts.",
+      "photo"
     )
   },
   "all-on-4-china": {
     id: "procedure-all-on-4",
     src: "/generated/procedures/all-on-4-china.webp",
-    alt: "Editorial illustration of full-mouth reconstruction planning in China",
+    alt: "Photorealistic scene of full-mouth reconstruction planning in China",
     aspect: "4:3",
     quality: "normal",
     prompt: buildPrompt(
-      "Create a full-mouth reconstruction planning scene with prosthetic arch symbols, consultation models, restorative workflow objects, and a premium cross-border care atmosphere."
+      "Create a photorealistic full-mouth reconstruction consultation scene with prosthetic models, clinician discussion, premium dental surroundings, and a calm restorative-planning mood. No surgery in progress and no readable materials.",
+      "photo"
     )
   },
   "veneers-china": {
     id: "procedure-veneers",
     src: "/generated/procedures/veneers-china.webp",
-    alt: "Editorial illustration of veneer treatment design planning",
+    alt: "Photorealistic scene of veneer treatment design planning",
     aspect: "4:3",
     quality: "normal",
     prompt: buildPrompt(
-      "Create a cosmetic-dentistry planning scene with smile-design tools, shade and contour cues, consultation objects, and elegant patient-journey symbols in a refined tone."
+      "Create a photorealistic cosmetic-dentistry consultation scene with smile-design discussion, premium clinic lighting, generic shade tools, and refined patient-planning cues. No readable mirrors, charts, or screens.",
+      "photo"
     )
   },
   "root-canal-china": {
     id: "procedure-root-canal",
     src: "/generated/procedures/root-canal-china.webp",
-    alt: "Editorial illustration of urgent endodontic care planning",
+    alt: "Photorealistic scene of urgent endodontic care planning",
     aspect: "4:3",
     quality: "normal",
     prompt: buildPrompt(
-      "Create an endodontic care planning scene with tooth-preservation symbols, specialist instruments shown abstractly, pain-relief cues, and a fast but calm clinical pathway."
+      "Create a photorealistic endodontic consultation scene with a specialist explaining urgent tooth-preservation care in a calm premium clinic, using generic instruments and no graphic treatment detail.",
+      "photo"
     )
   },
   "lasik-china": {
     id: "procedure-lasik",
     src: "/generated/procedures/lasik-china.webp",
-    alt: "Editorial illustration of LASIK evaluation and treatment planning",
+    alt: "Photorealistic scene of LASIK evaluation and treatment planning",
     aspect: "4:3",
     quality: "normal",
     prompt: buildPrompt(
-      "Create a refractive-surgery planning scene with corneal-mapping inspired rings, eye-diagnostic equipment silhouettes, specialist consultation cues, and short-stay travel symbols."
+      "Create a photorealistic LASIK evaluation scene with premium ophthalmology equipment, pre-op discussion, and a calm clinic environment. No surgery, no readable eye charts, and no device text.",
+      "photo"
     )
   },
   "health-checkup-china": {
     id: "procedure-health-checkup",
     src: "/generated/procedures/health-checkup-china.webp",
-    alt: "Editorial illustration of executive health checkup planning",
+    alt: "Photorealistic scene of executive health checkup planning",
     aspect: "4:3",
     quality: "normal",
     prompt: buildPrompt(
-      "Create a preventive screening scene with diagnostic symbols, wellness checkup objects, report-folder shapes, and a calm executive health-planning atmosphere."
+      "Create a photorealistic executive health-checkup scene with premium diagnostics spaces, clinician guidance, and a calm preventive-screening atmosphere. Avoid any visible report text or monitors.",
+      "photo"
     )
   },
   "cosmetic-surgery-china": {
     id: "procedure-cosmetic-surgery",
     src: "/generated/procedures/cosmetic-surgery-china.webp",
-    alt: "Editorial illustration of cosmetic procedure planning in China",
+    alt: "Photorealistic scene of cosmetic procedure planning in China",
     aspect: "4:3",
     quality: "normal",
     prompt: buildPrompt(
-      "Create a tasteful cosmetic-procedure planning scene with consultation silhouettes, refinement and recovery cues, clinic objects, and premium privacy-safe styling. No surgery-in-progress."
+      "Create a photorealistic cosmetic-procedure consultation scene with premium privacy-safe clinic styling, clinician discussion, and tasteful recovery cues. No surgery in progress, no bandages, and no readable materials.",
+      "photo"
     )
   }
 } as const satisfies Record<string, SiteImageAsset>;
@@ -345,21 +379,96 @@ export const cityGuideImageAssets = {
   "medical-tourism-shanghai": {
     id: "city-shanghai",
     src: "/generated/cities/medical-tourism-shanghai.webp",
-    alt: "Editorial illustration of medical travel in Shanghai",
+    alt: "Photorealistic scene of medical travel in Shanghai",
     aspect: "4:3",
     quality: "normal",
     prompt: buildPrompt(
-      "Create a city-guide scene for Shanghai medical travel with a recognizable skyline silhouette, hospital access cues, hotel stay planning, airport transfer symbols, and treatment itinerary objects."
+      "Create a photorealistic Shanghai medical-travel scene with premium skyline context, hospital access, hotel arrival, and international patient travel cues in one cohesive real-world composition.",
+      "photo"
     )
   },
   "medical-tourism-beijing": {
     id: "city-beijing",
     src: "/generated/cities/medical-tourism-beijing.webp",
-    alt: "Editorial illustration of medical travel in Beijing",
+    alt: "Photorealistic scene of medical travel in Beijing",
     aspect: "4:3",
     quality: "normal",
     prompt: buildPrompt(
-      "Create a city-guide scene for Beijing medical travel with a recognizable skyline silhouette, specialist hospital cues, structured transport planning, and treatment-itinerary objects."
+      "Create a photorealistic Beijing medical-travel scene with specialist hospital access, premium transport flow, and subtle skyline context in a credible real-world composition.",
+      "photo"
+    )
+  }
+} as const satisfies Record<string, SiteImageAsset>;
+
+export const articleCategoryImageAssets = {
+  "cost-comparisons": {
+    id: "article-cost-comparisons",
+    src: "/generated/articles/cost-comparisons.webp",
+    alt: "Editorial illustration for treatment cost comparison articles",
+    aspect: "4:3",
+    quality: "normal",
+    prompt: buildPrompt(
+      "Create an editorial article illustration about treatment cost comparisons using abstract budgeting cues, planning notebooks, and restrained medical-travel symbols without realistic people."
+    )
+  },
+  "patient-planning": {
+    id: "article-patient-planning",
+    src: "/generated/articles/patient-planning.webp",
+    alt: "Editorial illustration for patient planning articles",
+    aspect: "4:3",
+    quality: "normal",
+    prompt: buildPrompt(
+      "Create an editorial article illustration about patient planning with milestone steps, itinerary objects, provider-shortlist cards, and calm travel-planning cues."
+    )
+  },
+  dental: {
+    id: "article-dental",
+    src: "/generated/articles/dental.webp",
+    alt: "Editorial illustration for dental travel planning articles",
+    aspect: "4:3",
+    quality: "normal",
+    prompt: buildPrompt(
+      "Create an editorial article illustration for dental travel planning with clean clinic objects, treatment models, planning notes, and non-graphic care symbols."
+    )
+  },
+  lasik: {
+    id: "article-lasik",
+    src: "/generated/articles/lasik.webp",
+    alt: "Editorial illustration for LASIK planning articles",
+    aspect: "4:3",
+    quality: "normal",
+    prompt: buildPrompt(
+      "Create an editorial article illustration for LASIK planning with abstract eye-diagnostic motifs, clinical path markers, and calm short-stay travel cues."
+    )
+  },
+  "health-checkup": {
+    id: "article-health-checkup",
+    src: "/generated/articles/health-checkup.webp",
+    alt: "Editorial illustration for health checkup articles",
+    aspect: "4:3",
+    quality: "normal",
+    prompt: buildPrompt(
+      "Create an editorial article illustration for executive health checkup planning with preventive-screening objects, report folders, and structured decision cues."
+    )
+  },
+  cosmetic: {
+    id: "article-cosmetic",
+    src: "/generated/articles/cosmetic.webp",
+    alt: "Editorial illustration for cosmetic procedure articles",
+    aspect: "4:3",
+    quality: "normal",
+    prompt: buildPrompt(
+      "Create an editorial article illustration for cosmetic procedure planning with tasteful clinic objects, privacy-safe planning cues, and refined recovery symbols."
+    )
+  },
+  "visa-travel": {
+    id: "article-visa-travel",
+    src: "/generated/articles/visa-travel.webp",
+    alt: "Editorial illustration for medical travel and visa articles",
+    aspect: "4:3",
+    quality: "normal",
+    prompt: buildPrompt(
+      "Create an editorial article illustration for medical-travel preparation with luggage, route planning, secure folder cues, and calm pre-departure organization."
     )
   }
 } as const satisfies Record<string, SiteImageAsset>;
@@ -459,33 +568,16 @@ export const generatedSiteImageAssets: SiteImageAsset[] = [
   ...Object.values(hospitalImageAssets),
   ...Object.values(procedureImageAssets),
   ...Object.values(cityGuideImageAssets),
+  ...Object.values(articleCategoryImageAssets),
   ...Object.values(caseStudyImageAssets),
   ...Object.values(authorPortraitAssets)
 ];
 
 export function getBlogCategoryImage(slug: string): SiteImageAsset {
-  const mapping: Record<string, SiteImageAsset> = {
-    "cost-comparisons": pageImageAssets.pricingHero,
-    "patient-planning": pageImageAssets.caseStudiesBanner,
-    dental: procedureImageAssets["dental-implants-china"],
-    lasik: procedureImageAssets["lasik-china"],
-    "health-checkup": procedureImageAssets["health-checkup-china"],
-    cosmetic: procedureImageAssets["cosmetic-surgery-china"],
-    "visa-travel": pageImageAssets.visaHero
-  };
-
-  return mapping[slug] || pageImageAssets.blogBanner;
+  return articleCategoryImageAssets[slug as keyof typeof articleCategoryImageAssets] || pageImageAssets.blogBanner;
 }
 
 export function getBlogPostImage(post: Pick<BlogPost, "slug" | "category" | "relatedProcedureSlug">): SiteImageAsset {
-  if (post.relatedProcedureSlug && post.relatedProcedureSlug in procedureImageAssets) {
-    return procedureImageAssets[post.relatedProcedureSlug as keyof typeof procedureImageAssets];
-  }
-
-  if (post.slug === "china-visa-free-medical-tourism-what-to-prepare") {
-    return pageImageAssets.visaHero;
-  }
-
   return getBlogCategoryImage(post.category);
 }
 
