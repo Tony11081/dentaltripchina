@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { sendMail } from "@/lib/mailer";
+import { companyProfile } from "@/data/company-profile";
+import { mailerReady, sendMail } from "@/lib/mailer";
 
 const schema = z
   .object({
@@ -37,6 +38,16 @@ const schema = z
     }
   });
 
+function toFieldErrors(issues: z.ZodIssue[]) {
+  return issues.reduce<Record<string, string>>((errors, issue) => {
+    const key = typeof issue.path[0] === "string" ? issue.path[0] : "form";
+    if (!errors[key]) {
+      errors[key] = issue.message;
+    }
+    return errors;
+  }, {});
+}
+
 export async function POST(request: Request) {
   const form = await request.formData();
 
@@ -66,10 +77,14 @@ export async function POST(request: Request) {
   });
 
   if (!parsed.success) {
+    const fieldErrors = toFieldErrors(parsed.error.issues);
+
     return NextResponse.json(
       {
         ok: false,
-        message: "Please complete all required fields correctly."
+        message:
+          Object.values(fieldErrors)[0] || "Please complete all required fields correctly.",
+        fieldErrors
       },
       { status: 422 }
     );
@@ -78,7 +93,21 @@ export async function POST(request: Request) {
   const data = parsed.data;
   const operatorEmail = process.env.DTC_OPERATOR_EMAIL;
 
-  if (operatorEmail) {
+  if (!operatorEmail || !mailerReady) {
+    console.error(
+      "[transport] Missing operator routing or SMTP configuration, refusing submission to prevent lead loss."
+    );
+    return NextResponse.json(
+      {
+        ok: false,
+        message:
+          `Transport quote service is temporarily unavailable. Please email ${companyProfile.supportEmail} while we restore operator routing.`
+      },
+      { status: 503 }
+    );
+  }
+
+  try {
     await sendMail({
       to: operatorEmail,
       subject: `[DentalTripChina] New transport request from ${data.fullName}`,
@@ -108,6 +137,16 @@ export async function POST(request: Request) {
         text: "We received your transport request. Expect your quote within 2 hours."
       });
     }
+  } catch (error) {
+    console.error("[transport] Failed to send transport request email.", error);
+    return NextResponse.json(
+      {
+        ok: false,
+        message:
+          `Transport quote service is temporarily unavailable. Please email ${companyProfile.supportEmail} while we restore operator routing.`
+      },
+      { status: 503 }
+    );
   }
 
   return NextResponse.json({

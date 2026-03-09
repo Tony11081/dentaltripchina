@@ -7,6 +7,7 @@ const smtpPass = process.env.DTC_SMTP_PASS;
 const smtpSecure = String(process.env.DTC_SMTP_SECURE || "false") === "true";
 
 const hasSmtpConfig = Boolean(smtpHost && smtpUser && smtpPass);
+export const mailerReady = hasSmtpConfig;
 
 const transporter = hasSmtpConfig
   ? nodemailer.createTransport({

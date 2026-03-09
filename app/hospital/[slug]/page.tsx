@@ -6,6 +6,7 @@ import { getHospitalBySlug } from "@/lib/content";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { JsonLd } from "@/components/json-ld";
 import { hospitals } from "@/data/hospitals";
+import { buildMetadata } from "@/lib/metadata";
 import {
   CredentialBlock,
   DoctorProfiles,
@@ -13,6 +14,14 @@ import {
   SiteDisclosurePanel
 } from "@/components/trust-sections";
 import { hospitalTrustProfiles } from "@/data/trust";
+
+function formatShortDate(value: string) {
+  return new Intl.DateTimeFormat("en", {
+    month: "short",
+    day: "numeric",
+    year: "numeric"
+  }).format(new Date(value));
+}
 
 export function generateStaticParams() {
   return hospitals.map((hospital) => ({ slug: hospital.slug }));
@@ -27,10 +36,12 @@ export async function generateMetadata({
   const hospital = getHospitalBySlug(slug);
   if (!hospital) return { title: "Hospital Not Found" };
 
-  return {
-    title: hospital.name,
-    description: hospital.summary
-  };
+  return buildMetadata({
+    title: `${hospital.name} | Hospital Profile`,
+    description: hospital.summary,
+    path: `/hospital/${hospital.slug}`,
+    imagePath: hospital.heroImageSrc
+  });
 }
 
 export default async function HospitalDetailPage({
@@ -40,9 +51,16 @@ export default async function HospitalDetailPage({
 }) {
   const { slug } = await params;
   const hospital = getHospitalBySlug(slug);
-  const trustProfile = hospitalTrustProfiles.find((item) => item.hospitalSlug === slug);
 
   if (!hospital) notFound();
+
+  const trustProfile = hospitalTrustProfiles.find((item) => item.hospitalSlug === slug);
+  const namedDoctors = trustProfile?.doctors.length || 0;
+  const verificationStamp = trustProfile?.credentialLastVerified
+    ? formatShortDate(trustProfile.credentialLastVerified)
+    : hospital.jciYear > 0
+      ? `Since ${hospital.jciYear}`
+      : "Official";
 
   const schema = {
     "@context": "https://schema.org",
@@ -79,10 +97,43 @@ export default async function HospitalDetailPage({
         subtitle={hospital.summary}
         heroImageSrc={hospital.heroImageSrc}
         heroImageAlt={hospital.heroImageAlt}
+        secondaryHref={hospital.website || hospital.jciVerifyUrl}
+        secondaryText={hospital.website ? "Official site" : "Accreditation source"}
+        heroMetrics={[
+          { value: hospital.city.toUpperCase(), label: "City" },
+          { value: `${namedDoctors || hospital.specialties.length}`, label: namedDoctors ? "Named doctors" : "Specialties" },
+          { value: verificationStamp, label: "Latest verification" }
+        ]}
+        panelTitle="Review capability, intake flow, and verification in one page"
+        panelDescription="This profile is built to help a patient decide whether the hospital belongs on the shortlist."
+        panelList={[
+          "Department highlights used by international patients",
+          "Payment and intake notes before you travel",
+          "Credential sources, doctor profiles, and escalation pathway"
+        ]}
       />
 
-      <section className="section container">
+      <section className="section container" id="hospital-overview">
         <JsonLd data={schema} />
+        <nav className="section-nav" aria-label={`${hospital.name} page sections`}>
+          <a className="section-link" href="#hospital-overview">
+            Overview
+          </a>
+          <a className="section-link" href="#hospital-departments">
+            Departments
+          </a>
+          <a className="section-link" href="#hospital-admission">
+            Admission
+          </a>
+          <a className="section-link" href="#hospital-verification">
+            Verification
+          </a>
+          {trustProfile ? (
+            <a className="section-link" href="#named-doctors">
+              Named doctors
+            </a>
+          ) : null}
+        </nav>
         <div className="card-grid two">
           <article className="card">
             <p className="card-eyebrow">Hospital Overview</p>
@@ -138,7 +189,7 @@ export default async function HospitalDetailPage({
         </div>
       </section>
 
-      <section className="section container">
+      <section className="section container" id="hospital-departments">
         <p className="section-kicker">Department Guide</p>
         <h2>Departments Used Most by International Patients</h2>
         <div className="card-grid three">
@@ -151,7 +202,7 @@ export default async function HospitalDetailPage({
         </div>
       </section>
 
-      <section className="section container">
+      <section className="section container" id="hospital-admission">
         <p className="section-kicker">Admission Details</p>
         <h2>Payment Methods and International Intake Notes</h2>
         <div className="card-grid two">
@@ -175,7 +226,7 @@ export default async function HospitalDetailPage({
         </div>
       </section>
 
-      <section className="section container">
+      <section className="section container" id="hospital-verification">
         <p className="section-kicker">Verification</p>
         <h2>Credential and Monitoring Signals</h2>
         <div className="card-grid two">
@@ -221,8 +272,16 @@ export default async function HospitalDetailPage({
         </div>
       </section>
 
-      {trustProfile ? <DoctorProfiles doctors={trustProfile.doctors} /> : null}
-      {trustProfile ? <EmergencyPathway items={trustProfile.emergencyPathway} /> : null}
+      {trustProfile ? (
+        <div id="named-doctors">
+          <DoctorProfiles doctors={trustProfile.doctors} />
+        </div>
+      ) : null}
+      {trustProfile ? (
+        <div id="safety-pathway">
+          <EmergencyPathway items={trustProfile.emergencyPathway} />
+        </div>
+      ) : null}
       <SiteDisclosurePanel />
     </>
   );

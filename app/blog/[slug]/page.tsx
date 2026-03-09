@@ -9,6 +9,7 @@ import { blogPosts } from "@/data/posts";
 import { blogTrustProfiles } from "@/data/trust";
 import { BlogReviewBadge } from "@/components/trust-sections";
 import { LocalizedPrice } from "@/components/localized-price";
+import { buildMetadata } from "@/lib/metadata";
 
 export function generateStaticParams() {
   return blogPosts.map((post) => ({ slug: post.slug }));
@@ -24,10 +25,15 @@ export async function generateMetadata({
 
   if (!post) return { title: "Post Not Found" };
 
-  return {
+  return buildMetadata({
     title: post.title,
-    description: post.excerpt
-  };
+    description: post.excerpt,
+    path: `/blog/${post.slug}`,
+    imagePath: post.coverImage || "/editorial/hero-consultation.svg",
+    type: "article",
+    publishedTime: post.datePublished,
+    modifiedTime: post.dateUpdated
+  });
 }
 
 export default async function BlogPostPage({
@@ -97,6 +103,25 @@ export default async function BlogPostPage({
             read
           </p>
 
+          <nav className="section-nav" aria-label="Article sections">
+            <a className="section-link" href="#article-body">
+              Article
+            </a>
+            {trust ? (
+              <a className="section-link" href="#medical-review">
+                Medical review
+              </a>
+            ) : null}
+            {relatedCase ? (
+              <a className="section-link" href="#related-case">
+                Related case
+              </a>
+            ) : null}
+            <a className="section-link" href="#article-cta">
+              Request plan
+            </a>
+          </nav>
+
           <figure className="editorial-image">
             <Image
               src={postImage}
@@ -113,14 +138,14 @@ export default async function BlogPostPage({
             {post.timelineFocus ? <span className="badge">{post.timelineFocus}</span> : null}
           </div>
 
-          <div className="article-content">
+          <div className="article-content" id="article-body">
             {post.content.map((paragraph) => (
               <p key={paragraph}>{paragraph}</p>
             ))}
           </div>
 
           {trust ? (
-            <div className="article-review-wrap">
+            <div className="article-review-wrap" id="medical-review">
               <BlogReviewBadge reviewer={trust.medicalReviewer} disclosure={trust.disclosure} />
             </div>
           ) : null}
@@ -138,7 +163,7 @@ export default async function BlogPostPage({
           </article>
 
           {relatedCase ? (
-            <article className="card trust-block">
+            <article className="card trust-block" id="related-case">
               <h3>Related Real Case</h3>
               <p>
                 <strong>{relatedCase.title}</strong>
@@ -156,7 +181,7 @@ export default async function BlogPostPage({
             </article>
           ) : null}
 
-          <div className="hero-actions">
+          <div className="hero-actions" id="article-cta">
             {post.relatedProcedureSlug ? (
               <Link className="btn btn-secondary" href={`/${post.relatedProcedureSlug}`}>
                 View Related Procedure

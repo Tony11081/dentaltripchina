@@ -15,6 +15,13 @@ interface HeroProps {
   heroImageSrc?: string;
   heroImageAlt?: string;
   heroImagePriority?: boolean;
+  heroMetrics?: Array<{
+    value: string;
+    label: string;
+  }>;
+  panelTitle?: string;
+  panelDescription?: string;
+  panelList?: string[];
 }
 
 export function Hero({
@@ -27,7 +34,19 @@ export function Hero({
   secondaryText = "Chat on WhatsApp",
   heroImageSrc,
   heroImageAlt = "International patient consultation planning",
-  heroImagePriority = false
+  heroImagePriority = false,
+  heroMetrics = [
+    { value: "70-85%", label: "Typical savings" },
+    { value: "2h", label: "Quote response" },
+    { value: "EN", label: "Staff support" }
+  ],
+  panelTitle = "Save 70-85% vs UK/US Pricing",
+  panelDescription = "JCI-accredited hospitals, fast response, and transparent planning.",
+  panelList = [
+    "Quote in under 2 hours",
+    "English-speaking patient support",
+    "Travel and transfer coordination"
+  ]
 }: HeroProps) {
   const whatsappNumber =
     process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "8613800138000";
@@ -45,18 +64,12 @@ export function Hero({
           <h1>{title}</h1>
           <p>{subtitle}</p>
           <ul className="hero-metrics">
-            <li>
-              <strong>70-85%</strong>
-              <span>Typical savings</span>
-            </li>
-            <li>
-              <strong>2h</strong>
-              <span>Quote response</span>
-            </li>
-            <li>
-              <strong>EN</strong>
-              <span>Staff support</span>
-            </li>
+            {heroMetrics.map((item) => (
+              <li key={`${item.value}-${item.label}`}>
+                <strong>{item.value}</strong>
+                <span>{item.label}</span>
+              </li>
+            ))}
           </ul>
           <div className="hero-actions">
             <Link
@@ -97,12 +110,12 @@ export function Hero({
               />
             </figure>
           ) : null}
-          <h3>Save 70-85% vs UK/US Pricing</h3>
-          <p>JCI-accredited hospitals, fast response, and transparent planning.</p>
+          <h3>{panelTitle}</h3>
+          <p>{panelDescription}</p>
           <ul className="hero-panel-list">
-            <li>Quote in under 2 hours</li>
-            <li>English-speaking patient support</li>
-            <li>Travel and transfer coordination</li>
+            {panelList.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
           </ul>
         </div>
       </div>

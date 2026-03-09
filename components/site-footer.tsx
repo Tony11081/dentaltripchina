@@ -1,5 +1,9 @@
 import Link from "next/link";
-import { companyProfile } from "@/data/company-profile";
+import {
+  companyIdentityDisclosureNote,
+  companyProfile,
+  companyProfileStatus
+} from "@/data/company-profile";
 
 export function SiteFooter() {
   return (
@@ -77,8 +81,10 @@ export function SiteFooter() {
           Medical disclaimer: DentalTripChina.com provides coordination support and
           does not replace professional diagnosis or treatment advice.
           <br />
-          Legal entity: {companyProfile.legalEntityName} | Registration:{" "}
-          {companyProfile.registrationNumber}
+          {companyProfileStatus.hasPublishedLegalEntity &&
+          companyProfileStatus.hasPublishedRegistrationNumber
+            ? `Legal entity: ${companyProfile.legalEntityName} | Registration: ${companyProfile.registrationNumber}`
+            : companyIdentityDisclosureNote}
         </p>
       </div>
     </footer>

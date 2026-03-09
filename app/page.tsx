@@ -11,7 +11,11 @@ import { hospitals } from "@/data/hospitals";
 import { cityGuides } from "@/data/cities";
 import { caseStudies } from "@/data/case-studies";
 import { testimonials } from "@/data/testimonials";
-import { companyProfile } from "@/data/company-profile";
+import {
+  companyIdentityDisclosureNote,
+  companyProfile,
+  publishedCompanyIdentityItems
+} from "@/data/company-profile";
 
 export default function HomePage() {
   const featuredCases = caseStudies.slice(0, 2);
@@ -26,23 +30,78 @@ export default function HomePage() {
         heroImageSrc="/editorial/hero-consultation.svg"
         heroImageAlt="Consultation planning dashboard for medical travel in China"
         heroImagePriority
+        heroMetrics={[
+          { value: `${procedures.length}`, label: "Core procedures" },
+          { value: `${hospitals.length}`, label: "Verified hospitals" },
+          { value: "2h", label: "Reply target" }
+        ]}
+        panelTitle="Start with price, provider fit, and verification"
+        panelDescription="Use the site as a planning desk, not just a brochure. Compare scope, timing, and trust signals before you enquire."
+        panelList={[
+          "Jump from pricing to provider profiles in one flow",
+          "Check named doctors and verification dates",
+          "Send records only when you are ready"
+        ]}
       />
 
       <TrustBar />
 
       <section className="section container">
-        <p className="section-kicker">Operator Identity</p>
-        <h2>Who Runs This Service</h2>
+        <p className="section-kicker">Start Here</p>
+        <h2>Choose the Fastest Next Step</h2>
+        <div className="card-grid four">
+          <article className="card trust-block">
+            <h3>Compare Prices</h3>
+            <p>See procedure-by-procedure pricing and wait-time comparisons before contacting us.</p>
+            <p>
+              <Link className="btn btn-secondary" href="/pricing">
+                Open pricing table
+              </Link>
+            </p>
+          </article>
+          <article className="card trust-block">
+            <h3>Check Hospitals</h3>
+            <p>Review departments, location, and international intake notes for each hospital.</p>
+            <p>
+              <Link className="btn btn-secondary" href="/hospitals">
+                Browse hospitals
+              </Link>
+            </p>
+          </article>
+          <article className="card trust-block">
+            <h3>Verify Trust Signals</h3>
+            <p>Open doctor, hospital, and policy evidence before committing to a plan.</p>
+            <p>
+              <Link className="btn btn-secondary" href="/trust-center">
+                Open trust center
+              </Link>
+            </p>
+          </article>
+          <article className="card trust-block">
+            <h3>Request a Plan</h3>
+            <p>Share your procedure, budget, and timeline to receive a tailored next-step recommendation.</p>
+            <p>
+              <Link className="btn btn-primary" href="/contact">
+                Request free quote
+              </Link>
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section className="section container">
+        <p className="section-kicker">Operator Desk</p>
+        <h2>Contact, Identity, and Responsibility Boundary</h2>
         <article className="card trust-block">
-          <p>
-            <strong>Legal entity:</strong> {companyProfile.legalEntityName}
-          </p>
-          <p>
-            <strong>Registration number:</strong> {companyProfile.registrationNumber}
-          </p>
-          <p>
-            <strong>Registered office:</strong> {companyProfile.registeredAddress}
-          </p>
+          {publishedCompanyIdentityItems.length ? (
+            publishedCompanyIdentityItems.map((item) => (
+              <p key={item.key}>
+                <strong>{item.label}:</strong> {item.value}
+              </p>
+            ))
+          ) : (
+            <p className="trust-note">{companyIdentityDisclosureNote}</p>
+          )}
           <p>
             <strong>Support channels:</strong>{" "}
             <a href={`mailto:${companyProfile.supportEmail}`}>{companyProfile.supportEmail}</a>{" "}
@@ -50,6 +109,9 @@ export default function HomePage() {
             <a href={`tel:${companyProfile.supportPhone.replace(/\s+/g, "")}`}>
               {companyProfile.supportPhone}
             </a>
+          </p>
+          <p>
+            <strong>Operations desk:</strong> {companyProfile.operationsAddress}
           </p>
           <p className="trust-note">
             We are a coordination service for cross-border care planning. Hospitals make final

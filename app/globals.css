@@ -318,6 +318,14 @@ main > *:nth-child(3) {
   gap: 10px;
 }
 
+.header-quote {
+  white-space: nowrap;
+}
+
+.header-quote-mobile {
+  display: none;
+}
+
 .support-pill {
   display: inline-flex;
   align-items: center;
@@ -588,6 +596,10 @@ main > *:nth-child(3) {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+.card-grid.four {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
 .card {
   position: relative;
   height: 100%;
@@ -743,6 +755,34 @@ main > *:nth-child(3) {
 
 .case-links-row {
   margin-top: 14px;
+}
+
+.section-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.section-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid #d0d7d0;
+  border-radius: 999px;
+  color: #17344d;
+  background: #f7faf6;
+  font-size: 0.84rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.section-link:hover {
+  text-decoration: none;
+  color: #102c42;
+  border-color: #bdc9bf;
+  background: #eef5ef;
 }
 
 .trust-steps {
@@ -989,6 +1029,14 @@ main > *:nth-child(3) {
   background: #fbfcf9;
 }
 
+.dtc-form input[aria-invalid="true"],
+.dtc-form select[aria-invalid="true"],
+.dtc-form textarea[aria-invalid="true"],
+.dtc-form fieldset[aria-invalid="true"] {
+  border-color: #d87a7a;
+  box-shadow: 0 0 0 3px rgba(200, 78, 78, 0.12);
+}
+
 .checkbox-grid,
 .radio-grid {
   display: grid;
@@ -1015,6 +1063,14 @@ main > *:nth-child(3) {
   display: flex;
   gap: 8px;
   align-items: flex-start;
+}
+
+.field-error {
+  display: block;
+  margin-top: 6px;
+  color: #9a2f2f;
+  font-size: 0.79rem;
+  font-weight: 700;
 }
 
 .message {
@@ -1216,12 +1272,21 @@ main > *:nth-child(3) {
     grid-template-columns: 1fr;
   }
 
+  .card-grid.four {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .trust-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .header-actions {
-    display: none;
+  .header-inner {
+    gap: 10px;
+  }
+
+  .logo {
+    flex: 1 1 auto;
+    min-width: 0;
   }
 
   .desktop-nav {
@@ -1230,6 +1295,27 @@ main > *:nth-child(3) {
 
   .nav-toggle {
     display: inline-flex;
+    order: 3;
+  }
+
+  .header-actions {
+    display: inline-flex;
+    order: 2;
+  }
+
+  .header-actions .btn {
+    min-height: 38px;
+    padding: 0 12px;
+    font-size: 0.73rem;
+    letter-spacing: 0.08em;
+  }
+
+  .header-quote-desktop {
+    display: none;
+  }
+
+  .header-quote-mobile {
+    display: inline;
   }
 
   .nav-overlay {
@@ -1376,6 +1462,7 @@ main > *:nth-child(3) {
   .form-grid.three,
   .phone-split,
   .card-grid.two,
+  .card-grid.four,
   .checkbox-grid,
   .radio-grid,
   .trust-grid {

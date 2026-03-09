@@ -5,12 +5,15 @@ import { Breadcrumbs } from "@/components/breadcrumbs";
 import { InquiryForm } from "@/components/inquiry-form";
 import { siteTrustStatements } from "@/data/trust";
 import { companyProfile } from "@/data/company-profile";
+import { buildMetadata } from "@/lib/metadata";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildMetadata({
   title: "Free Medical Tourism Consultation",
   description:
-    "Get a free cost estimate for dental, LASIK, or health checkup in China. Response within 2 hours."
-};
+    "Get a free cost estimate for dental, LASIK, or health checkup in China. Response within 2 hours.",
+  path: "/contact",
+  imagePath: "/editorial/hero-consultation.svg"
+});
 
 export default function ContactPage() {
   return (
@@ -28,6 +31,18 @@ export default function ContactPage() {
         subtitle="Share your needs and choose your contact channel: email only, WhatsApp, or both."
         secondaryHref={`mailto:${companyProfile.supportEmail}`}
         secondaryText="Email Support"
+        heroMetrics={[
+          { value: "2h", label: "Response target" },
+          { value: "Email", label: "Works without WhatsApp" },
+          { value: "3 files", label: "Record uploads" }
+        ]}
+        panelTitle="Choose the channel that fits your comfort level"
+        panelDescription="The contact flow now makes email-first enquiries feel as valid as WhatsApp-first ones."
+        panelList={[
+          "Email only, WhatsApp only, or both",
+          "Optional records upload for faster triage",
+          "Privacy and response expectations shown upfront"
+        ]}
       />
 
       <section className="section container">

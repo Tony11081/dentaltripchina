@@ -1,0 +1,307 @@
+{
+  "generatedAt": "2026-03-03",
+  "scope": [
+    "app",
+    "components"
+  ],
+  "notes": [
+    "[existing] means the image slot already exists in the source and needs a strong final asset.",
+    "[new] means the page/component is text-only today, but the layout strongly suggests a high-value image slot should be added.",
+    "Default visual language should match the current SVG system in public/editorial and public/hospitals: premium editorial illustration, soft sage/ivory/steel-blue palette, restrained gold accents, clean lines, no readable text, no watermarks, no gore.",
+    "For doctors, authors, and patients, prefer approved real photos. If that is not possible, use clearly illustrative portrait treatment rather than photoreal synthetic faces."
+  ],
+  "priorityScale": {
+    "P0": "Must-have image for first-screen trust, conversion, or SEO/share impact.",
+    "P1": "High-value supporting image that materially improves scanability and credibility.",
+    "P2": "Nice-to-have enrichment image or lower-impact empty-state/supporting visual."
+  },
+  "imageRequirements": [
+    {
+      "positionId": "app/page.tsx:Hero.heroImageSrc [existing]",
+      "recommendedSize": "1200x900 (4:3)",
+      "styleDescription": "Flagship editorial hero illustration for the homepage; medical-travel planning dashboard, premium and calm, matching the existing SVG language.",
+      "prompt": "Create a premium editorial illustration for an international patient planning medical care in China, showing a consultation dashboard, hospital shortlist, travel itinerary cues, and price comparison cards; soft sage green, ivory, muted steel blue, and warm sand accents; clean vector-like shapes, high trust, no readable text, no watermarks, no gore, wide 4:3 composition.",
+      "priority": "P0"
+    },
+    {
+      "positionId": "app/about/page.tsx:Hero.heroImageSrc [new]",
+      "recommendedSize": "1200x900 (4:3)",
+      "styleDescription": "Brand-story hero showing coordination, transparency, and safety rather than treatment drama.",
+      "prompt": "Create a premium editorial illustration about transparent medical travel coordination in China: a calm operations desk, provider shortlist, compliance folder, and patient support notes; polished vector style, soft sage and ivory palette, subtle hospital and travel cues, trustworthy and professional, no readable text, no watermarks, no gore, 4:3.",
+      "priority": "P1"
+    },
+    {
+      "positionId": "app/how-it-works/page.tsx:Hero.heroImageSrc [new]",
+      "recommendedSize": "1200x900 (4:3)",
+      "styleDescription": "Process-led hero that visualizes the four-step patient journey from inquiry to follow-up.",
+      "prompt": "Create a premium editorial process illustration for a four-step medical travel journey: share case, receive options, confirm plan, travel and follow-up; use connected cards, arrows, and calm hospital-travel symbols; modern vector style, sage, ivory, muted blue palette, no readable text, no watermarks, no gore, 4:3.",
+      "priority": "P1"
+    },
+    {
+      "positionId": "app/travel-support/page.tsx:Hero.heroImageSrc [existing]",
+      "recommendedSize": "1200x900 (4:3)",
+      "styleDescription": "Travel-planning hero centered on treatment-first logistics, not leisure tourism.",
+      "prompt": "Create a premium editorial illustration for medical travel support in China, showing an airport transfer plan, recovery-friendly hotel shortlist, appointment calendar, and document folder; treatment-first travel tone, soft sage and sand palette, clean vector style, no sightseeing clichés, no readable text, no watermarks, 4:3.",
+      "priority": "P1"
+    },
+    {
+      "positionId": "app/testimonials/page.tsx:Hero.heroImageSrc [new]",
+      "recommendedSize": "1200x900 (4:3)",
+      "styleDescription": "Privacy-safe social-proof hero using quote cards, milestones, and trust signals instead of generated patient faces.",
+      "prompt": "Create a privacy-safe editorial illustration for international patient testimonials, showing verified quote cards, travel milestones, treatment folders, and trust badges without identifiable faces; warm but restrained, premium medical-travel tone, soft sage, ivory, muted blue palette, no readable text, no watermarks, 4:3.",
+      "priority": "P1"
+    },
+    {
+      "positionId": "app/hospitals/page.tsx:Hero.heroImageSrc [new]",
+      "recommendedSize": "1200x900 (4:3)",
+      "styleDescription": "Comparison hero for partner hospitals in Shanghai and Beijing with strong institutional trust cues.",
+      "prompt": "Create a premium editorial illustration comparing trusted hospitals in Shanghai and Beijing, with exterior campus architecture, international reception desks, and subtle accreditation motifs; clean hospital design, daylight, calm and credible, soft sage, ivory, blue-gray palette, no readable text, no watermarks, 4:3.",
+      "priority": "P0"
+    },
+    {
+      "positionId": "app/hotels/page.tsx:Hero.heroImageSrc [existing]",
+      "recommendedSize": "1200x900 (4:3)",
+      "styleDescription": "Recovery-friendly accommodation hero with quiet, medical-adjacent hospitality cues.",
+      "prompt": "Create a premium editorial illustration of a recovery-friendly hotel stay for medical travelers in China, showing a calm room, blackout curtains, elevator access cues, and easy hospital transfer planning; refined vector style, soft sage and ivory palette, no tourism clichés, no readable text, no watermarks, 4:3.",
+      "priority": "P1"
+    },
+    {
+      "positionId": "app/contact/page.tsx:Hero.heroImageSrc [new]",
+      "recommendedSize": "1200x900 (4:3)",
+      "styleDescription": "Contact hero focused on responsive communication channels and personalized planning.",
+      "prompt": "Create a premium editorial illustration for a medical travel contact page, showing email, WhatsApp, patient notes, and treatment planning cards in a clean communication hub; trustworthy, responsive, modern vector style, soft sage, ivory, muted blue palette, no readable text, no watermarks, 4:3.",
+      "priority": "P1"
+    },
+    {
+      "positionId": "app/pricing/page.tsx:Hero.heroImageSrc [new]",
+      "recommendedSize": "1200x900 (4:3)",
+      "styleDescription": "Data-led pricing hero that makes cost comparison feel transparent and premium.",
+      "prompt": "Create a premium editorial illustration for transparent medical pricing in China versus UK and US, showing clean comparison cards, budget tiers, and timeline cues; data-visual but elegant, soft sage, ivory, muted blue palette with restrained gold highlights, no readable text, no watermarks, 4:3.",
+      "priority": "P0"
+    },
+    {
+      "positionId": "app/transport/page.tsx:Hero.heroImageSrc [existing]",
+      "recommendedSize": "1200x900 (4:3)",
+      "styleDescription": "Transport hero centered on airport pickup and hospital-first routing.",
+      "prompt": "Create a premium editorial illustration for airport transfer coordination for medical travelers in China, showing an arrival board feel, vehicle route, luggage, and hospital drop-off planning; polished vector style, calm and reliable, soft sage, ivory, muted blue palette, no readable text, no watermarks, 4:3.",
+      "priority": "P1"
+    },
+    {
+      "positionId": "app/china-visa-free-medical-tourism/page.tsx:Hero.heroImageSrc [existing]",
+      "recommendedSize": "1200x900 (4:3)",
+      "styleDescription": "Documentation-focused hero with travel checklist and compliance cues.",
+      "prompt": "Create a premium editorial illustration for a China medical travel visa and preparation guide, showing a passport, clinic itinerary, checklist folder, and travel documents without official seals or readable text; refined vector style, soft sage, ivory, muted blue palette, no watermarks, 4:3.",
+      "priority": "P1"
+    },
+    {
+      "positionId": "app/[slug]/page.tsx:procedure Hero.heroImageSrc [new]",
+      "recommendedSize": "1200x900 (4:3)",
+      "styleDescription": "Dynamic procedure hero template; should feel procedure-specific but still non-graphic and high trust.",
+      "prompt": "Create a premium editorial medical-travel illustration for {procedureTitle} in China, showing a consultation setting with subtle procedure-specific equipment and planning documents; calm, clean, non-graphic, no surgery in progress, no blood, soft sage, ivory, muted blue palette, no readable text, no watermarks, 4:3.",
+      "priority": "P0"
+    },
+    {
+      "positionId": "app/[slug]/page.tsx:city-guide Hero.heroImageSrc [new]",
+      "recommendedSize": "1200x900 (4:3)",
+      "styleDescription": "Dynamic city-guide hero blending skyline recognition with hospital/travel utility.",
+      "prompt": "Create a premium editorial illustration for medical travel in {cityName}, combining recognizable city skyline cues with hospital access, hotel stay planning, airport transfer, and treatment itinerary cards; elegant vector style, soft sage, ivory, muted blue palette, no readable text, no watermarks, 4:3.",
+      "priority": "P1"
+    },
+    {
+      "positionId": "app/hospital/[slug]/page.tsx:Hero.heroImageSrc + overview editorial-image [existing]",
+      "recommendedSize": "1280x840 (~1.52:1)",
+      "styleDescription": "Hospital identity image shared across hero and overview; architecture or reception scene with institutional credibility.",
+      "prompt": "Create a premium editorial architectural illustration of {hospitalName} in {cityName}, showing the exterior campus or international reception area, daylight, clean modern healthcare design, subtle specialty cues for {hospitalSpecialties}, high trust, no readable signage, no watermarks, wide composition.",
+      "priority": "P0"
+    },
+    {
+      "positionId": "app/verification/page.tsx:top editorial-image [existing]",
+      "recommendedSize": "1200x760 (~1.58:1)",
+      "styleDescription": "Verification-led ledger graphic with document audit and registry cues.",
+      "prompt": "Create a premium editorial illustration for doctor and hospital verification, showing a credential ledger, registry checks, verified badges, and structured compliance cards; clean vector style, soft sage, ivory, muted blue palette, no readable text, no watermarks, wide format.",
+      "priority": "P1"
+    },
+    {
+      "positionId": "app/trust-dashboard/page.tsx:top editorial-image [existing]",
+      "recommendedSize": "1200x760 (~1.58:1)",
+      "styleDescription": "Operational transparency banner with metrics and quality indicators.",
+      "prompt": "Create a premium editorial illustration for a trust dashboard, showing response-time metrics, quality charts, and monthly operational scorecards in a calm compliance design; polished vector style, sage, ivory, muted blue palette, no readable text, no watermarks, wide format.",
+      "priority": "P1"
+    },
+    {
+      "positionId": "app/cost-calculator/page.tsx:top editorial-image [existing]",
+      "recommendedSize": "1200x760 (~1.58:1)",
+      "styleDescription": "Budget-planning banner with low/median/high estimate logic visualized cleanly.",
+      "prompt": "Create a premium editorial illustration for a full medical travel cost calculator, showing low, median, and high budget cards, treatment cost, hotel, flight, and follow-up expense blocks; elegant vector style, soft sage, ivory, muted blue palette with restrained gold accents, no readable text, no watermarks, wide format.",
+      "priority": "P1"
+    },
+    {
+      "positionId": "app/eligibility-screening/page.tsx:top editorial-image [existing]",
+      "recommendedSize": "1200x760 (~1.58:1)",
+      "styleDescription": "Safety-screening banner that feels clinical and responsible, not alarming.",
+      "prompt": "Create a premium editorial illustration for pre-travel eligibility screening, showing a calm medical checklist, safety filter, and physician-clearance cues; reassuring but serious, no fearmongering, vector style, soft sage, ivory, muted blue palette, no readable text, no watermarks, wide format.",
+      "priority": "P1"
+    },
+    {
+      "positionId": "app/care-sla/page.tsx:top editorial-image [existing]",
+      "recommendedSize": "1200x760 (~1.58:1)",
+      "styleDescription": "Service-level banner emphasizing response commitments and safety workflow.",
+      "prompt": "Create a premium editorial illustration for a post-operative support SLA, showing escalation timing, response workflow cards, and a calm safety shield motif; high-trust compliance look, vector style, soft sage, ivory, muted blue palette, no readable text, no watermarks, wide format.",
+      "priority": "P1"
+    },
+    {
+      "positionId": "app/case-studies/page.tsx:top editorial-image [existing]",
+      "recommendedSize": "1200x760 (~1.58:1)",
+      "styleDescription": "Case-center banner built around dossiers, timelines, and total-spend breakdowns.",
+      "prompt": "Create a premium editorial illustration for real medical case studies, showing a casebook, timeline cards, treatment milestones, travel planning, and total cost breakdown blocks; documentary but polished, no patient faces, soft sage, ivory, muted blue palette, no readable text, no watermarks, wide format.",
+      "priority": "P1"
+    },
+    {
+      "positionId": "app/case-studies/[slug]/page.tsx:case cover image [new]",
+      "recommendedSize": "1200x760 (~1.58:1)",
+      "styleDescription": "Detail-case cover image should feel privacy-safe and documentary, focused on the patient journey rather than the patient's face.",
+      "prompt": "Create a privacy-safe editorial illustration for the case study '{caseTitle}', showing an anonymous international patient journey in {cityName}, treatment milestones, travel folder, follow-up notes, and cost tracking; calm documentary tone, no identifiable face, no readable text, no watermarks, soft sage, ivory, muted blue palette, wide format.",
+      "priority": "P1"
+    },
+    {
+      "positionId": "app/blog/page.tsx:hub banner [new]",
+      "recommendedSize": "1200x760 (~1.58:1)",
+      "styleDescription": "Editorial-hub banner that visually organizes content by country, budget, and timeline.",
+      "prompt": "Create a premium editorial illustration for a medical travel content hub, showing article cards grouped by country, budget, timeline, and procedure type; smart editorial system feel, clean vector style, soft sage, ivory, muted blue palette, no readable text, no watermarks, wide format.",
+      "priority": "P1"
+    },
+    {
+      "positionId": "app/blog/category/[slug]/page.tsx:category banner [new]",
+      "recommendedSize": "1200x760 (~1.58:1)",
+      "styleDescription": "Category-specific banner that can shift emphasis by topic while staying within the same editorial system.",
+      "prompt": "Create a premium editorial illustration for the medical travel article category '{categoryName}', using category-relevant cues such as cost comparison, planning, dental, LASIK, health checkup, cosmetic, or visa logistics; refined vector style, soft sage, ivory, muted blue palette, no readable text, no watermarks, wide format.",
+      "priority": "P2"
+    },
+    {
+      "positionId": "app/blog/[slug]/page.tsx:article cover Image [existing]",
+      "recommendedSize": "1200x900 (4:3)",
+      "styleDescription": "Primary blog cover that must support article SEO/share previews and long-form reading context.",
+      "prompt": "Create a premium editorial cover illustration for the article '{postTitle}', focused on {postCategory} with {postCountryFocus} and {postTimelineFocus} cues where relevant; polished medical-travel editorial style, soft sage, ivory, muted blue palette, no readable text, no watermarks, non-graphic, 4:3.",
+      "priority": "P0"
+    },
+    {
+      "positionId": "app/blog/page.tsx + app/blog/category/[slug]/page.tsx:post-card-thumbnail [new]",
+      "recommendedSize": "1200x900 (4:3)",
+      "styleDescription": "Smaller derivative blog cover image for listing cards; should crop cleanly and remain legible at card size.",
+      "prompt": "Create a premium editorial thumbnail illustration for the article '{postTitle}', designed to read clearly in a card grid; simple focal composition, topic-specific medical-travel cues, soft sage, ivory, muted blue palette, no readable text, no watermarks, 4:3.",
+      "priority": "P1"
+    },
+    {
+      "positionId": "app/authors/page.tsx:top editorial-image [existing]",
+      "recommendedSize": "1200x760 (~1.58:1)",
+      "styleDescription": "Editorial-team banner with review-lab and content integrity cues.",
+      "prompt": "Create a premium editorial illustration for a medical content review team, showing an editorial lab, review workflow, compliance notes, and article quality controls; calm authority, clean vector style, soft sage, ivory, muted blue palette, no readable text, no watermarks, wide format.",
+      "priority": "P1"
+    },
+    {
+      "positionId": "app/authors/page.tsx:author-card portrait [new]",
+      "recommendedSize": "800x1000 (4:5)",
+      "styleDescription": "Card portrait for author/reviewer profiles; should feel credible and editorial, not like generic stock headshots.",
+      "prompt": "Create a refined editorial portrait illustration for {authorName}, a medical content author or reviewer with the role {authorTitle}; waist-up, neutral background, confident but understated, premium magazine illustration feel, soft sage, ivory, muted blue palette, no readable text, no watermarks, 4:5.",
+      "priority": "P1"
+    },
+    {
+      "positionId": "app/authors/[slug]/page.tsx:author portrait [new]",
+      "recommendedSize": "800x1000 (4:5)",
+      "styleDescription": "Larger profile portrait for the author detail page, suitable for trust-building and profile recognition.",
+      "prompt": "Create a premium editorial profile portrait for {authorName}, showing a medical-travel editor or reviewer in a calm professional setting; elegant, trustworthy, non-generic, soft sage, ivory, muted blue palette, no readable text, no watermarks, 4:5.",
+      "priority": "P1"
+    },
+    {
+      "positionId": "app/trust-center/page.tsx:top editorial banner [new]",
+      "recommendedSize": "1200x760 (~1.58:1)",
+      "styleDescription": "Trust-center overview banner combining safety, credentials, privacy, and pricing transparency.",
+      "prompt": "Create a premium editorial illustration for a healthcare trust center, combining doctor verification, hospital credentials, privacy handling, pricing clarity, and safety pathways in one coherent dashboard scene; clean vector style, soft sage, ivory, muted blue palette, no readable text, no watermarks, wide format.",
+      "priority": "P0"
+    },
+    {
+      "positionId": "app/editorial-policy/page.tsx:top editorial banner [new]",
+      "recommendedSize": "1200x760 (~1.58:1)",
+      "styleDescription": "Workflow-driven banner for drafting, review, and scheduled updates.",
+      "prompt": "Create a premium editorial illustration for a medical content editorial policy, showing drafting, medical review, and scheduled updates as a clean workflow board; compliance-driven but modern, soft sage, ivory, muted blue palette, no readable text, no watermarks, wide format.",
+      "priority": "P1"
+    },
+    {
+      "positionId": "app/content-updates/page.tsx:top editorial banner [new]",
+      "recommendedSize": "1200x760 (~1.58:1)",
+      "styleDescription": "Change-log banner with version history and dated update cards.",
+      "prompt": "Create a premium editorial illustration for a content update log, showing a version ledger, dated update cards, and review checkpoints; structured, transparent, clean vector style, soft sage, ivory, muted blue palette, no readable text, no watermarks, wide format.",
+      "priority": "P2"
+    },
+    {
+      "positionId": "app/privacy/page.tsx:top editorial-image [existing]",
+      "recommendedSize": "1200x760 (~1.58:1)",
+      "styleDescription": "Privacy/compliance banner with secure data-flow cues and dossier styling.",
+      "prompt": "Create a premium editorial illustration for healthcare privacy and cross-border data handling, showing secure dossiers, permission-controlled data flow, and deletion-request workflow cues; calm compliance feel, soft sage, ivory, muted blue palette, no readable text, no watermarks, wide format.",
+      "priority": "P1"
+    },
+    {
+      "positionId": "app/terms/page.tsx:top editorial-image [existing]",
+      "recommendedSize": "1200x760 (~1.58:1)",
+      "styleDescription": "Terms/commercial process banner built around service scope and scheduling logic.",
+      "prompt": "Create a premium editorial illustration for medical travel service terms, showing quote boundaries, scheduling flow, cancellation logic, and agreement folders in a clean structured layout; polished vector style, soft sage, ivory, muted blue palette, no readable text, no watermarks, wide format.",
+      "priority": "P2"
+    },
+    {
+      "positionId": "app/medical-disclaimer/page.tsx:top editorial-image [existing]",
+      "recommendedSize": "1200x760 (~1.58:1)",
+      "styleDescription": "Clinical-boundary banner emphasizing safety, escalation, and non-diagnostic content.",
+      "prompt": "Create a premium editorial illustration for a medical disclaimer page, showing a safety shield, escalation pathway, and clear boundary between educational content and physician-led care; serious but calm, soft sage, ivory, muted blue palette, no readable text, no watermarks, wide format.",
+      "priority": "P1"
+    },
+    {
+      "positionId": "components/procedure-card.tsx:card-thumbnail [new]",
+      "recommendedSize": "1200x900 (4:3)",
+      "styleDescription": "Reusable procedure thumb for homepage and any future procedure grids; needs a single strong focal visual per treatment type.",
+      "prompt": "Create a premium editorial thumbnail for the procedure {procedureTitle}, showing subtle equipment or care-setting cues relevant to the treatment, but no gore and no surgery in progress; simple focal composition, soft sage, ivory, muted blue palette, no readable text, no watermarks, 4:3.",
+      "priority": "P1"
+    },
+    {
+      "positionId": "components/hospital-card.tsx:card-thumbnail [new]",
+      "recommendedSize": "1200x900 (4:3)",
+      "styleDescription": "Reusable hospital thumb focused on place identity, reception quality, and credibility.",
+      "prompt": "Create a premium editorial hospital thumbnail for {hospitalName} in {cityName}, showing either the campus exterior or the international patient reception area; clean architecture, daylight, high trust, soft sage, ivory, muted blue palette, no readable signage, no watermarks, 4:3.",
+      "priority": "P1"
+    },
+    {
+      "positionId": "components/case-study-card.tsx:card-thumbnail [new]",
+      "recommendedSize": "1200x900 (4:3)",
+      "styleDescription": "Reusable case-study thumb that communicates journey, outcome, and privacy safety without fake patient glamour shots.",
+      "prompt": "Create a privacy-safe editorial thumbnail for a medical travel case study, showing an anonymous patient journey with treatment folder, travel itinerary, and follow-up milestones in {cityName}; documentary and calm, no identifiable faces, soft sage, ivory, muted blue palette, no readable text, no watermarks, 4:3.",
+      "priority": "P1"
+    },
+    {
+      "positionId": "app/page.tsx:city-guide-card-thumbnail [new]",
+      "recommendedSize": "1200x900 (4:3)",
+      "styleDescription": "Homepage city-guide card image that distinguishes Shanghai and Beijing at a glance while keeping the medical-travel framing.",
+      "prompt": "Create a premium editorial city-guide thumbnail for medical travel in {cityName}, combining skyline cues, hospital access, hotel stay planning, and airport transfer hints; elegant vector style, soft sage, ivory, muted blue palette, no readable text, no watermarks, 4:3.",
+      "priority": "P2"
+    },
+    {
+      "positionId": "components/trust-sections.tsx:DoctorProfiles doctor-headshot [new]",
+      "recommendedSize": "800x1000 (4:5)",
+      "styleDescription": "Profile image slot for named specialists; safest as approved real photos or clearly illustrative portrait treatment.",
+      "prompt": "Create a clean non-photoreal editorial portrait placeholder for a specialist doctor profile, waist-up, neutral clinical background, calm and authoritative, premium illustration style, soft sage, ivory, muted blue palette, no readable text, no watermarks, 4:5.",
+      "priority": "P1"
+    },
+    {
+      "positionId": "app/thank-you/page.tsx:confirmation illustration [new]",
+      "recommendedSize": "1200x900 (4:3)",
+      "styleDescription": "Simple positive confirmation image for form completion and next-step reassurance.",
+      "prompt": "Create a premium editorial confirmation illustration for a completed medical inquiry, showing a checked care-plan folder, calm support cues, and a reassuring success state; minimal and warm, soft sage, ivory, muted blue palette, no readable text, no watermarks, 4:3.",
+      "priority": "P2"
+    },
+    {
+      "positionId": "app/not-found.tsx:empty-state illustration [new]",
+      "recommendedSize": "1200x900 (4:3)",
+      "styleDescription": "Graceful empty-state visual that fits the brand without feeling playful or childish.",
+      "prompt": "Create a premium editorial empty-state illustration for a page not found experience on a medical travel site, showing a misplaced document, route map, and subtle search cues; calm, refined, trustworthy, soft sage, ivory, muted blue palette, no readable text, no watermarks, 4:3.",
+      "priority": "P2"
+    }
+  ]
+}

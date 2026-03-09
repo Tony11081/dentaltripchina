@@ -1,5 +1,16 @@
 const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "8613800138000";
 
+const unpublishedMarkers = [
+  "pending public launch update",
+  "to be published before go-live",
+  "pending publication"
+] as const;
+
+export function isPublishedCompanyField(value: string) {
+  const normalized = value.trim().toLowerCase();
+  return normalized.length > 0 && !unpublishedMarkers.some((marker) => normalized.includes(marker));
+}
+
 export const companyProfile = {
   brandName: "DentalTripChina.com",
   legalEntityName:
@@ -27,3 +38,41 @@ export const companyProfile = {
   infoLastUpdated: process.env.DTC_PUBLIC_COMPANY_INFO_UPDATED || "February 27, 2026"
 };
 
+export const companyProfileStatus = {
+  hasPublishedLegalEntity: isPublishedCompanyField(companyProfile.legalEntityName),
+  hasPublishedRegistrationNumber: isPublishedCompanyField(companyProfile.registrationNumber),
+  hasPublishedRegistrationJurisdiction: isPublishedCompanyField(
+    companyProfile.registrationJurisdiction
+  ),
+  hasPublishedRegisteredAddress: isPublishedCompanyField(companyProfile.registeredAddress)
+};
+
+export const companyIdentityDisclosureNote =
+  "Detailed registration records are shared during consultation and added here when publication controls are finalized.";
+
+export const publishedCompanyIdentityItems = [
+  {
+    key: "legal-entity",
+    label: "Legal entity",
+    value: companyProfile.legalEntityName,
+    published: companyProfileStatus.hasPublishedLegalEntity
+  },
+  {
+    key: "registration-number",
+    label: "Registration number",
+    value: companyProfile.registrationNumber,
+    published: companyProfileStatus.hasPublishedRegistrationNumber
+  },
+  {
+    key: "registration-jurisdiction",
+    label: "Registration jurisdiction",
+    value: companyProfile.registrationJurisdiction,
+    published: companyProfileStatus.hasPublishedRegistrationJurisdiction
+  },
+  {
+    key: "registered-office",
+    label: "Registered office",
+    value: companyProfile.registeredAddress,
+    published: companyProfileStatus.hasPublishedRegisteredAddress
+  }
+].filter((item) => item.published);

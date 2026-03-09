@@ -5,10 +5,15 @@ import { Breadcrumbs } from "@/components/breadcrumbs";
 import { procedures } from "@/data/procedures";
 import { getUsdFxReferenceNote } from "@/lib/currency";
 import { LocalizedPrice } from "@/components/localized-price";
+import { buildMetadata } from "@/lib/metadata";
 
-export const metadata: Metadata = {
-  title: "Pricing"
-};
+export const metadata: Metadata = buildMetadata({
+  title: "Pricing",
+  description:
+    "Compare indicative procedure pricing and treatment timelines in China versus UK, US, and Australia.",
+  path: "/pricing",
+  imagePath: "/editorial/budget-atlas.svg"
+});
 
 export default function PricingPage() {
   return (
@@ -24,9 +29,32 @@ export default function PricingPage() {
         eyebrow="Transparent Cost Comparison"
         title="Procedure Pricing in China vs UK/US"
         subtitle="Indicative ranges for planning. Final quote depends on case complexity and treatment scope."
+        heroMetrics={[
+          { value: `${procedures.length}`, label: "Core procedures" },
+          { value: "USD", label: "Baseline currency" },
+          { value: "1-5d", label: "Typical China booking" }
+        ]}
+        panelTitle="Compare scope and timing, not just the headline fee"
+        panelDescription="This page is meant to get a patient from broad curiosity to a realistic budget conversation."
+        panelList={[
+          "Procedure-level China vs UK/US/AU pricing",
+          "Separate wait time from treatment duration",
+          "Jump into the full cost calculator when ready"
+        ]}
       />
 
-      <section className="section container">
+      <section className="section container" id="pricing-table">
+        <nav className="section-nav" aria-label="Pricing page sections">
+          <a className="section-link" href="#pricing-table">
+            Compare pricing
+          </a>
+          <a className="section-link" href="#time-comparison">
+            Compare timelines
+          </a>
+          <Link className="section-link" href="/cost-calculator">
+            Open calculator
+          </Link>
+        </nav>
         <p className="muted section-lede">
           Prices auto-localize for UK/AU visitors while keeping USD as the baseline for
           like-for-like global comparison.
@@ -70,7 +98,7 @@ export default function PricingPage() {
         </table>
       </section>
 
-      <section className="section container">
+      <section className="section container" id="time-comparison">
         <p className="section-kicker">Time Comparison</p>
         <h2>Appointment Wait and Treatment Timeline</h2>
         <p className="muted section-lede">

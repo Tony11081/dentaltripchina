@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Cormorant_Garamond, Source_Sans_3 } from "next/font/google";
 import "./globals.css";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
@@ -7,19 +6,10 @@ import { WhatsAppButton } from "@/components/whatsapp-button";
 import { GAScript } from "@/components/ga-script";
 import { FunnelTracker } from "@/components/funnel-tracker";
 import { JsonLd } from "@/components/json-ld";
-import { companyProfile } from "@/data/company-profile";
+import { companyProfile, companyProfileStatus } from "@/data/company-profile";
+import { absoluteUrl, defaultSocialImage } from "@/lib/metadata";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://dentaltripchina.com";
-const sourceSans = Source_Sans_3({
-  subsets: ["latin"],
-  variable: "--font-sans",
-  display: "swap"
-});
-const cormorant = Cormorant_Garamond({
-  subsets: ["latin"],
-  variable: "--font-serif",
-  display: "swap"
-});
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -29,32 +19,61 @@ export const metadata: Metadata = {
   },
   description:
     "World-class dental implants, LASIK, and health checkups in China. JCI-accredited hospitals. English support. Free quote in 2 hours.",
+  openGraph: {
+    type: "website",
+    url: siteUrl,
+    title: "Medical Tourism China - Save 70%+ | DentalTripChina",
+    description:
+      "World-class dental implants, LASIK, and health checkups in China. JCI-accredited hospitals. English support. Free quote in 2 hours.",
+    siteName: "DentalTripChina",
+    images: [
+      {
+        url: absoluteUrl(defaultSocialImage),
+        alt: "DentalTripChina planning dashboard"
+      }
+    ]
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Medical Tourism China - Save 70%+ | DentalTripChina",
+    description:
+      "World-class dental implants, LASIK, and health checkups in China. JCI-accredited hospitals. English support. Free quote in 2 hours.",
+    images: [absoluteUrl(defaultSocialImage)]
+  },
   alternates: {
     canonical: "/"
   }
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  const orgSchema = {
+  const orgSchema: Record<string, unknown> = {
     "@context": "https://schema.org",
-    "@type": "MedicalOrganization",
+    "@type": "Organization",
     name: companyProfile.brandName,
-    legalName: companyProfile.legalEntityName,
     url: siteUrl,
     email: companyProfile.supportEmail,
     telephone: companyProfile.supportPhone,
-    address: {
-      "@type": "PostalAddress",
-      streetAddress: companyProfile.registeredAddress,
-      addressCountry: "CN"
-    },
+    description:
+      "Cross-border treatment coordination for dental care, LASIK, and health checkups in China.",
     contactPoint: {
       "@type": "ContactPoint",
       telephone: companyProfile.supportPhone,
       contactType: "customer support",
-      availableLanguage: ["en-GB", "en-AU"]
+      availableLanguage: ["en-US", "en-GB", "en-AU"]
     }
   };
+
+  if (companyProfileStatus.hasPublishedLegalEntity) {
+    orgSchema.legalName = companyProfile.legalEntityName;
+  }
+
+  if (companyProfileStatus.hasPublishedRegisteredAddress) {
+    orgSchema.address = {
+      "@type": "PostalAddress",
+      streetAddress: companyProfile.registeredAddress,
+      addressCountry: "CN"
+    };
+  }
 
   const websiteSchema = {
     "@context": "https://schema.org",
@@ -65,11 +84,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
 
   return (
     <html lang="en-GB">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-      </head>
-      <body className={`${sourceSans.variable} ${cormorant.variable}`}>
+      <body>
         <GAScript />
         <FunnelTracker />
         <JsonLd data={orgSchema} />

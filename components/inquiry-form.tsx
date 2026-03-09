@@ -26,11 +26,57 @@ const whatsappDialCodes = [
   { label: "Other (+)", value: "+" }
 ];
 
+type FieldErrors = Record<string, string>;
+
+function joinDescribedBy(...ids: Array<string | undefined>) {
+  const tokens = ids.filter(Boolean);
+  return tokens.length ? tokens.join(" ") : undefined;
+}
+
 export function InquiryForm() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [isError, setIsError] = useState(false);
   const [hasStarted, setHasStarted] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
+
+  const getErrorId = (name: string) => `${name}-error`;
+
+  const renderFieldError = (name: string) =>
+    fieldErrors[name] ? (
+      <span className="field-error" id={getErrorId(name)}>
+        {fieldErrors[name]}
+      </span>
+    ) : null;
+
+  const clearFieldErrors = (name: string) => {
+    setFieldErrors((current) => {
+      const next = { ...current };
+      let changed = false;
+      const clear = (key: string) => {
+        if (next[key]) {
+          delete next[key];
+          changed = true;
+        }
+      };
+
+      clear(name);
+
+      if (
+        name === "contactPreference" ||
+        name === "whatsappCountryCode" ||
+        name === "whatsappLocalNumber"
+      ) {
+        clear("contactPreference");
+        clear("whatsappLocalNumber");
+      }
+
+      if (name === "procedures") clear("procedures");
+      if (name === "medicalFiles") clear("medicalFiles");
+
+      return changed ? next : current;
+    });
+  };
 
   const markFormStart = () => {
     if (hasStarted) return;
@@ -46,33 +92,41 @@ export function InquiryForm() {
     setLoading(true);
     setMessage(null);
     setIsError(false);
+    setFieldErrors({});
 
     const form = event.currentTarget;
     const formData = new FormData(form);
     const contactPreference = String(formData.get("contactPreference") || "email-only");
     const whatsappLocalNumber = String(formData.get("whatsappLocalNumber") || "").trim();
+    const selectedProcedures = formData.getAll("procedures").map(String).filter(Boolean);
     const files = formData
       .getAll("medicalFiles")
       .filter((item): item is File => item instanceof File && item.size > 0);
+    const nextErrors: FieldErrors = {};
+
+    if (!selectedProcedures.length) {
+      nextErrors.procedures = "Select at least one procedure so we can route your enquiry.";
+    }
 
     if (contactPreference !== "email-only" && !whatsappLocalNumber) {
-      setIsError(true);
-      setMessage("Please add a WhatsApp number or switch contact preference to Email only.");
-      setLoading(false);
-      return;
+      nextErrors.whatsappLocalNumber =
+        "Please add a WhatsApp number or switch contact preference to Email only.";
+      nextErrors.contactPreference = "WhatsApp is required for this contact preference.";
     }
 
     if (files.length > 3) {
-      setIsError(true);
-      setMessage("Please upload up to 3 files.");
-      setLoading(false);
-      return;
+      nextErrors.medicalFiles = "Please upload up to 3 files.";
     }
 
     const oversized = files.find((file) => file.size > 10 * 1024 * 1024);
     if (oversized) {
+      nextErrors.medicalFiles = `File is too large: ${oversized.name}. Max file size is 10MB.`;
+    }
+
+    if (Object.keys(nextErrors).length > 0) {
+      setFieldErrors(nextErrors);
       setIsError(true);
-      setMessage(`File is too large: ${oversized.name}. Max file size is 10MB.`);
+      setMessage(Object.values(nextErrors)[0]);
       setLoading(false);
       return;
     }
@@ -87,10 +141,12 @@ export function InquiryForm() {
         ok: boolean;
         message: string;
         analytics?: { procedure: string; country: string; city: string };
+        fieldErrors?: FieldErrors;
       };
 
       if (!response.ok || !payload.ok) {
         setIsError(true);
+        setFieldErrors(payload.fieldErrors || {});
         setMessage(payload.message || "Submission failed. Please try again.");
         return;
       }
@@ -102,6 +158,7 @@ export function InquiryForm() {
       }
 
       setMessage(payload.message);
+      setFieldErrors({});
       form.reset();
     } catch {
       setIsError(true);
@@ -112,17 +169,47 @@ export function InquiryForm() {
   };
 
   return (
-    <form className="dtc-form" onSubmit={onSubmit} onFocusCapture={markFormStart}>
+    <form
+      className="dtc-form"
+      onSubmit={onSubmit}
+      onFocusCapture={markFormStart}
+      onChangeCapture={(event) => {
+        const { target } = event;
+        if (
+          target instanceof HTMLInputElement ||
+          target instanceof HTMLSelectElement ||
+          target instanceof HTMLTextAreaElement
+        ) {
+          clearFieldErrors(target.name);
+        }
+      }}
+    >
       <input type="text" name="_gotcha" className="honeypot" tabIndex={-1} autoComplete="off" />
 
       <div className="form-grid two">
         <label>
           <span>Full Name *</span>
-          <input type="text" name="fullName" placeholder="Your full name" required />
+          <input
+            type="text"
+            name="fullName"
+            placeholder="Your full name"
+            required
+            aria-invalid={Boolean(fieldErrors.fullName)}
+            aria-describedby={fieldErrors.fullName ? getErrorId("fullName") : undefined}
+          />
+          {renderFieldError("fullName")}
         </label>
         <label>
           <span>Email Address *</span>
-          <input type="email" name="email" placeholder="your@email.com" required />
+          <input
+            type="email"
+            name="email"
+            placeholder="your@email.com"
+            required
+            aria-invalid={Boolean(fieldErrors.email)}
+            aria-describedby={fieldErrors.email ? getErrorId("email") : undefined}
+          />
+          {renderFieldError("email")}
         </label>
         <label>
           <span>WhatsApp Number (optional)</span>
@@ -131,6 +218,11 @@ export function InquiryForm() {
               name="whatsappCountryCode"
               defaultValue=""
               aria-label="WhatsApp country code"
+              aria-invalid={Boolean(fieldErrors.whatsappLocalNumber)}
+              aria-describedby={joinDescribedBy(
+                "whatsapp-note",
+                fieldErrors.whatsappLocalNumber ? getErrorId("whatsappLocalNumber") : undefined
+              )}
             >
               <option value="">No WhatsApp / Email only</option>
               {whatsappDialCodes.map((item) => (
@@ -144,21 +236,43 @@ export function InquiryForm() {
               name="whatsappLocalNumber"
               placeholder="7700 900123"
               aria-label="WhatsApp local number"
+              aria-invalid={Boolean(fieldErrors.whatsappLocalNumber)}
+              aria-describedby={joinDescribedBy(
+                "whatsapp-note",
+                fieldErrors.whatsappLocalNumber ? getErrorId("whatsappLocalNumber") : undefined
+              )}
             />
           </div>
-          <span className="field-note">Leave blank if you prefer email-only communication.</span>
+          <span className="field-note" id="whatsapp-note">
+            Leave blank if you prefer email-only communication.
+          </span>
+          {renderFieldError("whatsappLocalNumber")}
         </label>
         <label>
           <span>Preferred Contact Channel *</span>
-          <select name="contactPreference" defaultValue="email-only" required>
+          <select
+            name="contactPreference"
+            defaultValue="email-only"
+            required
+            aria-invalid={Boolean(fieldErrors.contactPreference)}
+            aria-describedby={
+              fieldErrors.contactPreference ? getErrorId("contactPreference") : undefined
+            }
+          >
             <option value="email-only">Email only</option>
             <option value="email-and-whatsapp">Email and WhatsApp</option>
             <option value="whatsapp-only">WhatsApp only</option>
           </select>
+          {renderFieldError("contactPreference")}
         </label>
         <label>
           <span>Country of Residence *</span>
-          <select name="country" required>
+          <select
+            name="country"
+            required
+            aria-invalid={Boolean(fieldErrors.country)}
+            aria-describedby={fieldErrors.country ? getErrorId("country") : undefined}
+          >
             <option value="">Select country</option>
             <option>United Kingdom</option>
             <option>Australia</option>
@@ -170,10 +284,14 @@ export function InquiryForm() {
             <option>Other Europe</option>
             <option>Other</option>
           </select>
+          {renderFieldError("country")}
         </label>
       </div>
 
-      <fieldset>
+      <fieldset
+        aria-invalid={Boolean(fieldErrors.procedures)}
+        aria-describedby={fieldErrors.procedures ? getErrorId("procedures") : undefined}
+      >
         <legend>Procedure of Interest *</legend>
         <div className="checkbox-grid">
           {procedureOptions.map((item) => (
@@ -182,9 +300,13 @@ export function InquiryForm() {
             </label>
           ))}
         </div>
+        {renderFieldError("procedures")}
       </fieldset>
 
-      <fieldset>
+      <fieldset
+        aria-invalid={Boolean(fieldErrors.city)}
+        aria-describedby={fieldErrors.city ? getErrorId("city") : undefined}
+      >
         <legend>Preferred City</legend>
         <div className="radio-grid">
           {["Shanghai", "Beijing", "Flexible", "Not decided"].map((city) => (
@@ -193,12 +315,20 @@ export function InquiryForm() {
             </label>
           ))}
         </div>
+        {renderFieldError("city")}
       </fieldset>
 
       <div className="form-grid two">
         <label>
           <span>Approximate Travel Dates</span>
-          <input type="text" name="travelDates" placeholder="e.g. April 2026 or flexible" />
+          <input
+            type="text"
+            name="travelDates"
+            placeholder="e.g. April 2026 or flexible"
+            aria-invalid={Boolean(fieldErrors.travelDates)}
+            aria-describedby={fieldErrors.travelDates ? getErrorId("travelDates") : undefined}
+          />
+          {renderFieldError("travelDates")}
         </label>
         <label className="full">
           <span>Tell us more</span>
@@ -206,7 +336,10 @@ export function InquiryForm() {
             name="notes"
             rows={4}
             placeholder="Any specific concerns, questions, or context that would help us prepare your quote..."
+            aria-invalid={Boolean(fieldErrors.notes)}
+            aria-describedby={fieldErrors.notes ? getErrorId("notes") : undefined}
           />
+          {renderFieldError("notes")}
         </label>
         <label className="full">
           <span>Upload Records (optional)</span>
@@ -215,26 +348,48 @@ export function InquiryForm() {
             name="medicalFiles"
             accept=".pdf,.jpg,.jpeg,.png,.webp,.heic"
             multiple
+            aria-invalid={Boolean(fieldErrors.medicalFiles)}
+            aria-describedby={joinDescribedBy(
+              "medical-files-note",
+              fieldErrors.medicalFiles ? getErrorId("medicalFiles") : undefined
+            )}
           />
-          <span className="field-note">
+          <span className="field-note" id="medical-files-note">
             Up to 3 files, max 10MB each (PDF/JPG/PNG/WEBP/HEIC).
           </span>
+          {renderFieldError("medicalFiles")}
         </label>
       </div>
 
       <label className="consent">
-        <input type="checkbox" name="consent" value="1" required />
+        <input
+          type="checkbox"
+          name="consent"
+          value="1"
+          required
+          aria-invalid={Boolean(fieldErrors.consent)}
+          aria-describedby={fieldErrors.consent ? getErrorId("consent") : undefined}
+        />
         <span>
           I agree to be contacted regarding my enquiry. I understand my data will
           only be shared with selected providers for treatment coordination.
         </span>
       </label>
+      {renderFieldError("consent")}
 
       <button type="submit" className="btn btn-primary" disabled={loading}>
         {loading ? "Submitting..." : "Request Free Consultation"}
       </button>
 
-      {message ? <p className={isError ? "message error" : "message"}>{message}</p> : null}
+      {message ? (
+        <p
+          className={isError ? "message error" : "message"}
+          role={isError ? "alert" : "status"}
+          aria-live={isError ? "assertive" : "polite"}
+        >
+          {message}
+        </p>
+      ) : null}
     </form>
   );
 }

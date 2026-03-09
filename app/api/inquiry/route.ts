@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { sendMail } from "@/lib/mailer";
+import { mailerReady, sendMail } from "@/lib/mailer";
 import { companyProfile } from "@/data/company-profile";
 
 const MAX_FILES = 3;
@@ -41,6 +41,16 @@ function toArray(value: FormDataEntryValue | FormDataEntryValue[] | null) {
   return [String(value)];
 }
 
+function toFieldErrors(issues: z.ZodIssue[]) {
+  return issues.reduce<Record<string, string>>((errors, issue) => {
+    const key = typeof issue.path[0] === "string" ? issue.path[0] : "form";
+    if (!errors[key]) {
+      errors[key] = issue.message;
+    }
+    return errors;
+  }, {});
+}
+
 export async function POST(request: Request) {
   const form = await request.formData();
 
@@ -76,10 +86,13 @@ export async function POST(request: Request) {
   });
 
   if (!parsed.success) {
+    const fieldErrors = toFieldErrors(parsed.error.issues);
+
     return NextResponse.json(
       {
         ok: false,
-        message: "Please complete all required fields."
+        message: Object.values(fieldErrors)[0] || "Please complete all required fields.",
+        fieldErrors
       },
       { status: 422 }
     );
@@ -91,7 +104,10 @@ export async function POST(request: Request) {
     return NextResponse.json(
       {
         ok: false,
-        message: `Please upload up to ${MAX_FILES} files.`
+        message: `Please upload up to ${MAX_FILES} files.`,
+        fieldErrors: {
+          medicalFiles: `Please upload up to ${MAX_FILES} files.`
+        }
       },
       { status: 422 }
     );
@@ -107,7 +123,10 @@ export async function POST(request: Request) {
     return NextResponse.json(
       {
         ok: false,
-        message: `Unsupported or too large file: ${invalidFile.name}.`
+        message: `Unsupported or too large file: ${invalidFile.name}.`,
+        fieldErrors: {
+          medicalFiles: `Unsupported or too large file: ${invalidFile.name}.`
+        }
       },
       { status: 422 }
     );
@@ -125,7 +144,12 @@ export async function POST(request: Request) {
     return NextResponse.json(
       {
         ok: false,
-        message: "Please provide WhatsApp number or choose Email only."
+        message: "Please provide WhatsApp number or choose Email only.",
+        fieldErrors: {
+          whatsappLocalNumber:
+            "Please provide WhatsApp number or switch contact preference to Email only.",
+          contactPreference: "WhatsApp is required for this contact preference."
+        }
       },
       { status: 422 }
     );
@@ -133,8 +157,10 @@ export async function POST(request: Request) {
 
   const operatorEmail = process.env.DTC_OPERATOR_EMAIL;
 
-  if (!operatorEmail) {
-    console.error("[inquiry] Missing DTC_OPERATOR_EMAIL, refusing submission to prevent lead loss.");
+  if (!operatorEmail || !mailerReady) {
+    console.error(
+      "[inquiry] Missing operator routing or SMTP configuration, refusing submission to prevent lead loss."
+    );
     return NextResponse.json(
       {
         ok: false,
@@ -145,36 +171,48 @@ export async function POST(request: Request) {
     );
   }
 
-  await sendMail({
-    to: operatorEmail,
-    subject: `[DentalTripChina] New inquiry from ${data.fullName}`,
-    replyTo: data.email,
-    text: [
-      "New inquiry submission",
-      "---------------------",
-      `Name: ${data.fullName}`,
-      `Email: ${data.email}`,
-      `Contact preference: ${data.contactPreference}`,
-      `WhatsApp: ${data.whatsapp || "Not provided"}`,
-      `Country: ${data.country}`,
-      `Procedures: ${data.procedures.join(", ")}`,
-      `Preferred City: ${data.city || "Not decided"}`,
-      `Travel Dates: ${data.travelDates || "Not provided"}`,
-      `Notes: ${data.notes || "Not provided"}`,
-      `Attachments: ${
-        attachments.length
-          ? attachments.map((item) => item.filename).join(", ")
-          : "No files uploaded"
-      }`
-    ].join("\n"),
-    attachments
-  });
+  try {
+    await sendMail({
+      to: operatorEmail,
+      subject: `[DentalTripChina] New inquiry from ${data.fullName}`,
+      replyTo: data.email,
+      text: [
+        "New inquiry submission",
+        "---------------------",
+        `Name: ${data.fullName}`,
+        `Email: ${data.email}`,
+        `Contact preference: ${data.contactPreference}`,
+        `WhatsApp: ${data.whatsapp || "Not provided"}`,
+        `Country: ${data.country}`,
+        `Procedures: ${data.procedures.join(", ")}`,
+        `Preferred City: ${data.city || "Not decided"}`,
+        `Travel Dates: ${data.travelDates || "Not provided"}`,
+        `Notes: ${data.notes || "Not provided"}`,
+        `Attachments: ${
+          attachments.length
+            ? attachments.map((item) => item.filename).join(", ")
+            : "No files uploaded"
+        }`
+      ].join("\n"),
+      attachments
+    });
 
-  await sendMail({
-    to: data.email,
-    subject: "We received your enquiry | DentalTripChina.com",
-    text: `Thank you, ${data.fullName.split(" ")[0]}! We will respond via your preferred channel within 2 hours. Check your spam folder if you don't hear from us.`
-  });
+    await sendMail({
+      to: data.email,
+      subject: "We received your enquiry | DentalTripChina.com",
+      text: `Thank you, ${data.fullName.split(" ")[0]}! We will respond via your preferred channel within 2 hours. Check your spam folder if you don't hear from us.`
+    });
+  } catch (error) {
+    console.error("[inquiry] Failed to send inquiry email.", error);
+    return NextResponse.json(
+      {
+        ok: false,
+        message:
+          `Inquiry service is temporarily unavailable. Please email ${companyProfile.supportEmail} while we restore operator routing.`
+      },
+      { status: 503 }
+    );
+  }
 
   return NextResponse.json({
     ok: true,

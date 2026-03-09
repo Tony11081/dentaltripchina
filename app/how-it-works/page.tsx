@@ -2,10 +2,15 @@ import type { Metadata } from "next";
 import { Hero } from "@/components/hero";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { InquiryForm } from "@/components/inquiry-form";
+import { buildMetadata } from "@/lib/metadata";
 
-export const metadata: Metadata = {
-  title: "How It Works"
-};
+export const metadata: Metadata = buildMetadata({
+  title: "How It Works",
+  description:
+    "A clear four-step process for provider matching, planning, travel coordination, and follow-up support.",
+  path: "/how-it-works",
+  imagePath: "/editorial/travel-suite.svg"
+});
 
 export default function HowItWorksPage() {
   return (
@@ -21,6 +26,18 @@ export default function HowItWorksPage() {
         eyebrow="Simple 4-Step Process"
         title="From First Message to Treatment Follow-Up"
         subtitle="Everything is coordinated in one flow so you can plan your trip with clarity."
+        heroMetrics={[
+          { value: "4", label: "Clear steps" },
+          { value: "1 team", label: "Single desk" },
+          { value: "2h", label: "Initial response" }
+        ]}
+        panelTitle="A planning flow built to reduce uncertainty"
+        panelDescription="The process is intentionally linear so patients can compare options, lock dates, and keep follow-up visible."
+        panelList={[
+          "Case brief and timeline intake",
+          "Provider shortlist with scope notes",
+          "Travel and follow-up coordination"
+        ]}
       />
 
       <section className="section container card-grid two">

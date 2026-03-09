@@ -25,6 +25,7 @@ import { JsonLd } from "@/components/json-ld";
 import { hospitalTrustProfiles, procedureTrustProfiles } from "@/data/trust";
 import { getUsdFxReferenceNote } from "@/lib/currency";
 import { LocalizedPrice } from "@/components/localized-price";
+import { buildMetadata } from "@/lib/metadata";
 
 export function generateStaticParams() {
   return [...procedures, ...cityGuides].map((item) => ({ slug: item.slug }));
@@ -39,18 +40,26 @@ export async function generateMetadata({
   const procedure = getProcedureBySlug(slug);
 
   if (procedure) {
-    return {
+    const primaryHospital = getHospitalsBySlugs(procedure.partnerHospitalSlugs)[0];
+
+    return buildMetadata({
       title: `${procedure.title} Cost in China (2026)`,
-      description: `Get ${procedure.title} in China at trusted hospitals. Compare prices vs US and UK.`
-    };
+      description: `Get ${procedure.title} in China at trusted hospitals. Compare prices vs US and UK.`,
+      path: `/${procedure.slug}`,
+      imagePath: primaryHospital?.heroImageSrc || "/editorial/hero-consultation.svg"
+    });
   }
 
   const cityGuide = getCityGuideBySlug(slug);
   if (cityGuide) {
-    return {
+    const cityHospital = hospitals.find((hospital) => hospital.city === cityGuide.city.toLowerCase());
+
+    return buildMetadata({
       title: cityGuide.title,
-      description: cityGuide.summary
-    };
+      description: cityGuide.summary,
+      path: `/${cityGuide.slug}`,
+      imagePath: cityHospital?.heroImageSrc || "/editorial/travel-suite.svg"
+    });
   }
 
   return {
@@ -122,11 +131,43 @@ export default async function RootSlugPage({
           secondaryHref={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "8613800138000"}?text=${encodeURIComponent(
             `Hi, I'd like to know more about ${procedure.title} in China. Can you help?`
           )}`}
+          heroMetrics={[
+            { value: `${procedure.savingsPct}%`, label: "Typical savings" },
+            { value: procedure.durationDays, label: "Typical stay" },
+            { value: `${relatedHospitals.length}`, label: "Partner hospitals" }
+          ]}
+          panelTitle="Use this page to decide fit, timing, and total budget"
+          panelDescription="Procedure pages now surface the key commercial and clinical checks before a patient has to contact support."
+          panelList={[
+            `Compare ${procedure.title} pricing against home-market references`,
+            "See trust, risk, and recovery notes on the same page",
+            "Jump straight to hospitals, FAQs, or request form"
+          ]}
         />
 
-        <section className="section container">
+        <section className="section container" id="overview">
           <JsonLd data={schema} />
           <JsonLd data={faqSchema} />
+          <nav className="section-nav" aria-label={`${procedure.title} page sections`}>
+            <a className="section-link" href="#overview">
+              Overview
+            </a>
+            <a className="section-link" href="#prices">
+              Pricing
+            </a>
+            <a className="section-link" href="#timeline">
+              Timeline
+            </a>
+            <a className="section-link" href="#hospitals">
+              Hospitals
+            </a>
+            <a className="section-link" href="#faq">
+              FAQs
+            </a>
+            <a className="section-link" href="#request">
+              Request estimate
+            </a>
+          </nav>
 
           <article className="card">
             <h2>Procedure Overview</h2>
@@ -156,7 +197,7 @@ export default async function RootSlugPage({
           ) : null}
         </section>
 
-        <section className="section container">
+        <section className="section container" id="prices">
           <h2>Price Comparison (Localized Display + USD Baseline)</h2>
           <table className="price-table">
             <thead>
@@ -196,9 +237,11 @@ export default async function RootSlugPage({
           <p className="trust-note">{getUsdFxReferenceNote()}</p>
         </section>
 
-        <ProcedureTimeComparison procedure={procedure} />
+        <div id="timeline">
+          <ProcedureTimeComparison procedure={procedure} />
+        </div>
 
-        <section className="section container">
+        <section className="section container" id="hospitals">
           <h2>Recommended Hospitals</h2>
           <div className="card-grid three">
             {relatedHospitals.map((hospital) => (
@@ -207,7 +250,7 @@ export default async function RootSlugPage({
           </div>
         </section>
 
-        <section className="section container">
+        <section className="section container" id="faq">
           <FaqList items={procedure.faqs} />
         </section>
 
@@ -250,7 +293,7 @@ export default async function RootSlugPage({
 
         <SiteDisclosurePanel />
 
-        <section className="section container">
+        <section className="section container" id="request">
           <div className="cta-box">
             <h2>Request a Personalized Cost Estimate</h2>
             <InquiryForm />
@@ -303,6 +346,18 @@ export default async function RootSlugPage({
           eyebrow="City Guide"
           title={cityGuide.title}
           subtitle={cityGuide.summary}
+          heroMetrics={[
+            { value: cityGuide.city, label: "Destination" },
+            { value: `${cityHospitalList.length}`, label: "Hospital profiles" },
+            { value: "Arrival", label: "Travel planning" }
+          ]}
+          panelTitle="Plan the city around the treatment schedule"
+          panelDescription="City guides work best when they connect airport arrival, stay zones, and provider access in one page."
+          panelList={[
+            "Review transport and stay guidance by city",
+            "Check entry preparation before booking",
+            "Jump straight into city-specific hospital profiles"
+          ]}
         />
 
         <section className="section container">

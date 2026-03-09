@@ -2,11 +2,20 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Hero } from "@/components/hero";
 import { Breadcrumbs } from "@/components/breadcrumbs";
-import { companyProfile } from "@/data/company-profile";
+import {
+  companyIdentityDisclosureNote,
+  companyProfile,
+  publishedCompanyIdentityItems
+} from "@/data/company-profile";
+import { buildMetadata } from "@/lib/metadata";
 
-export const metadata: Metadata = {
-  title: "About"
-};
+export const metadata: Metadata = buildMetadata({
+  title: "About",
+  description:
+    "How DentalTripChina coordinates provider matching, logistics, and English-speaking treatment planning in China.",
+  path: "/about",
+  imagePath: "/editorial/editorial-lab.svg"
+});
 
 export default function AboutPage() {
   return (
@@ -22,6 +31,18 @@ export default function AboutPage() {
         eyebrow="About DentalTripChina"
         title="Built for Safe, Transparent Medical Travel"
         subtitle="We are a medical travel coordination service. We do not replace hospital diagnosis or clinical decision-making."
+        heroMetrics={[
+          { value: "Coordination", label: "Service role" },
+          { value: "2h", label: "Response target" },
+          { value: "EN", label: "Patient support" }
+        ]}
+        panelTitle="What we handle and what stays with the hospital"
+        panelDescription="The about page should make commercial scope and clinical boundaries obvious before anyone books."
+        panelList={[
+          "Provider matching and quote coordination",
+          "Travel and intake planning support",
+          "No diagnosis, prescriptions, or outcome guarantees"
+        ]}
       />
 
       <section className="section container card-grid three">
@@ -52,21 +73,17 @@ export default function AboutPage() {
         <div className="card-grid two">
           <article className="card trust-block">
             <h3>Legal and Registration Details</h3>
-            <ul className="trust-list">
-              <li>
-                <strong>Legal entity:</strong> {companyProfile.legalEntityName}
-              </li>
-              <li>
-                <strong>Registration number:</strong> {companyProfile.registrationNumber}
-              </li>
-              <li>
-                <strong>Registration jurisdiction:</strong>{" "}
-                {companyProfile.registrationJurisdiction}
-              </li>
-              <li>
-                <strong>Registered office:</strong> {companyProfile.registeredAddress}
-              </li>
-            </ul>
+            {publishedCompanyIdentityItems.length ? (
+              <ul className="trust-list">
+                {publishedCompanyIdentityItems.map((item) => (
+                  <li key={item.key}>
+                    <strong>{item.label}:</strong> {item.value}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="trust-note">{companyIdentityDisclosureNote}</p>
+            )}
             <p className="trust-note">
               <strong>Last updated:</strong> {companyProfile.infoLastUpdated}
             </p>
