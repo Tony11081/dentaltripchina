@@ -1,11 +1,19 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { Breadcrumbs } from "@/components/breadcrumbs";
+import { CardMedia } from "@/components/card-media";
 import { blogPosts } from "@/data/posts";
+import { buildMetadata } from "@/lib/metadata";
+import { getBlogPostImage, pageImageAssets } from "@/lib/site-images";
 
-export const metadata: Metadata = {
-  title: "Blog"
-};
+export const metadata: Metadata = buildMetadata({
+  title: "Blog",
+  description:
+    "Editorial planning guides covering costs, timelines, candidacy, and travel decisions for treatment in China.",
+  path: "/blog",
+  imagePath: pageImageAssets.blogBanner.src
+});
 
 export default function BlogPage() {
   const posts = [...blogPosts].sort((a, b) => (a.datePublished < b.datePublished ? 1 : -1));
@@ -34,11 +42,23 @@ export default function BlogPage() {
             </Link>
           ))}
         </div>
+        <figure className="editorial-image">
+          <Image
+            src={pageImageAssets.blogBanner.src}
+            alt={pageImageAssets.blogBanner.alt}
+            width={1200}
+            height={900}
+          />
+        </figure>
       </section>
 
       <section className="section container card-grid three">
-        {posts.map((post) => (
+        {posts.map((post) => {
+          const image = getBlogPostImage(post);
+
+          return (
           <article className="card" key={post.slug}>
+            <CardMedia src={image.src} alt={image.alt} />
             <h2>
               <Link href={`/blog/${post.slug}`}>{post.title}</Link>
             </h2>
@@ -60,7 +80,8 @@ export default function BlogPage() {
               Read article
             </Link>
           </article>
-        ))}
+          );
+        })}
       </section>
     </>
   );

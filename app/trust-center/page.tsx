@@ -15,6 +15,7 @@ import {
   procedureTrustProfiles
 } from "@/data/trust";
 import { buildMetadata } from "@/lib/metadata";
+import { pageImageAssets } from "@/lib/site-images";
 
 function formatShortDate(value: string) {
   return new Intl.DateTimeFormat("en", {
@@ -37,7 +38,7 @@ export const metadata: Metadata = buildMetadata({
   description:
     "Credential verification, doctor profiles, risk disclosures, pricing transparency, and patient data handling policy.",
   path: "/trust-center",
-  imagePath: "/editorial/verification-ledger.svg"
+  imagePath: pageImageAssets.trustCenterHero.src
 });
 
 export default function TrustCenterPage() {
@@ -56,8 +57,8 @@ export default function TrustCenterPage() {
         subtitle="Use this page as the evidence layer behind provider selection, content claims, and post-op escalation."
         ctaHref="/verification"
         ctaText="Open verification ledger"
-        heroImageSrc="/editorial/verification-ledger.svg"
-        heroImageAlt="Verification ledger and trust evidence overview"
+        heroImageSrc={pageImageAssets.trustCenterHero.src}
+        heroImageAlt={pageImageAssets.trustCenterHero.alt}
         heroMetrics={[
           { value: `${hospitals.length}`, label: "Hospitals tracked" },
           { value: `${allDoctors.length}`, label: "Named doctors" },

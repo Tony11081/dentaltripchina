@@ -278,3 +278,57 @@ export function BlogReviewBadge({ reviewer, disclosure }: BlogReviewBadgeProps) 
     </article>
   );
 }
+
+interface SourceReferenceItem {
+  label: string;
+  href: string;
+  description: string;
+  linkText?: string;
+  external?: boolean;
+}
+
+interface SourceReferenceSectionProps {
+  eyebrow: string;
+  title: string;
+  description?: string;
+  items: SourceReferenceItem[];
+  id?: string;
+  columns?: "two" | "three";
+}
+
+export function SourceReferenceSection({
+  eyebrow,
+  title,
+  description,
+  items,
+  id,
+  columns = "three"
+}: SourceReferenceSectionProps) {
+  if (!items.length) return null;
+
+  return (
+    <section className="section container" id={id}>
+      <p className="section-kicker">{eyebrow}</p>
+      <h2>{title}</h2>
+      {description ? <p className="section-lede muted">{description}</p> : null}
+      <div className={`card-grid ${columns}`}>
+        {items.map((item) => (
+          <article className="card trust-block" key={`${item.label}-${item.href}`}>
+            <p className="card-eyebrow">Source Link</p>
+            <h3>{item.label}</h3>
+            <p>{item.description}</p>
+            <p>
+              {item.external ? (
+                <a href={item.href} target="_blank" rel="noopener noreferrer">
+                  {item.linkText || "Open source"}
+                </a>
+              ) : (
+                <Link href={item.href}>{item.linkText || "Open source"}</Link>
+              )}
+            </p>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}

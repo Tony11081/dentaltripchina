@@ -3,9 +3,11 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { Hero } from "@/components/hero";
+import { CardMedia } from "@/components/card-media";
 import { getPostsByCategory } from "@/lib/content";
 import { blogPosts } from "@/data/posts";
 import { buildMetadata } from "@/lib/metadata";
+import { getBlogCategoryImage, getBlogPostImage } from "@/lib/site-images";
 
 function formatCategoryLabel(slug: string) {
   return slug
@@ -28,14 +30,13 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const posts = getPostsByCategory(slug);
   const categoryLabel = formatCategoryLabel(slug);
 
   return buildMetadata({
     title: `${categoryLabel} Articles`,
     description: `Planning guides, cost notes, and travel logistics for ${categoryLabel.toLowerCase()}.`,
     path: `/blog/category/${slug}`,
-    imagePath: posts[0]?.coverImage
+    imagePath: getBlogCategoryImage(slug).src
   });
 }
 
@@ -56,6 +57,7 @@ export default async function BlogCategoryPage({
   if (!posts.length) notFound();
 
   const categoryLabel = formatCategoryLabel(slug);
+  const categoryImage = getBlogCategoryImage(slug);
   const latestUpdatedPost = [...posts].sort((left, right) =>
     left.dateUpdated.localeCompare(right.dateUpdated)
   )[posts.length - 1];
@@ -75,8 +77,8 @@ export default async function BlogCategoryPage({
         eyebrow="Blog Category"
         title={`${categoryLabel} Planning Guides`}
         subtitle="Curated articles that move from cost assumptions to timeline and candidacy decisions."
-        heroImageSrc={posts[0]?.coverImage}
-        heroImageAlt={posts[0]?.title || `${categoryLabel} planning articles`}
+        heroImageSrc={categoryImage.src}
+        heroImageAlt={categoryImage.alt}
         heroMetrics={[
           { value: `${posts.length}`, label: "Articles" },
           { value: `${countryCount || 1}`, label: "Market lenses" },
@@ -113,27 +115,32 @@ export default async function BlogCategoryPage({
           travel, or provider-fit judgment before requesting a quote.
         </p>
         <div className="card-grid three">
-          {posts.map((post) => (
-            <article className="card" key={post.slug} id={post === posts[0] ? "category-articles" : undefined}>
-              <p className="card-eyebrow">{post.countryFocus || "Global planning"}</p>
-              <h2>
-                <Link href={`/blog/${post.slug}`}>{post.title}</Link>
-              </h2>
-              <p className="muted">
-                {post.budgetFocus || "Flexible budget"} |{" "}
-                {post.timelineFocus || "Timeline guidance included"}
-              </p>
-              <p>{post.excerpt}</p>
-              <p className="trust-note">
-                Updated {formatShortDate(post.dateUpdated)} | Reviewed content by {post.authorName}
-              </p>
-              <p>
-                <Link className="btn btn-secondary" href={`/blog/${post.slug}`}>
-                  Read article
-                </Link>
-              </p>
-            </article>
-          ))}
+          {posts.map((post) => {
+            const image = getBlogPostImage(post);
+
+            return (
+              <article className="card" key={post.slug} id={post === posts[0] ? "category-articles" : undefined}>
+                <CardMedia src={image.src} alt={image.alt} />
+                <p className="card-eyebrow">{post.countryFocus || "Global planning"}</p>
+                <h2>
+                  <Link href={`/blog/${post.slug}`}>{post.title}</Link>
+                </h2>
+                <p className="muted">
+                  {post.budgetFocus || "Flexible budget"} |{" "}
+                  {post.timelineFocus || "Timeline guidance included"}
+                </p>
+                <p>{post.excerpt}</p>
+                <p className="trust-note">
+                  Updated {formatShortDate(post.dateUpdated)} | Reviewed content by {post.authorName}
+                </p>
+                <p>
+                  <Link className="btn btn-secondary" href={`/blog/${post.slug}`}>
+                    Read article
+                  </Link>
+                </p>
+              </article>
+            );
+          })}
         </div>
       </section>
     </>

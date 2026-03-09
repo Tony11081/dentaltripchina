@@ -20,11 +20,6 @@ export const metadata: Metadata = {
   description:
     "World-class dental implants, LASIK, and health checkups in China. JCI-accredited hospitals. English support. Free quote in 2 hours.",
   openGraph: {
-    type: "website",
-    url: siteUrl,
-    title: "Medical Tourism China - Save 70%+ | DentalTripChina",
-    description:
-      "World-class dental implants, LASIK, and health checkups in China. JCI-accredited hospitals. English support. Free quote in 2 hours.",
     siteName: "DentalTripChina",
     images: [
       {
@@ -35,13 +30,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Medical Tourism China - Save 70%+ | DentalTripChina",
-    description:
-      "World-class dental implants, LASIK, and health checkups in China. JCI-accredited hospitals. English support. Free quote in 2 hours.",
     images: [absoluteUrl(defaultSocialImage)]
-  },
-  alternates: {
-    canonical: "/"
   }
 };
 

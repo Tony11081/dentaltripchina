@@ -2,10 +2,16 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Hero } from "@/components/hero";
 import { Breadcrumbs } from "@/components/breadcrumbs";
+import { buildMetadata } from "@/lib/metadata";
+import { pageImageAssets } from "@/lib/site-images";
 
-export const metadata: Metadata = {
-  title: "China Visa-Free Medical Tourism"
-};
+export const metadata: Metadata = buildMetadata({
+  title: "China Visa-Free Medical Tourism",
+  description:
+    "Travel preparation checklist for visa-free entry, medical documents, and scheduling assumptions before treatment in China.",
+  path: "/china-visa-free-medical-tourism",
+  imagePath: pageImageAssets.visaHero.src
+});
 
 export default function VisaPage() {
   return (
@@ -24,8 +30,8 @@ export default function VisaPage() {
         eyebrow="Visa & Travel"
         title="China Visa-Free Medical Tourism Guide"
         subtitle="Preparation checklist for medical travel documentation and scheduling."
-        heroImageSrc="/editorial/travel-suite.svg"
-        heroImageAlt="Visa and documentation checklist for medical travel"
+        heroImageSrc={pageImageAssets.visaHero.src}
+        heroImageAlt={pageImageAssets.visaHero.alt}
       />
 
       <section className="section container">

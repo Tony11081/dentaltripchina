@@ -1,0 +1,4 @@
+interface:
+  display_name: "DTC Site Imagery"
+  short_description: "Generate and wire site illustrations"
+  default_prompt: "Use $dtc-site-imagery to audit image slots, generate visuals, wire them into the Next.js site, and verify the build."

@@ -1,12 +1,16 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { Breadcrumbs } from "@/components/breadcrumbs";
+import { buildMetadata } from "@/lib/metadata";
+import { pageImageAssets } from "@/lib/site-images";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildMetadata({
   title: "Medical Disclaimer",
   description:
-    "Clinical boundaries, emergency guidance, and why content does not replace physician diagnosis."
-};
+    "Clinical boundaries, emergency guidance, and why content does not replace physician diagnosis.",
+  path: "/medical-disclaimer",
+  imagePath: pageImageAssets.careSlaBanner.src
+});
 
 export default function MedicalDisclaimerPage() {
   return (
@@ -27,10 +31,10 @@ export default function MedicalDisclaimerPage() {
         </p>
         <figure className="editorial-image">
           <Image
-            src="/editorial/sla-shield.svg"
-            alt="Medical safety shield illustration"
+            src={pageImageAssets.careSlaBanner.src}
+            alt={pageImageAssets.careSlaBanner.alt}
             width={1200}
-            height={760}
+            height={900}
           />
         </figure>
       </section>

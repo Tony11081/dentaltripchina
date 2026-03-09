@@ -4,10 +4,16 @@ import { Hero } from "@/components/hero";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { HospitalCard } from "@/components/hospital-card";
 import { hospitals } from "@/data/hospitals";
+import { buildMetadata } from "@/lib/metadata";
+import { pageImageAssets } from "@/lib/site-images";
 
-export const metadata: Metadata = {
-  title: "Partner Hospitals"
-};
+export const metadata: Metadata = buildMetadata({
+  title: "Partner Hospitals",
+  description:
+    "Compare verified hospital profiles in Shanghai and Beijing with department highlights, intake notes, and credential references.",
+  path: "/hospitals",
+  imagePath: pageImageAssets.hospitalsHero.src
+});
 
 export default async function HospitalsPage({
   searchParams
@@ -35,6 +41,8 @@ export default async function HospitalsPage({
         eyebrow="Partner Hospitals"
         title="Trusted Hospitals in Shanghai and Beijing"
         subtitle="Compare accredited providers with international patient support."
+        heroImageSrc={pageImageAssets.hospitalsHero.src}
+        heroImageAlt={pageImageAssets.hospitalsHero.alt}
       />
 
       <section className="section container">

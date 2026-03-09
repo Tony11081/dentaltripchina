@@ -2,10 +2,16 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Hero } from "@/components/hero";
 import { Breadcrumbs } from "@/components/breadcrumbs";
+import { buildMetadata } from "@/lib/metadata";
+import { pageImageAssets } from "@/lib/site-images";
 
-export const metadata: Metadata = {
-  title: "Travel Support"
-};
+export const metadata: Metadata = buildMetadata({
+  title: "Travel Support",
+  description:
+    "Optional hotel, transfer, and document-planning support designed around treatment schedules and recovery needs.",
+  path: "/travel-support",
+  imagePath: pageImageAssets.travelSupportHero.src
+});
 
 export default function TravelSupportPage() {
   return (
@@ -21,8 +27,8 @@ export default function TravelSupportPage() {
         eyebrow="Trip Logistics (Optional)"
         title="Medical-First Travel Support"
         subtitle="Hotel shortlists, airport transfers, and arrival checklists designed for recovery and clinic schedules."
-        heroImageSrc="/editorial/travel-suite.svg"
-        heroImageAlt="Travel and recovery planning dossier for medical travelers"
+        heroImageSrc={pageImageAssets.travelSupportHero.src}
+        heroImageAlt={pageImageAssets.travelSupportHero.alt}
       />
 
       <section className="section container">
@@ -95,4 +101,3 @@ export default function TravelSupportPage() {
     </>
   );
 }
-

@@ -2,10 +2,16 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Hero } from "@/components/hero";
 import { Breadcrumbs } from "@/components/breadcrumbs";
+import { buildMetadata } from "@/lib/metadata";
+import { pageImageAssets } from "@/lib/site-images";
 
-export const metadata: Metadata = {
-  title: "Hotels"
-};
+export const metadata: Metadata = buildMetadata({
+  title: "Hotels for Medical Travelers",
+  description:
+    "Recovery-friendly hotel guidance near partner hospitals with shortlist criteria built around treatment schedules.",
+  path: "/hotels",
+  imagePath: pageImageAssets.hotelsHero.src
+});
 
 export default function HotelsPage() {
   return (
@@ -21,8 +27,8 @@ export default function HotelsPage() {
         eyebrow="Accommodation"
         title="Hotels for Medical Travelers"
         subtitle="Stay options near partner hospitals with easy transfer access."
-        heroImageSrc="/editorial/travel-suite.svg"
-        heroImageAlt="Recovery-friendly stay planning for medical travel"
+        heroImageSrc={pageImageAssets.hotelsHero.src}
+        heroImageAlt={pageImageAssets.hotelsHero.alt}
       />
 
       <section className="section container">

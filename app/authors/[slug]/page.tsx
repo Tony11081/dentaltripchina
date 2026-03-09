@@ -2,8 +2,11 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Breadcrumbs } from "@/components/breadcrumbs";
+import { CardMedia } from "@/components/card-media";
 import { blogAuthors } from "@/data/authors";
 import { blogPosts } from "@/data/posts";
+import { buildMetadata } from "@/lib/metadata";
+import { getAuthorPortrait, getBlogPostImage } from "@/lib/site-images";
 
 export function generateStaticParams() {
   return blogAuthors.map((author) => ({ slug: author.slug }));
@@ -19,10 +22,12 @@ export async function generateMetadata({
 
   if (!author) return { title: "Author Not Found" };
 
-  return {
+  return buildMetadata({
     title: `${author.name} | Author Profile`,
-    description: author.profile
-  };
+    description: author.profile,
+    path: `/authors/${author.slug}`,
+    imagePath: getAuthorPortrait(author.slug).src
+  });
 }
 
 export default async function AuthorDetailPage({
@@ -35,6 +40,7 @@ export default async function AuthorDetailPage({
   if (!author) notFound();
 
   const posts = blogPosts.filter((post) => post.authorSlug === author.slug);
+  const portrait = getAuthorPortrait(author.slug);
 
   return (
     <>
@@ -54,6 +60,7 @@ export default async function AuthorDetailPage({
           Profile identity may be an editorial identifier where direct publication of personal
           identifiers is restricted. Medical claims are reviewed by qualified clinical reviewers.
         </p>
+        <CardMedia src={portrait.src} alt={portrait.alt} portrait />
 
         <div className="card-grid two">
           <article className="card trust-block">
@@ -81,8 +88,12 @@ export default async function AuthorDetailPage({
       <section className="section container">
         <h2>Articles by {author.name}</h2>
         <div className="card-grid three">
-          {posts.map((post) => (
+          {posts.map((post) => {
+            const image = getBlogPostImage(post);
+
+            return (
             <article className="card" key={post.slug}>
+              <CardMedia src={image.src} alt={image.alt} />
               <h3>
                 <Link href={`/blog/${post.slug}`}>{post.title}</Link>
               </h3>
@@ -91,7 +102,8 @@ export default async function AuthorDetailPage({
               </p>
               <p>{post.excerpt}</p>
             </article>
-          ))}
+            );
+          })}
         </div>
       </section>
     </>

@@ -2,12 +2,16 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { careSlaTargets } from "@/data/trust-dashboard";
+import { buildMetadata } from "@/lib/metadata";
+import { pageImageAssets } from "@/lib/site-images";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildMetadata({
   title: "Post-Op Support SLA",
   description:
-    "Service level commitments for red-flag escalation, clinical pathway response, and continuity handoff."
-};
+    "Service level commitments for red-flag escalation, clinical pathway response, and continuity handoff.",
+  path: "/care-sla",
+  imagePath: pageImageAssets.careSlaBanner.src
+});
 
 export default function CareSlaPage() {
   return (
@@ -28,10 +32,10 @@ export default function CareSlaPage() {
         </p>
         <figure className="editorial-image">
           <Image
-            src="/editorial/sla-shield.svg"
-            alt="Post-operative response SLA illustration"
+            src={pageImageAssets.careSlaBanner.src}
+            alt={pageImageAssets.careSlaBanner.alt}
             width={1200}
-            height={760}
+            height={900}
           />
         </figure>
       </section>

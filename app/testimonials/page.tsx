@@ -4,10 +4,16 @@ import { Hero } from "@/components/hero";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { testimonials } from "@/data/testimonials";
 import { siteTrustStatements } from "@/data/trust";
+import { buildMetadata } from "@/lib/metadata";
+import { pageImageAssets } from "@/lib/site-images";
 
-export const metadata: Metadata = {
-  title: "Testimonials"
-};
+export const metadata: Metadata = buildMetadata({
+  title: "Verified Patient Testimonials",
+  description:
+    "Read disclosure-labeled patient testimonials and see how verification and incentive policies are handled.",
+  path: "/testimonials",
+  imagePath: pageImageAssets.testimonialsHero.src
+});
 
 export default function TestimonialsPage() {
   return (
@@ -23,6 +29,8 @@ export default function TestimonialsPage() {
         eyebrow="Patient Stories"
         title="Experiences from International Patients"
         subtitle="Verified and disclosure-labeled testimonials from patients who traveled to China for treatment."
+        heroImageSrc={pageImageAssets.testimonialsHero.src}
+        heroImageAlt={pageImageAssets.testimonialsHero.alt}
       />
 
       <section className="section container card-grid three">

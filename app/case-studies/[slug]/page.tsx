@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import Image from "next/image";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { JsonLd } from "@/components/json-ld";
 import { LocalizedPrice } from "@/components/localized-price";
 import { caseStudies } from "@/data/case-studies";
 import { procedures } from "@/data/procedures";
+import { buildMetadata } from "@/lib/metadata";
+import { getCaseStudyImage } from "@/lib/site-images";
 
 export function generateStaticParams() {
   return caseStudies.map((item) => ({ slug: item.slug }));
@@ -21,10 +24,16 @@ export async function generateMetadata({
 
   if (!item) return { title: "Case Not Found" };
 
-  return {
+  const caseImage = getCaseStudyImage(item.slug);
+
+  return buildMetadata({
     title: `${item.title} | Case Study`,
-    description: item.patientContext
-  };
+    description: item.patientContext,
+    path: `/case-studies/${item.slug}`,
+    imagePath: caseImage.src,
+    type: "article",
+    modifiedTime: "2026-02-26"
+  });
 }
 
 function getTotal(item: (typeof caseStudies)[number]) {
@@ -47,6 +56,7 @@ export default async function CaseStudyDetailPage({
   if (!item) notFound();
 
   const procedure = procedures.find((entry) => entry.slug === item.procedureSlug);
+  const caseImage = getCaseStudyImage(item.slug);
 
   const schema = {
     "@context": "https://schema.org",
@@ -75,6 +85,9 @@ export default async function CaseStudyDetailPage({
         <p className="section-kicker">Case File</p>
         <h1>{item.title}</h1>
         <p className="section-lede muted">{item.patientContext}</p>
+        <figure className="editorial-image">
+          <Image src={caseImage.src} alt={caseImage.alt} width={1200} height={900} />
+        </figure>
 
         <div className="card-grid three">
           <article className="card trust-block">

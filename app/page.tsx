@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { Hero } from "@/components/hero";
 import Link from "next/link";
 import { TrustBar } from "@/components/trust-bar";
@@ -6,6 +7,7 @@ import { HospitalCard } from "@/components/hospital-card";
 import { CaseStudyCard } from "@/components/case-study-card";
 import { InquiryForm } from "@/components/inquiry-form";
 import { SiteDisclosurePanel } from "@/components/trust-sections";
+import { CardMedia } from "@/components/card-media";
 import { procedures } from "@/data/procedures";
 import { hospitals } from "@/data/hospitals";
 import { cityGuides } from "@/data/cities";
@@ -16,6 +18,16 @@ import {
   companyProfile,
   publishedCompanyIdentityItems
 } from "@/data/company-profile";
+import { buildMetadata } from "@/lib/metadata";
+import { getCityGuideImage, pageImageAssets } from "@/lib/site-images";
+
+export const metadata: Metadata = buildMetadata({
+  title: "Medical Tourism China - Save 70%+ | DentalTripChina",
+  description:
+    "World-class dental implants, LASIK, and health checkups in China. JCI-accredited hospitals. English support. Free quote in 2 hours.",
+  path: "/",
+  imagePath: pageImageAssets.homeHero.src
+});
 
 export default function HomePage() {
   const featuredCases = caseStudies.slice(0, 2);
@@ -27,8 +39,8 @@ export default function HomePage() {
         eyebrow="Dental, LASIK, Checkups"
         title="World-Class Medical Care in China - Save 70%+"
         subtitle="Compare treatment plans at trusted hospitals in Shanghai and Beijing with English support and transparent pricing."
-        heroImageSrc="/editorial/hero-consultation.svg"
-        heroImageAlt="Consultation planning dashboard for medical travel in China"
+        heroImageSrc={pageImageAssets.homeHero.src}
+        heroImageAlt={pageImageAssets.homeHero.alt}
         heroImagePriority
         heroMetrics={[
           { value: `${procedures.length}`, label: "Core procedures" },
@@ -263,8 +275,12 @@ export default function HomePage() {
         <p className="section-kicker">City Guide</p>
         <h2>Shanghai & Beijing Medical Tourism Pages</h2>
         <div className="card-grid two">
-          {cityGuides.map((guide) => (
+          {cityGuides.map((guide) => {
+            const image = getCityGuideImage(guide.slug);
+
+            return (
             <article className="card" key={guide.slug}>
+              <CardMedia src={image.src} alt={image.alt} />
               <h3>
                 <Link href={`/${guide.slug}`}>{guide.title}</Link>
               </h3>
@@ -275,7 +291,8 @@ export default function HomePage() {
                 </Link>
               </p>
             </article>
-          ))}
+            );
+          })}
         </div>
       </section>
 

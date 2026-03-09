@@ -2,12 +2,16 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { EligibilityScreener } from "@/components/eligibility-screener";
+import { buildMetadata } from "@/lib/metadata";
+import { pageImageAssets } from "@/lib/site-images";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildMetadata({
   title: "Not Suitable Screening",
   description:
-    "Pre-screen who should not travel to China for treatment before physician clearance."
-};
+    "Pre-screen who should not travel to China for treatment before physician clearance.",
+  path: "/eligibility-screening",
+  imagePath: pageImageAssets.eligibilityBanner.src
+});
 
 export default function EligibilityScreeningPage() {
   return (
@@ -28,10 +32,10 @@ export default function EligibilityScreeningPage() {
         </p>
         <figure className="editorial-image">
           <Image
-            src="/editorial/sla-shield.svg"
-            alt="Suitability and safety screening illustration"
+            src={pageImageAssets.eligibilityBanner.src}
+            alt={pageImageAssets.eligibilityBanner.alt}
             width={1200}
-            height={760}
+            height={900}
           />
         </figure>
       </section>

@@ -3,12 +3,16 @@ import Image from "next/image";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { CaseStudyCard } from "@/components/case-study-card";
 import { caseStudies } from "@/data/case-studies";
+import { buildMetadata } from "@/lib/metadata";
+import { pageImageAssets } from "@/lib/site-images";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildMetadata({
   title: "Real Case Center",
   description:
-    "Real international treatment cases with planning scope, timeline, total spend, and follow-up outcomes."
-};
+    "Real international treatment cases with planning scope, timeline, total spend, and follow-up outcomes.",
+  path: "/case-studies",
+  imagePath: pageImageAssets.caseStudiesBanner.src
+});
 
 export default function CaseStudiesPage() {
   return (
@@ -29,10 +33,10 @@ export default function CaseStudiesPage() {
         </p>
         <figure className="editorial-image">
           <Image
-            src="/editorial/casebook.svg"
-            alt="Medical casebook illustration"
+            src={pageImageAssets.caseStudiesBanner.src}
+            alt={pageImageAssets.caseStudiesBanner.alt}
             width={1200}
-            height={760}
+            height={900}
           />
         </figure>
       </section>

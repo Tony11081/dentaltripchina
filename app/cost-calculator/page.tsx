@@ -2,12 +2,16 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { CostCalculator } from "@/components/cost-calculator";
+import { buildMetadata } from "@/lib/metadata";
+import { pageImageAssets } from "@/lib/site-images";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildMetadata({
   title: "Full Cost Calculator",
   description:
-    "One-click low, median, and high budget estimate including treatment, flight, hotel, follow-up, and extras."
-};
+    "One-click low, median, and high budget estimate including treatment, flight, hotel, follow-up, and extras.",
+  path: "/cost-calculator",
+  imagePath: pageImageAssets.costCalculatorBanner.src
+});
 
 export default function CostCalculatorPage() {
   return (
@@ -28,10 +32,10 @@ export default function CostCalculatorPage() {
         </p>
         <figure className="editorial-image">
           <Image
-            src="/editorial/budget-atlas.svg"
-            alt="Medical travel budget calculator illustration"
+            src={pageImageAssets.costCalculatorBanner.src}
+            alt={pageImageAssets.costCalculatorBanner.alt}
             width={1200}
-            height={760}
+            height={900}
           />
         </figure>
       </section>

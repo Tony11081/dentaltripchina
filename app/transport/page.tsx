@@ -2,10 +2,16 @@ import type { Metadata } from "next";
 import { Hero } from "@/components/hero";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { TransportForm } from "@/components/transport-form";
+import { buildMetadata } from "@/lib/metadata";
+import { pageImageAssets } from "@/lib/site-images";
 
-export const metadata: Metadata = {
-  title: "Transport Quote"
-};
+export const metadata: Metadata = buildMetadata({
+  title: "Transport Quote",
+  description:
+    "Request airport transfer planning for medical travel in Shanghai or Beijing with schedule-first coordination.",
+  path: "/transport",
+  imagePath: pageImageAssets.transportHero.src
+});
 
 export default function TransportPage() {
   return (
@@ -21,8 +27,8 @@ export default function TransportPage() {
         eyebrow="Airport Transfers"
         title="Request a Transport Quote"
         subtitle="Shanghai and Beijing arrival/departure transfer coordination for medical travelers."
-        heroImageSrc="/editorial/travel-suite.svg"
-        heroImageAlt="Airport transfer planning for medical travelers"
+        heroImageSrc={pageImageAssets.transportHero.src}
+        heroImageAlt={pageImageAssets.transportHero.alt}
       />
 
       <section className="section container">

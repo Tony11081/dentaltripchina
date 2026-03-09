@@ -3,13 +3,14 @@ import { Hero } from "@/components/hero";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { InquiryForm } from "@/components/inquiry-form";
 import { buildMetadata } from "@/lib/metadata";
+import { pageImageAssets } from "@/lib/site-images";
 
 export const metadata: Metadata = buildMetadata({
   title: "How It Works",
   description:
     "A clear four-step process for provider matching, planning, travel coordination, and follow-up support.",
   path: "/how-it-works",
-  imagePath: "/editorial/travel-suite.svg"
+  imagePath: pageImageAssets.howItWorksHero.src
 });
 
 export default function HowItWorksPage() {
@@ -26,6 +27,8 @@ export default function HowItWorksPage() {
         eyebrow="Simple 4-Step Process"
         title="From First Message to Treatment Follow-Up"
         subtitle="Everything is coordinated in one flow so you can plan your trip with clarity."
+        heroImageSrc={pageImageAssets.howItWorksHero.src}
+        heroImageAlt={pageImageAssets.howItWorksHero.alt}
         heroMetrics={[
           { value: "4", label: "Clear steps" },
           { value: "1 team", label: "Single desk" },

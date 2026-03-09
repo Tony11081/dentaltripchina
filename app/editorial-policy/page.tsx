@@ -1,12 +1,17 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { Breadcrumbs } from "@/components/breadcrumbs";
+import { buildMetadata } from "@/lib/metadata";
+import { pageImageAssets } from "@/lib/site-images";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildMetadata({
   title: "Editorial Review Policy",
   description:
-    "How medical and travel content is drafted, clinically reviewed, and updated with change logs."
-};
+    "How medical and travel content is drafted, clinically reviewed, and updated with change logs.",
+  path: "/editorial-policy",
+  imagePath: pageImageAssets.authorsBanner.src
+});
 
 export default function EditorialPolicyPage() {
   return (
@@ -25,6 +30,16 @@ export default function EditorialPolicyPage() {
           Every medical article follows a drafting, review, and update cycle with named
           reviewers and visible update dates.
         </p>
+
+        <figure className="editorial-image">
+          <Image
+            src={pageImageAssets.authorsBanner.src}
+            alt={pageImageAssets.authorsBanner.alt}
+            width={1200}
+            height={900}
+            priority
+          />
+        </figure>
 
         <div className="card-grid three">
           <article className="card trust-block">

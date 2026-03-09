@@ -1,4 +1,5 @@
 import { Hospital } from "@/lib/types";
+import { hospitalImageAssets } from "@/lib/site-images";
 
 export const hospitals: Hospital[] = [
   {
@@ -18,8 +19,8 @@ export const hospitals: Hospital[] = [
     lng: 121.4067,
     summary:
       "Comprehensive private hospital with international patient pathways for dental, checkup, and multidisciplinary care.",
-    heroImageSrc: "/hospitals/jiahui-campus.svg",
-    heroImageAlt: "Jiahui International Hospital campus and international patient reception",
+    heroImageSrc: hospitalImageAssets["jiahui-international-hospital"].src,
+    heroImageAlt: hospitalImageAssets["jiahui-international-hospital"].alt,
     overview: [
       "Jiahui is frequently selected for overseas patients who need coordinated scheduling between diagnostics, treatment, and follow-up within one trip window.",
       "Its international patient desk supports English communication, treatment documentation handoff, and same-journey adjustments when clinical findings change."
@@ -70,8 +71,8 @@ export const hospitals: Hospital[] = [
     lng: 116.4862,
     summary:
       "Established international hospital with 24/7 intake and multidisciplinary pathways for overseas patients.",
-    heroImageSrc: "/hospitals/ufh-campus.svg",
-    heroImageAlt: "Beijing United Family Hospital entrance and outpatient desks",
+    heroImageSrc: hospitalImageAssets["beijing-united-family-hospital"].src,
+    heroImageAlt: hospitalImageAssets["beijing-united-family-hospital"].alt,
     overview: [
       "Beijing United Family Hospital is commonly used for patients needing coordinated dental, ophthalmology, and medical checkup planning under one system.",
       "Its international division is structured for expatriate and inbound patient communication, including records transfer and bilingual coordination."
@@ -122,8 +123,8 @@ export const hospitals: Hospital[] = [
     lng: 116.4235,
     summary:
       "Leading ophthalmology center often selected for refractive surgery pathways requiring detailed diagnostics.",
-    heroImageSrc: "/hospitals/tongren-eye.svg",
-    heroImageAlt: "Beijing Tongren Eye Center refractive diagnostics environment",
+    heroImageSrc: hospitalImageAssets["tongren-eye-center"].src,
+    heroImageAlt: hospitalImageAssets["tongren-eye-center"].alt,
     overview: [
       "Tongren Eye Center is recognized for refractive and corneal diagnostics, making it a key option for candidates who need strict suitability screening.",
       "For international LASIK planning, timeline decisions are usually gated by diagnostic thresholds rather than booking speed."

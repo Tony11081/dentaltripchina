@@ -1,12 +1,17 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { editorialUpdates } from "@/data/editorial-updates";
+import { buildMetadata } from "@/lib/metadata";
+import { pageImageAssets } from "@/lib/site-images";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildMetadata({
   title: "Content Update Log",
   description:
-    "Versioned update ledger for pricing, safety guidance, and policy pages."
-};
+    "Versioned update ledger for pricing, safety guidance, and policy pages.",
+  path: "/content-updates",
+  imagePath: pageImageAssets.trustDashboardBanner.src
+});
 
 export default function ContentUpdatesPage() {
   return (
@@ -25,6 +30,16 @@ export default function ContentUpdatesPage() {
           We publish material edits that affect decision-making, safety, pricing boundaries,
           or travel preparation.
         </p>
+
+        <figure className="editorial-image">
+          <Image
+            src={pageImageAssets.trustDashboardBanner.src}
+            alt={pageImageAssets.trustDashboardBanner.alt}
+            width={1200}
+            height={900}
+            priority
+          />
+        </figure>
 
         <div className="table-scroll">
           <table className="price-table timeline-table">

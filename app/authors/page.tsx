@@ -2,13 +2,18 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { Breadcrumbs } from "@/components/breadcrumbs";
+import { CardMedia } from "@/components/card-media";
 import { blogAuthors } from "@/data/authors";
+import { buildMetadata } from "@/lib/metadata";
+import { getAuthorPortrait, pageImageAssets } from "@/lib/site-images";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildMetadata({
   title: "Editorial Authors",
   description:
-    "Meet medical reviewers and editors behind our treatment, policy, and travel content."
-};
+    "Meet the medical reviewers and editors behind our treatment, policy, and travel content.",
+  path: "/authors",
+  imagePath: pageImageAssets.authorsBanner.src
+});
 
 export default function AuthorsPage() {
   return (
@@ -33,17 +38,21 @@ export default function AuthorsPage() {
         </p>
         <figure className="editorial-image">
           <Image
-            src="/editorial/editorial-lab.svg"
-            alt="Editorial review team illustration"
+            src={pageImageAssets.authorsBanner.src}
+            alt={pageImageAssets.authorsBanner.alt}
             width={1200}
-            height={760}
+            height={900}
           />
         </figure>
       </section>
 
       <section className="section container card-grid two">
-        {blogAuthors.map((author) => (
+        {blogAuthors.map((author) => {
+          const portrait = getAuthorPortrait(author.slug);
+
+          return (
           <article className="card trust-block" key={author.slug}>
+            <CardMedia src={portrait.src} alt={portrait.alt} portrait />
             <h3>
               <Link href={`/authors/${author.slug}`}>{author.name}</Link>
             </h3>
@@ -58,7 +67,8 @@ export default function AuthorsPage() {
               </Link>
             </p>
           </article>
-        ))}
+          );
+        })}
       </section>
     </>
   );

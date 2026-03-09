@@ -6,13 +6,14 @@ import { InquiryForm } from "@/components/inquiry-form";
 import { siteTrustStatements } from "@/data/trust";
 import { companyProfile } from "@/data/company-profile";
 import { buildMetadata } from "@/lib/metadata";
+import { pageImageAssets } from "@/lib/site-images";
 
 export const metadata: Metadata = buildMetadata({
   title: "Free Medical Tourism Consultation",
   description:
     "Get a free cost estimate for dental, LASIK, or health checkup in China. Response within 2 hours.",
   path: "/contact",
-  imagePath: "/editorial/hero-consultation.svg"
+  imagePath: pageImageAssets.contactHero.src
 });
 
 export default function ContactPage() {
@@ -31,6 +32,8 @@ export default function ContactPage() {
         subtitle="Share your needs and choose your contact channel: email only, WhatsApp, or both."
         secondaryHref={`mailto:${companyProfile.supportEmail}`}
         secondaryText="Email Support"
+        heroImageSrc={pageImageAssets.contactHero.src}
+        heroImageAlt={pageImageAssets.contactHero.alt}
         heroMetrics={[
           { value: "2h", label: "Response target" },
           { value: "Email", label: "Works without WhatsApp" },

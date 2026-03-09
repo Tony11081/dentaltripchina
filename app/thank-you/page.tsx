@@ -1,8 +1,15 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { buildMetadata } from "@/lib/metadata";
+import { pageImageAssets } from "@/lib/site-images";
 
 export const metadata: Metadata = {
-  title: "Thank You",
+  ...buildMetadata({
+    title: "Thank You",
+    description: "Your request has been received and our coordination desk will follow up shortly.",
+    path: "/thank-you",
+    imagePath: pageImageAssets.homeHero.src
+  }),
   robots: {
     index: false,
     follow: false

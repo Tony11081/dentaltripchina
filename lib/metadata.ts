@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
+import { pageImageAssets } from "@/lib/site-images";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://dentaltripchina.com";
 
-export const defaultSocialImage = "/editorial/hero-consultation.svg";
+export const defaultSocialImage = pageImageAssets.homeHero.src;
 
 export function absoluteUrl(path: string) {
   return new URL(path, siteUrl).toString();

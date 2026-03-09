@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { CaseStudy } from "@/lib/types";
 import { LocalizedPrice } from "@/components/localized-price";
+import { CardMedia } from "@/components/card-media";
+import { getCaseStudyImage } from "@/lib/site-images";
 
 interface CaseStudyCardProps {
   item: CaseStudy;
@@ -16,8 +18,11 @@ function getTotalCost(item: CaseStudy) {
 }
 
 export function CaseStudyCard({ item }: CaseStudyCardProps) {
+  const image = getCaseStudyImage(item.slug);
+
   return (
     <article className="card case-card">
+      <CardMedia src={image.src} alt={image.alt} />
       <p className="card-eyebrow">{item.country} Case</p>
       <h3>
         <Link href={`/case-studies/${item.slug}`}>{item.title}</Link>

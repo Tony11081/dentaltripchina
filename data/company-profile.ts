@@ -1,29 +1,15 @@
 const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "8613800138000";
 
-const unpublishedMarkers = [
-  "pending public launch update",
-  "to be published before go-live",
-  "pending publication"
-] as const;
-
 export function isPublishedCompanyField(value: string) {
-  const normalized = value.trim().toLowerCase();
-  return normalized.length > 0 && !unpublishedMarkers.some((marker) => normalized.includes(marker));
+  return value.trim().length > 0;
 }
 
 export const companyProfile = {
   brandName: "DentalTripChina.com",
-  legalEntityName:
-    process.env.DTC_PUBLIC_LEGAL_ENTITY_NAME ||
-    "Legal entity disclosure pending public launch update",
-  registrationNumber:
-    process.env.DTC_PUBLIC_REGISTRATION_NUMBER ||
-    "Registration number to be published before go-live",
-  registrationJurisdiction:
-    process.env.DTC_PUBLIC_REGISTRATION_JURISDICTION || "Pending publication",
-  registeredAddress:
-    process.env.DTC_PUBLIC_REGISTERED_ADDRESS ||
-    "Registered office address to be published before go-live",
+  legalEntityName: process.env.DTC_PUBLIC_LEGAL_ENTITY_NAME || "",
+  registrationNumber: process.env.DTC_PUBLIC_REGISTRATION_NUMBER || "",
+  registrationJurisdiction: process.env.DTC_PUBLIC_REGISTRATION_JURISDICTION || "",
+  registeredAddress: process.env.DTC_PUBLIC_REGISTERED_ADDRESS || "",
   operationsAddress:
     process.env.DTC_PUBLIC_OPERATIONS_ADDRESS ||
     "Shanghai and Beijing coordination desks (address details provided in service agreement)",
@@ -35,7 +21,7 @@ export const companyProfile = {
   supportPhone: process.env.DTC_PUBLIC_SUPPORT_PHONE || `+${whatsappNumber}`,
   businessHours:
     process.env.DTC_PUBLIC_BUSINESS_HOURS || "Mon-Sun 08:00-22:00 China Time (UTC+8)",
-  infoLastUpdated: process.env.DTC_PUBLIC_COMPANY_INFO_UPDATED || "February 27, 2026"
+  infoLastUpdated: process.env.DTC_PUBLIC_COMPANY_INFO_UPDATED || "March 9, 2026"
 };
 
 export const companyProfileStatus = {
@@ -48,7 +34,7 @@ export const companyProfileStatus = {
 };
 
 export const companyIdentityDisclosureNote =
-  "Detailed registration records are shared during consultation and added here when publication controls are finalized.";
+  "Public legal entity details are not currently published on the website. Add verified legal name, registration number, jurisdiction, and registered office before treating the entity profile as complete.";
 
 export const publishedCompanyIdentityItems = [
   {

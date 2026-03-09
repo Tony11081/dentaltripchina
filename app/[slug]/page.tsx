@@ -11,9 +11,11 @@ import {
   EmergencyPathway,
   PricingDisclosure,
   RiskDisclosure,
-  SiteDisclosurePanel
+  SiteDisclosurePanel,
+  SourceReferenceSection
 } from "@/components/trust-sections";
 import {
+  getCaseStudiesByProcedureSlug,
   getCityGuideBySlug,
   getHospitalsBySlugs,
   getProcedureBySlug
@@ -25,7 +27,17 @@ import { JsonLd } from "@/components/json-ld";
 import { hospitalTrustProfiles, procedureTrustProfiles } from "@/data/trust";
 import { getUsdFxReferenceNote } from "@/lib/currency";
 import { LocalizedPrice } from "@/components/localized-price";
-import { buildMetadata } from "@/lib/metadata";
+import { absoluteUrl, buildMetadata } from "@/lib/metadata";
+import { editorialUpdates } from "@/data/editorial-updates";
+import { getCityGuideImage, getProcedureImage } from "@/lib/site-images";
+
+interface SourceItem {
+  label: string;
+  href: string;
+  description: string;
+  linkText: string;
+  external?: boolean;
+}
 
 export function generateStaticParams() {
   return [...procedures, ...cityGuides].map((item) => ({ slug: item.slug }));
@@ -40,25 +52,25 @@ export async function generateMetadata({
   const procedure = getProcedureBySlug(slug);
 
   if (procedure) {
-    const primaryHospital = getHospitalsBySlugs(procedure.partnerHospitalSlugs)[0];
+    const procedureImage = getProcedureImage(procedure.slug);
 
     return buildMetadata({
       title: `${procedure.title} Cost in China (2026)`,
       description: `Get ${procedure.title} in China at trusted hospitals. Compare prices vs US and UK.`,
       path: `/${procedure.slug}`,
-      imagePath: primaryHospital?.heroImageSrc || "/editorial/hero-consultation.svg"
+      imagePath: procedureImage.src
     });
   }
 
   const cityGuide = getCityGuideBySlug(slug);
   if (cityGuide) {
-    const cityHospital = hospitals.find((hospital) => hospital.city === cityGuide.city.toLowerCase());
+    const cityImage = getCityGuideImage(cityGuide.slug);
 
     return buildMetadata({
       title: cityGuide.title,
       description: cityGuide.summary,
       path: `/${cityGuide.slug}`,
-      imagePath: cityHospital?.heroImageSrc || "/editorial/travel-suite.svg"
+      imagePath: cityImage.src
     });
   }
 
@@ -80,26 +92,144 @@ export default async function RootSlugPage({
     const procedureTrust = procedureTrustProfiles.find(
       (item) => item.procedureSlug === procedure.slug
     );
+    const featuredCase = getCaseStudiesByProcedureSlug(procedure.slug)[0];
     const emergencyPathway =
       hospitalTrustProfiles.find((item) =>
         procedure.partnerHospitalSlugs.includes(item.hospitalSlug)
       )?.emergencyPathway || [];
+    const procedureImage = getProcedureImage(procedure.slug);
+    const pageUrl = absoluteUrl(`/${procedure.slug}`);
+    const procedureUpdate = editorialUpdates.find((item) => item.page === `/${procedure.slug}`);
+    const sourceReferences = [
+      {
+        label: "Provider Verification Desk",
+        href: "/verification",
+        description:
+          "Named-doctor registry links, hospital verification timestamps, and scope boundaries for partner providers.",
+        linkText: "Open verification page"
+      },
+      {
+        label: "Trust Center",
+        href: "/trust-center",
+        description:
+          "Published escalation targets, trust metrics, and quality-monitoring policies that support treatment pages.",
+        linkText: "Open trust center"
+      },
+      {
+        label: "Post-Op Support SLA",
+        href: "/care-sla",
+        description:
+          "Response-time commitments for red-flag escalation, clinical pathway guidance, and continuity handoff.",
+        linkText: "Read SLA details"
+      },
+      procedureUpdate
+        ? {
+            label: "Latest Public Content Update",
+            href: "/content-updates",
+            description: `${procedureUpdate.date}: ${procedureUpdate.change}`,
+            linkText: "Open update log"
+          }
+        : {
+            label: "Editorial Review Policy",
+            href: "/editorial-policy",
+            description:
+              "Methodology for how medical planning content is drafted, reviewed, and refreshed.",
+            linkText: "Read editorial policy"
+          },
+      featuredCase
+        ? {
+            label: "Related Case Study",
+            href: `/case-studies/${featuredCase.slug}`,
+            description:
+              "Real patient pathway with total spend, treatment timeline, and follow-up outcome for this procedure.",
+            linkText: "Open case study"
+          }
+        : null,
+      ...relatedHospitals.flatMap((hospital) => [
+        {
+          label: `Hospital Profile: ${hospital.name}`,
+          href: `/hospital/${hospital.slug}`,
+          description:
+            "Hospital capability, department highlights, and verification evidence for this treatment pathway.",
+          linkText: "Open hospital profile"
+        },
+        hospital.website
+          ? {
+              label: `Official Site: ${hospital.name}`,
+              href: hospital.website,
+              description:
+                "Provider-published service and contact information used as a supporting external source.",
+              linkText: "Visit official site",
+              external: true
+            }
+          : {
+              label: `Official Listing: ${hospital.name}`,
+              href: hospital.jciVerifyUrl,
+              description:
+                "Official accreditation or public hospital listing used as an external source reference.",
+              linkText: "Open official listing",
+              external: true
+            }
+      ])
+    ].filter((item): item is SourceItem => item !== null);
+    const sourceUrls = sourceReferences.map((item) =>
+      item.external ? item.href : absoluteUrl(item.href)
+    );
 
     const schema = {
       "@context": "https://schema.org",
-      "@type": procedure.schemaType,
-      name: procedure.title,
-      description: procedure.excerpt,
-      offers: {
-        "@type": "Offer",
-        price: procedure.prices.chinaUsd,
-        priceCurrency: "USD",
-        availability: "https://schema.org/InStock",
-        seller: {
-          "@type": "Organization",
-          name: "DentalTripChina.com"
+      "@graph": [
+        {
+          "@type": procedure.schemaType,
+          "@id": `${pageUrl}#procedure`,
+          name: procedure.title,
+          url: pageUrl,
+          description: procedure.excerpt,
+          image: absoluteUrl(procedureImage.src),
+          mainEntityOfPage: {
+            "@id": `${pageUrl}#webpage`
+          },
+          howPerformed: procedure.body.join(" "),
+          preparation:
+            "Share current diagnostics, relevant medical history, and travel constraints before treatment confirmation.",
+          ...(procedureTrust
+            ? {
+                followup: procedureTrust.recoveryMilestones.join(" "),
+                possibleComplication: procedureTrust.commonRisks.join("; ")
+              }
+            : {}),
+          performer: relatedHospitals.map((hospital) => ({
+            "@type": "Hospital",
+            name: hospital.name,
+            url: absoluteUrl(`/hospital/${hospital.slug}`)
+          })),
+          offers: {
+            "@type": "Offer",
+            url: pageUrl,
+            price: procedure.prices.chinaUsd,
+            priceCurrency: "USD",
+            availability: "https://schema.org/InStock",
+            seller: {
+              "@type": "Organization",
+              name: "DentalTripChina",
+              url: absoluteUrl("/")
+            }
+          }
+        },
+        {
+          "@type": "MedicalWebPage",
+          "@id": `${pageUrl}#webpage`,
+          url: pageUrl,
+          name: `${procedure.title} Cost in China (2026)`,
+          description: procedure.excerpt,
+          about: {
+            "@id": `${pageUrl}#procedure`
+          },
+          inLanguage: "en-GB",
+          relatedLink: sourceUrls,
+          ...(procedureUpdate ? { lastReviewed: procedureUpdate.date } : {})
         }
-      }
+      ]
     };
 
     const faqSchema = {
@@ -128,6 +258,8 @@ export default async function RootSlugPage({
           eyebrow="Procedure Guide"
           title={procedure.heroHeadline}
           subtitle={procedure.excerpt}
+          heroImageSrc={procedureImage.src}
+          heroImageAlt={procedureImage.alt}
           secondaryHref={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "8613800138000"}?text=${encodeURIComponent(
             `Hi, I'd like to know more about ${procedure.title} in China. Can you help?`
           )}`}
@@ -163,6 +295,9 @@ export default async function RootSlugPage({
             </a>
             <a className="section-link" href="#faq">
               FAQs
+            </a>
+            <a className="section-link" href="#sources">
+              Sources
             </a>
             <a className="section-link" href="#request">
               Request estimate
@@ -258,6 +393,14 @@ export default async function RootSlugPage({
         {procedureTrust ? <PricingDisclosure trust={procedureTrust} /> : null}
         {emergencyPathway.length ? <EmergencyPathway items={emergencyPathway} /> : null}
 
+        <SourceReferenceSection
+          eyebrow="Primary Sources"
+          title="Verification Inputs and Supporting Sources"
+          description="Use these pages and official provider links to verify claims, compare providers, and audit the planning assumptions."
+          items={sourceReferences}
+          id="sources"
+        />
+
         <section className="section container card-grid three">
           <article className="card trust-block">
             <h3>Not Suitable Screening</h3>
@@ -308,6 +451,7 @@ export default async function RootSlugPage({
     const cityHospitalList = hospitals.filter(
       (hospital) => hospital.city === cityGuide.city.toLowerCase()
     );
+    const cityImage = getCityGuideImage(cityGuide.slug);
 
     const citySchema = {
       "@context": "https://schema.org",
@@ -346,6 +490,8 @@ export default async function RootSlugPage({
           eyebrow="City Guide"
           title={cityGuide.title}
           subtitle={cityGuide.summary}
+          heroImageSrc={cityImage.src}
+          heroImageAlt={cityImage.alt}
           heroMetrics={[
             { value: cityGuide.city, label: "Destination" },
             { value: `${cityHospitalList.length}`, label: "Hospital profiles" },

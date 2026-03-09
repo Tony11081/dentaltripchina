@@ -2,12 +2,16 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { Breadcrumbs } from "@/components/breadcrumbs";
+import { buildMetadata } from "@/lib/metadata";
+import { pageImageAssets } from "@/lib/site-images";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildMetadata({
   title: "Privacy Policy",
   description:
-    "How DentalTripChina handles cross-border medical travel data, retention windows, and deletion requests."
-};
+    "How DentalTripChina handles cross-border medical travel data, retention windows, and deletion requests.",
+  path: "/privacy",
+  imagePath: pageImageAssets.verificationBanner.src
+});
 
 export default function PrivacyPage() {
   return (
@@ -30,10 +34,10 @@ export default function PrivacyPage() {
 
         <figure className="editorial-image">
           <Image
-            src="/editorial/compliance-dossier.svg"
-            alt="Compliance dossier illustration"
+            src={pageImageAssets.verificationBanner.src}
+            alt={pageImageAssets.verificationBanner.alt}
             width={1200}
-            height={760}
+            height={900}
             priority
           />
         </figure>

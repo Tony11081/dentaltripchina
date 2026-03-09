@@ -8,13 +8,14 @@ import {
   publishedCompanyIdentityItems
 } from "@/data/company-profile";
 import { buildMetadata } from "@/lib/metadata";
+import { pageImageAssets } from "@/lib/site-images";
 
 export const metadata: Metadata = buildMetadata({
   title: "About",
   description:
     "How DentalTripChina coordinates provider matching, logistics, and English-speaking treatment planning in China.",
   path: "/about",
-  imagePath: "/editorial/editorial-lab.svg"
+  imagePath: pageImageAssets.aboutHero.src
 });
 
 export default function AboutPage() {
@@ -31,6 +32,8 @@ export default function AboutPage() {
         eyebrow="About DentalTripChina"
         title="Built for Safe, Transparent Medical Travel"
         subtitle="We are a medical travel coordination service. We do not replace hospital diagnosis or clinical decision-making."
+        heroImageSrc={pageImageAssets.aboutHero.src}
+        heroImageAlt={pageImageAssets.aboutHero.alt}
         heroMetrics={[
           { value: "Coordination", label: "Service role" },
           { value: "2h", label: "Response target" },

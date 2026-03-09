@@ -2,12 +2,16 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { Breadcrumbs } from "@/components/breadcrumbs";
+import { buildMetadata } from "@/lib/metadata";
+import { pageImageAssets } from "@/lib/site-images";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildMetadata({
   title: "Terms of Service",
   description:
-    "Service terms for treatment coordination, quoting boundaries, cancellations, and liability scope."
-};
+    "Service terms for treatment coordination, quoting boundaries, cancellations, and liability scope.",
+  path: "/terms",
+  imagePath: pageImageAssets.aboutHero.src
+});
 
 export default function TermsPage() {
   return (
@@ -28,10 +32,10 @@ export default function TermsPage() {
         </p>
         <figure className="editorial-image">
           <Image
-            src="/editorial/editorial-lab.svg"
-            alt="Terms and process ledger illustration"
+            src={pageImageAssets.aboutHero.src}
+            alt={pageImageAssets.aboutHero.alt}
             width={1200}
-            height={760}
+            height={900}
           />
         </figure>
       </section>

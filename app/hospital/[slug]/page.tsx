@@ -6,14 +6,23 @@ import { getHospitalBySlug } from "@/lib/content";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { JsonLd } from "@/components/json-ld";
 import { hospitals } from "@/data/hospitals";
-import { buildMetadata } from "@/lib/metadata";
+import { absoluteUrl, buildMetadata } from "@/lib/metadata";
 import {
   CredentialBlock,
   DoctorProfiles,
   EmergencyPathway,
-  SiteDisclosurePanel
+  SiteDisclosurePanel,
+  SourceReferenceSection
 } from "@/components/trust-sections";
 import { hospitalTrustProfiles } from "@/data/trust";
+
+interface SourceItem {
+  label: string;
+  href: string;
+  description: string;
+  linkText: string;
+  external?: boolean;
+}
 
 function formatShortDate(value: string) {
   return new Intl.DateTimeFormat("en", {
@@ -61,24 +70,116 @@ export default async function HospitalDetailPage({
     : hospital.jciYear > 0
       ? `Since ${hospital.jciYear}`
       : "Official";
+  const pageUrl = absoluteUrl(`/hospital/${hospital.slug}`);
+  const sameAs = Array.from(new Set([hospital.website, hospital.jciVerifyUrl].filter(Boolean)));
+  const sourceReferences = [
+    hospital.website
+      ? {
+          label: `${hospital.name} Official Website`,
+          href: hospital.website,
+          description:
+            "Provider-published department, contact, and service information used as the primary external source.",
+          linkText: "Visit official site",
+          external: true
+        }
+      : null,
+    {
+      label: "Accreditation or Official Listing",
+      href: hospital.jciVerifyUrl,
+      description:
+        "Official accreditation or public hospital listing used for facility-level verification.",
+      linkText: "Open official listing",
+      external: true
+    },
+    {
+      label: "Verification Desk",
+      href: "/verification",
+      description:
+        "Central registry of hospital and doctor verification links, timestamps, and scope boundaries.",
+      linkText: "Open verification page"
+    },
+    {
+      label: "Trust Center",
+      href: "/trust-center",
+      description:
+        "Published quality controls, escalation rules, and transparency standards referenced on provider pages.",
+      linkText: "Open trust center"
+    },
+    trustProfile?.doctors[0]
+      ? {
+          label: `Doctor Registry Source: ${trustProfile.doctors[0].name}`,
+          href: trustProfile.doctors[0].verificationUrl,
+          description:
+            "Public registry source used for named-doctor license checks shown in this profile.",
+          linkText: "Open doctor registry",
+          external: true
+        }
+      : null,
+    {
+      label: "Content Update Log",
+      href: "/content-updates",
+      description:
+        "Material page changes affecting provider data are logged in the public editorial update ledger.",
+      linkText: "Open update log"
+    }
+  ].filter((item): item is SourceItem => item !== null);
 
   const schema = {
     "@context": "https://schema.org",
-    "@type": "Hospital",
-    name: hospital.name,
-    url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://dentaltripchina.com"}/hospital/${hospital.slug}`,
-    address: {
-      "@type": "PostalAddress",
-      streetAddress: hospital.address,
-      addressCountry: "CN"
-    },
-    telephone: hospital.phone,
-    medicalSpecialty: hospital.specialties,
-    isAccreditedBy: {
-      "@type": "Organization",
-      name: "Joint Commission International",
-      url: hospital.jciVerifyUrl
-    }
+    "@graph": [
+      {
+        "@type": "Hospital",
+        "@id": `${pageUrl}#hospital`,
+        name: hospital.name,
+        description: hospital.summary,
+        url: pageUrl,
+        image: absoluteUrl(hospital.heroImageSrc),
+        sameAs,
+        address: {
+          "@type": "PostalAddress",
+          streetAddress: hospital.address,
+          addressCountry: "CN"
+        },
+        telephone: hospital.phone,
+        medicalSpecialty: hospital.specialties,
+        geo: {
+          "@type": "GeoCoordinates",
+          latitude: hospital.lat,
+          longitude: hospital.lng
+        },
+        hasMap: `https://www.google.com/maps?q=${hospital.lat},${hospital.lng}`,
+        contactPoint: hospital.phone
+          ? {
+              "@type": "ContactPoint",
+              telephone: hospital.phone,
+              contactType: "international patient desk",
+              availableLanguage: ["English", "Mandarin"]
+            }
+          : undefined,
+        department: hospital.departmentHighlights.map((department) => ({
+          "@type": "MedicalClinic",
+          name: department.name,
+          description: department.description
+        })),
+        isAccreditedBy: {
+          "@type": "Organization",
+          name: "Joint Commission International",
+          url: hospital.jciVerifyUrl
+        }
+      },
+      {
+        "@type": "WebPage",
+        "@id": `${pageUrl}#webpage`,
+        url: pageUrl,
+        name: hospital.name,
+        description: hospital.summary,
+        inLanguage: "en-GB",
+        about: {
+          "@id": `${pageUrl}#hospital`
+        },
+        primaryImageOfPage: absoluteUrl(hospital.heroImageSrc)
+      }
+    ]
   };
 
   return (
@@ -101,7 +202,10 @@ export default async function HospitalDetailPage({
         secondaryText={hospital.website ? "Official site" : "Accreditation source"}
         heroMetrics={[
           { value: hospital.city.toUpperCase(), label: "City" },
-          { value: `${namedDoctors || hospital.specialties.length}`, label: namedDoctors ? "Named doctors" : "Specialties" },
+          {
+            value: `${namedDoctors || hospital.specialties.length}`,
+            label: namedDoctors ? "Named doctors" : "Specialties"
+          },
           { value: verificationStamp, label: "Latest verification" }
         ]}
         panelTitle="Review capability, intake flow, and verification in one page"
@@ -127,6 +231,9 @@ export default async function HospitalDetailPage({
           </a>
           <a className="section-link" href="#hospital-verification">
             Verification
+          </a>
+          <a className="section-link" href="#hospital-sources">
+            Sources
           </a>
           {trustProfile ? (
             <a className="section-link" href="#named-doctors">
@@ -271,6 +378,14 @@ export default async function HospitalDetailPage({
           ) : null}
         </div>
       </section>
+
+      <SourceReferenceSection
+        eyebrow="Primary Sources"
+        title="Official Sources and Verification Inputs"
+        description="These links are the main facility and registry sources used to maintain this hospital profile."
+        items={sourceReferences}
+        id="hospital-sources"
+      />
 
       {trustProfile ? (
         <div id="named-doctors">

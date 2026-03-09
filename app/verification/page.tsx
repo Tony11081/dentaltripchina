@@ -3,12 +3,16 @@ import Image from "next/image";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { hospitals } from "@/data/hospitals";
 import { hospitalTrustProfiles } from "@/data/trust";
+import { buildMetadata } from "@/lib/metadata";
+import { pageImageAssets } from "@/lib/site-images";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildMetadata({
   title: "Doctor & Hospital Verification",
   description:
-    "Doctor license references, verification links, latest check dates, and scope boundaries for partner providers."
-};
+    "Doctor license references, verification links, latest check dates, and scope boundaries for partner providers.",
+  path: "/verification",
+  imagePath: pageImageAssets.verificationBanner.src
+});
 
 export default function VerificationPage() {
   return (
@@ -29,10 +33,10 @@ export default function VerificationPage() {
         </p>
         <figure className="editorial-image">
           <Image
-            src="/editorial/verification-ledger.svg"
-            alt="Provider verification ledger illustration"
+            src={pageImageAssets.verificationBanner.src}
+            alt={pageImageAssets.verificationBanner.alt}
             width={1200}
-            height={760}
+            height={900}
           />
         </figure>
       </section>

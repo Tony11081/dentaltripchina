@@ -6,13 +6,14 @@ import { procedures } from "@/data/procedures";
 import { getUsdFxReferenceNote } from "@/lib/currency";
 import { LocalizedPrice } from "@/components/localized-price";
 import { buildMetadata } from "@/lib/metadata";
+import { pageImageAssets } from "@/lib/site-images";
 
 export const metadata: Metadata = buildMetadata({
   title: "Pricing",
   description:
     "Compare indicative procedure pricing and treatment timelines in China versus UK, US, and Australia.",
   path: "/pricing",
-  imagePath: "/editorial/budget-atlas.svg"
+  imagePath: pageImageAssets.pricingHero.src
 });
 
 export default function PricingPage() {
@@ -29,6 +30,8 @@ export default function PricingPage() {
         eyebrow="Transparent Cost Comparison"
         title="Procedure Pricing in China vs UK/US"
         subtitle="Indicative ranges for planning. Final quote depends on case complexity and treatment scope."
+        heroImageSrc={pageImageAssets.pricingHero.src}
+        heroImageAlt={pageImageAssets.pricingHero.alt}
         heroMetrics={[
           { value: `${procedures.length}`, label: "Core procedures" },
           { value: "USD", label: "Baseline currency" },
