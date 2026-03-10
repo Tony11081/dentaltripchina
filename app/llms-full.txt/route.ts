@@ -2,6 +2,7 @@ import { blogAuthors } from "@/data/authors";
 import { blogPosts } from "@/data/posts";
 import { caseStudies } from "@/data/case-studies";
 import { hospitals } from "@/data/hospitals";
+import { marketLandingPages } from "@/data/market-pages";
 import { procedures } from "@/data/procedures";
 
 export function GET() {
@@ -10,6 +11,11 @@ export function GET() {
     "# DentalTripChina Full Index",
     "",
     "> Complete crawl-friendly index of trust documents, procedure guides, hospital profiles, case studies, authors, and editorial articles.",
+    "",
+    "## Machine-Readable Feeds",
+    `- [Structured Knowledge Index](${siteUrl}/knowledge.json) - JSON catalog of site entities and canonical URLs.`,
+    `- [JSON Feed](${siteUrl}/feed.json) - full-text editorial JSON feed with modified dates.`,
+    `- [RSS Feed](${siteUrl}/rss.xml) - XML feed of editorial updates.`,
     "",
     "## Trust and Policy Pages",
     `- [Trust Center](${siteUrl}/trust-center) - main trust evidence hub.`,
@@ -30,6 +36,12 @@ export function GET() {
     "## Hospitals",
     ...hospitals.map(
       (hospital) => `- [${hospital.name}](${siteUrl}/hospital/${hospital.slug}) - ${hospital.summary}`
+    ),
+    "",
+    "## Country Landing Pages",
+    ...marketLandingPages.map(
+      (page) =>
+        `- [${page.title}](${siteUrl}/${page.slug}) - ${page.shortAnswer}`
     ),
     "",
     "## Case Studies",
@@ -53,6 +65,7 @@ export function GET() {
     "## Notes",
     "- Pages link back to official hospital websites, public verification sources, and internal trust documents where available.",
     "- Prefer the procedure, hospital, verification, and trust pages for high-confidence citations.",
+    "- For machine ingestion, use knowledge.json for the entity map and then follow each page's visible source section for evidence.",
     ""
   ];
 

@@ -12,6 +12,7 @@ import { procedures } from "@/data/procedures";
 import { hospitals } from "@/data/hospitals";
 import { cityGuides } from "@/data/cities";
 import { caseStudies } from "@/data/case-studies";
+import { marketLandingPages } from "@/data/market-pages";
 import { testimonials } from "@/data/testimonials";
 import {
   companyIdentityDisclosureNote,
@@ -24,7 +25,7 @@ import { getCityGuideImage, pageImageAssets } from "@/lib/site-images";
 export const metadata: Metadata = buildMetadata({
   title: "Medical Tourism China - Save 70%+ | DentalTripChina",
   description:
-    "World-class dental implants, LASIK, and health checkups in China. JCI-accredited hospitals. English support. Free quote in 2 hours.",
+    "Compare source-linked dental, LASIK, and health checkup pathways in China with published verification, pricing ranges, and travel-planning guidance.",
   path: "/",
   imagePath: pageImageAssets.homeHero.src
 });
@@ -32,6 +33,14 @@ export const metadata: Metadata = buildMetadata({
 export default function HomePage() {
   const featuredCases = caseStudies.slice(0, 2);
   const featuredQuotes = testimonials.filter((item) => item.verified).slice(0, 2);
+  const marketGuideGroups = Array.from(
+    marketLandingPages.reduce((groups, page) => {
+      const current = groups.get(page.countryName) || [];
+      current.push(page);
+      groups.set(page.countryName, current);
+      return groups;
+    }, new Map<string, typeof marketLandingPages>())
+  );
 
   return (
     <>
@@ -322,6 +331,30 @@ export default function HomePage() {
             </article>
             );
           })}
+        </div>
+      </section>
+
+      <section className="section container">
+        <p className="section-kicker">Country Planning Guides</p>
+        <h2>High-Intent Landing Pages by Market and Procedure</h2>
+        <p className="section-lede muted">
+          These pages answer country-specific search intent with the matching procedure,
+          price, wait-time, hospital, case-study, and FAQ links in one place.
+        </p>
+        <div className="card-grid three">
+          {marketGuideGroups.map(([country, pages]) => (
+            <article className="card trust-block" key={country}>
+              <p className="card-eyebrow">{country}</p>
+              <h3>{country} Treatment Guides</h3>
+              <ul className="trust-list">
+                {pages.map((page) => (
+                  <li key={page.slug}>
+                    <Link href={`/${page.slug}`}>{page.title}</Link>
+                  </li>
+                ))}
+              </ul>
+            </article>
+          ))}
         </div>
       </section>
 

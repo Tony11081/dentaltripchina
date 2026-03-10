@@ -3,10 +3,12 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { Hero } from "@/components/hero";
+import { JsonLd } from "@/components/json-ld";
 import { CardMedia } from "@/components/card-media";
+import { ExtractableSummary } from "@/components/extractable-summary";
 import { getPostsByCategory } from "@/lib/content";
 import { blogPosts } from "@/data/posts";
-import { buildMetadata } from "@/lib/metadata";
+import { absoluteUrl, buildMetadata } from "@/lib/metadata";
 import { getBlogCategoryImage, getBlogPostImage } from "@/lib/site-images";
 
 function formatCategoryLabel(slug: string) {
@@ -62,6 +64,32 @@ export default async function BlogCategoryPage({
     left.dateUpdated.localeCompare(right.dateUpdated)
   )[posts.length - 1];
   const countryCount = new Set(posts.map((post) => post.countryFocus).filter(Boolean)).size;
+  const pageUrl = absoluteUrl(`/blog/category/${slug}`);
+  const schema = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "CollectionPage",
+        "@id": `${pageUrl}#webpage`,
+        url: pageUrl,
+        name: `${categoryLabel} Articles`,
+        description: `Planning guides, cost notes, and travel logistics for ${categoryLabel.toLowerCase()}.`,
+        inLanguage: "en-GB"
+      },
+      {
+        "@type": "ItemList",
+        "@id": `${pageUrl}#itemlist`,
+        itemListOrder: "https://schema.org/ItemListOrderDescending",
+        numberOfItems: posts.length,
+        itemListElement: posts.map((post, index) => ({
+          "@type": "ListItem",
+          position: index + 1,
+          url: absoluteUrl(`/blog/${post.slug}`),
+          name: post.title
+        }))
+      }
+    ]
+  };
 
   return (
     <>
@@ -97,6 +125,7 @@ export default async function BlogCategoryPage({
       />
 
       <section className="section container">
+        <JsonLd data={schema} />
         <nav className="section-nav" aria-label={`${categoryLabel} category sections`}>
           <a className="section-link" href="#category-articles">
             Browse articles
@@ -114,6 +143,31 @@ export default async function BlogCategoryPage({
           Use this cluster when you already know the topic, but still need better cost,
           travel, or provider-fit judgment before requesting a quote.
         </p>
+        <ExtractableSummary
+          eyebrow="Category Summary"
+          title="Fast Summary"
+          description="This block turns the category archive into a machine-readable overview of the cluster."
+          id="category-summary"
+          items={[
+            {
+              label: "Cluster purpose",
+              value:
+                "Articles in this category help users narrow assumptions on cost, timing, travel planning, and provider fit before contacting support."
+            },
+            {
+              label: "Article count",
+              value: `${posts.length} articles`
+            },
+            {
+              label: "Country lenses",
+              value: `${countryCount || 1} market perspectives`
+            },
+            {
+              label: "Latest refresh",
+              value: latestUpdatedPost ? formatShortDate(latestUpdatedPost.dateUpdated) : "Current"
+            }
+          ]}
+        />
         <div className="card-grid three">
           {posts.map((post) => {
             const image = getBlogPostImage(post);

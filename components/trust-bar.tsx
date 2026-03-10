@@ -1,6 +1,6 @@
 export function TrustBar() {
   const items = [
-    { icon: "01", label: "JCI-accredited partner hospitals" },
+    { icon: "01", label: "Source-linked hospital profiles" },
     { icon: "02", label: "English-speaking patient support" },
     { icon: "03", label: "Save 70-85% vs UK/US" },
     { icon: "04", label: "Fast response within 2 hours" }

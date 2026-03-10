@@ -6,6 +6,7 @@ import { Breadcrumbs } from "@/components/breadcrumbs";
 import { FaqList } from "@/components/faq-list";
 import { HospitalCard } from "@/components/hospital-card";
 import { InquiryForm } from "@/components/inquiry-form";
+import { MarketLandingPageView } from "@/components/market-landing-page";
 import { ProcedureTimeComparison } from "@/components/time-comparison";
 import {
   EmergencyPathway,
@@ -14,15 +15,18 @@ import {
   SiteDisclosurePanel,
   SourceReferenceSection
 } from "@/components/trust-sections";
+import { ExtractableSummary } from "@/components/extractable-summary";
 import {
   getCaseStudiesByProcedureSlug,
   getCityGuideBySlug,
   getHospitalsBySlugs,
+  getMarketLandingBySlug,
   getProcedureBySlug
 } from "@/lib/content";
 import { hospitals } from "@/data/hospitals";
 import { procedures } from "@/data/procedures";
 import { cityGuides } from "@/data/cities";
+import { marketLandingPages } from "@/data/market-pages";
 import { JsonLd } from "@/components/json-ld";
 import { hospitalTrustProfiles, procedureTrustProfiles } from "@/data/trust";
 import { getUsdFxReferenceNote } from "@/lib/currency";
@@ -40,7 +44,7 @@ interface SourceItem {
 }
 
 export function generateStaticParams() {
-  return [...procedures, ...cityGuides].map((item) => ({ slug: item.slug }));
+  return [...procedures, ...cityGuides, ...marketLandingPages].map((item) => ({ slug: item.slug }));
 }
 
 export async function generateMetadata({
@@ -71,6 +75,16 @@ export async function generateMetadata({
       description: cityGuide.summary,
       path: `/${cityGuide.slug}`,
       imagePath: cityImage.src
+    });
+  }
+
+  const marketLandingPage = getMarketLandingBySlug(slug);
+  if (marketLandingPage) {
+    return buildMetadata({
+      title: marketLandingPage.title,
+      description: marketLandingPage.metaDescription,
+      path: `/${marketLandingPage.slug}`,
+      imagePath: `/market-og/${marketLandingPage.slug}`
     });
   }
 
@@ -304,6 +318,43 @@ export default async function RootSlugPage({
             </a>
           </nav>
 
+          <ExtractableSummary
+            eyebrow="At A Glance"
+            title="Fast Summary"
+            description="This block isolates the shortest useful answer on price, timing, fit, and freshness for users, search results, and AI retrieval."
+            id="procedure-summary"
+            items={[
+              {
+                label: "Typical China estimate",
+                value: <LocalizedPrice usd={procedure.prices.chinaUsd} emphasize showUsdHint={false} />
+              },
+              {
+                label: "Typical China booking wait",
+                value: procedure.timeComparison.china.appointmentWait
+              },
+              {
+                label: "Typical stay in China",
+                value: procedure.durationDays
+              },
+              {
+                label: "Often suitable for",
+                value: procedureTrust
+                  ? procedureTrust.suitableFor.slice(0, 2).join(" | ")
+                  : "Patients with complete diagnostics and realistic travel windows."
+              },
+              {
+                label: "Pause travel if",
+                value: procedureTrust
+                  ? procedureTrust.chinaTravelNotRecommended[0]
+                  : "Physician clearance has not been completed."
+              },
+              {
+                label: "Latest public review",
+                value: procedureUpdate?.date || "Current public version"
+              }
+            ]}
+          />
+
           <article className="card">
             <h2>Procedure Overview</h2>
             {procedure.body.map((paragraph) => (
@@ -446,6 +497,11 @@ export default async function RootSlugPage({
         </section>
       </>
     );
+  }
+
+  const marketLandingPage = getMarketLandingBySlug(slug);
+  if (marketLandingPage) {
+    return <MarketLandingPageView page={marketLandingPage} />;
   }
 
   const cityGuide = getCityGuideBySlug(slug);

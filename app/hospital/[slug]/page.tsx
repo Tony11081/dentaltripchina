@@ -14,6 +14,7 @@ import {
   SiteDisclosurePanel,
   SourceReferenceSection
 } from "@/components/trust-sections";
+import { ExtractableSummary } from "@/components/extractable-summary";
 import { hospitalTrustProfiles } from "@/data/trust";
 
 interface SourceItem {
@@ -161,6 +162,9 @@ export default async function HospitalDetailPage({
           name: department.name,
           description: department.description
         })),
+        mainEntityOfPage: {
+          "@id": `${pageUrl}#webpage`
+        },
         isAccreditedBy: {
           "@type": "Organization",
           name: "Joint Commission International",
@@ -217,9 +221,9 @@ export default async function HospitalDetailPage({
         ]}
       />
 
-      <section className="section container" id="hospital-overview">
-        <JsonLd data={schema} />
-        <nav className="section-nav" aria-label={`${hospital.name} page sections`}>
+        <section className="section container" id="hospital-overview">
+          <JsonLd data={schema} />
+          <nav className="section-nav" aria-label={`${hospital.name} page sections`}>
           <a className="section-link" href="#hospital-overview">
             Overview
           </a>
@@ -240,10 +244,53 @@ export default async function HospitalDetailPage({
               Named doctors
             </a>
           ) : null}
-        </nav>
-        <div className="card-grid two">
-          <article className="card">
-            <p className="card-eyebrow">Hospital Overview</p>
+          </nav>
+          <ExtractableSummary
+            eyebrow="Hospital At A Glance"
+            title="Fast Summary"
+            description="This section highlights the shortest useful set of facts for provider comparison, search previews, and AI retrieval."
+            id="hospital-summary"
+            items={[
+              {
+                label: "City and role",
+                value: `${hospital.city.toUpperCase()} | ${hospital.summary}`
+              },
+              {
+                label: "Official source",
+                value: hospital.website ? (
+                  <a href={hospital.website} target="_blank" rel="noopener noreferrer">
+                    Official hospital website
+                  </a>
+                ) : (
+                  <a href={hospital.jciVerifyUrl} target="_blank" rel="noopener noreferrer">
+                    Official hospital listing
+                  </a>
+                )
+              },
+              {
+                label: "Latest verification",
+                value: trustProfile?.credentialLastVerified || verificationStamp
+              },
+              {
+                label: "International patient intake",
+                value: hospital.internationalDept
+                  ? "International patient desk available."
+                  : "International intake details available on request."
+              },
+              {
+                label: "Payment methods",
+                value: hospital.paymentMethods.slice(0, 2).join(" | ")
+              },
+              {
+                label: "Doctor assignment note",
+                value:
+                  "Named doctors shown on this page are representative verified clinicians. Final assignment depends on specialty fit, availability, and the confirmed plan."
+              }
+            ]}
+          />
+          <div className="card-grid two">
+            <article className="card">
+              <p className="card-eyebrow">Hospital Overview</p>
             <figure className="editorial-image">
               <Image
                 src={hospital.heroImageSrc}

@@ -3,9 +3,13 @@ import { cityGuides } from "@/data/cities";
 import { hospitals } from "@/data/hospitals";
 import { procedures } from "@/data/procedures";
 import { caseStudies } from "@/data/case-studies";
+import { marketLandingPages } from "@/data/market-pages";
 
 export const getProcedureBySlug = (slug: string) =>
   procedures.find((item) => item.slug === slug);
+
+export const getMarketLandingBySlug = (slug: string) =>
+  marketLandingPages.find((item) => item.slug === slug);
 
 export const getCityGuideBySlug = (slug: string) =>
   cityGuides.find((item) => item.slug === slug);

@@ -41,7 +41,7 @@ export function Hero({
     { value: "EN", label: "Staff support" }
   ],
   panelTitle = "Save 70-85% vs UK/US Pricing",
-  panelDescription = "JCI-accredited hospitals, fast response, and transparent planning.",
+  panelDescription = "Published hospital sources, fast response, and transparent planning.",
   panelList = [
     "Quote in under 2 hours",
     "English-speaking patient support",

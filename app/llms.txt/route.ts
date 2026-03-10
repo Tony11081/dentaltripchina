@@ -22,6 +22,11 @@ export function GET() {
     `- [Verification](${siteUrl}/verification) - hospital and doctor verification links, dates, and scope boundaries.`,
     `- [Editorial Policy](${siteUrl}/editorial-policy) - review process and update methodology for content.`,
     `- [Full Index](${siteUrl}/llms-full.txt) - complete list of procedures, hospitals, case studies, and articles.`,
+    `- [Structured Knowledge Index](${siteUrl}/knowledge.json) - machine-readable catalog of procedures, hospitals, case studies, and editorial content.`,
+    "",
+    "## Machine-Readable Feeds",
+    `- [JSON Feed](${siteUrl}/feed.json) - structured editorial feed with full article text and modified dates.`,
+    `- [RSS Feed](${siteUrl}/rss.xml) - XML feed of updated editorial articles.`,
     "",
     "## Core Procedures",
     ...procedures.map(
@@ -40,11 +45,15 @@ export function GET() {
     latestPost
       ? `- [${latestPost.title}](${siteUrl}/blog/${latestPost.slug}) - latest updated planning article.`
       : null,
+    `- [UK Dental Implants in China](${siteUrl}/uk-dental-implants-china) - country-specific collection page for UK implant planning.`,
+    `- [US LASIK in China](${siteUrl}/us-lasik-china) - country-specific collection page for US LASIK planning.`,
+    `- [Australia Health Checkup in China](${siteUrl}/australia-health-checkup-china) - country-specific collection page for Australia checkup planning.`,
     "",
     "## Usage Notes",
     "- Content is educational and does not replace physician diagnosis or provider-issued treatment plans.",
     "- Prefer procedure guides, hospital profiles, trust pages, and official external links shown on each profile when citing facts.",
     "- Use visible published, updated, reviewed, and verified dates on each page before quoting timelines or pricing.",
+    "- For structured ingestion, start with knowledge.json, then use llms-full.txt and page-level source sections for citation checks.",
     ""
   ].filter(Boolean);
 

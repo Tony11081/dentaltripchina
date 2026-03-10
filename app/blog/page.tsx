@@ -2,9 +2,11 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { Breadcrumbs } from "@/components/breadcrumbs";
+import { JsonLd } from "@/components/json-ld";
 import { CardMedia } from "@/components/card-media";
+import { ExtractableSummary } from "@/components/extractable-summary";
 import { blogPosts } from "@/data/posts";
-import { buildMetadata } from "@/lib/metadata";
+import { absoluteUrl, buildMetadata } from "@/lib/metadata";
 import { getBlogPostImage, pageImageAssets } from "@/lib/site-images";
 
 export const metadata: Metadata = buildMetadata({
@@ -18,6 +20,36 @@ export const metadata: Metadata = buildMetadata({
 export default function BlogPage() {
   const posts = [...blogPosts].sort((a, b) => (a.datePublished < b.datePublished ? 1 : -1));
   const categories = Array.from(new Set(posts.map((post) => post.category)));
+  const latestUpdated = [...posts]
+    .sort((left, right) => left.dateUpdated.localeCompare(right.dateUpdated))
+    .at(-1)?.dateUpdated;
+
+  const schema = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "CollectionPage",
+        "@id": `${absoluteUrl("/blog")}#webpage`,
+        url: absoluteUrl("/blog"),
+        name: "DentalTripChina Blog",
+        description:
+          "Editorial planning guides covering costs, timelines, candidacy, and travel decisions for treatment in China.",
+        inLanguage: "en-GB"
+      },
+      {
+        "@type": "ItemList",
+        "@id": `${absoluteUrl("/blog")}#itemlist`,
+        itemListOrder: "https://schema.org/ItemListOrderDescending",
+        numberOfItems: posts.length,
+        itemListElement: posts.map((post, index) => ({
+          "@type": "ListItem",
+          position: index + 1,
+          url: absoluteUrl(`/blog/${post.slug}`),
+          name: post.title
+        }))
+      }
+    ]
+  };
 
   return (
     <>
@@ -29,6 +61,7 @@ export default function BlogPage() {
       />
 
       <section className="section container">
+        <JsonLd data={schema} />
         <p className="section-kicker">SEO Editorial Hub</p>
         <h1>Project × Country × Budget × Timeline</h1>
         <p className="section-lede muted">
@@ -52,34 +85,62 @@ export default function BlogPage() {
         </figure>
       </section>
 
+      <section className="section container">
+        <ExtractableSummary
+          eyebrow="Blog At A Glance"
+          title="Fast Summary"
+          description="This block summarizes the editorial collection in a way that search engines and AI systems can extract without parsing every card."
+          id="blog-summary"
+          items={[
+            {
+              label: "What this hub covers",
+              value:
+                "Treatment cost, timeline, provider-fit, travel planning, and candidacy content for patients considering care in China."
+            },
+            {
+              label: "Article count",
+              value: `${posts.length} published articles across ${categories.length} categories.`
+            },
+            {
+              label: "Latest refresh",
+              value: latestUpdated || "Current editorial set"
+            },
+            {
+              label: "Best next step",
+              value: "Start with a category page, then use procedure guides and source sections before requesting a quote."
+            }
+          ]}
+        />
+      </section>
+
       <section className="section container card-grid three">
         {posts.map((post) => {
           const image = getBlogPostImage(post);
 
           return (
-          <article className="card" key={post.slug}>
-            <CardMedia src={image.src} alt={image.alt} />
-            <h2>
-              <Link href={`/blog/${post.slug}`}>{post.title}</Link>
-            </h2>
-            <p className="muted">
-              Published {post.datePublished} | Updated {post.dateUpdated} | {post.category}
-            </p>
-            <p>{post.excerpt}</p>
-            <div className="badge-row">
-              {post.countryFocus ? <span className="badge">{post.countryFocus}</span> : null}
-              {post.budgetFocus ? <span className="badge">{post.budgetFocus}</span> : null}
-              {post.timelineFocus ? <span className="badge">{post.timelineFocus}</span> : null}
-            </div>
-            {post.authorSlug ? (
+            <article className="card" key={post.slug}>
+              <CardMedia src={image.src} alt={image.alt} />
+              <h2>
+                <Link href={`/blog/${post.slug}`}>{post.title}</Link>
+              </h2>
               <p className="muted">
-                By <Link href={`/authors/${post.authorSlug}`}>{post.authorName}</Link>
+                Published {post.datePublished} | Updated {post.dateUpdated} | {post.category}
               </p>
-            ) : null}
-            <Link className="btn btn-secondary" href={`/blog/${post.slug}`}>
-              Read article
-            </Link>
-          </article>
+              <p>{post.excerpt}</p>
+              <div className="badge-row">
+                {post.countryFocus ? <span className="badge">{post.countryFocus}</span> : null}
+                {post.budgetFocus ? <span className="badge">{post.budgetFocus}</span> : null}
+                {post.timelineFocus ? <span className="badge">{post.timelineFocus}</span> : null}
+              </div>
+              {post.authorSlug ? (
+                <p className="muted">
+                  By <Link href={`/authors/${post.authorSlug}`}>{post.authorName}</Link>
+                </p>
+              ) : null}
+              <Link className="btn btn-secondary" href={`/blog/${post.slug}`}>
+                Read article
+              </Link>
+            </article>
           );
         })}
       </section>

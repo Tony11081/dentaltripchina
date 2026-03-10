@@ -8,6 +8,7 @@ import { cityGuides } from "@/data/cities";
 import { companyProfile } from "@/data/company-profile";
 import { editorialUpdates } from "@/data/editorial-updates";
 import { hospitals } from "@/data/hospitals";
+import { marketLandingPages } from "@/data/market-pages";
 import { blogPosts } from "@/data/posts";
 import { procedures } from "@/data/procedures";
 import { hospitalTrustProfiles } from "@/data/trust";
@@ -158,7 +159,49 @@ const staticPageLastModified: Record<string, Date | undefined> = {
     ),
     latestTrackedFileDate("app/china-visa-free-medical-tourism/page.tsx")
   ),
-  "/blog": latestDate(latestBlogDate, latestTrackedFileDate("app/blog/page.tsx", "data/posts.ts"))
+  "/blog": latestDate(latestBlogDate, latestTrackedFileDate("app/blog/page.tsx", "data/posts.ts")),
+  "/rss.xml": latestDate(latestBlogDate, latestTrackedFileDate("app/rss.xml/route.ts", "data/posts.ts")),
+  "/feed.json": latestDate(
+    latestBlogDate,
+    latestTrackedFileDate("app/feed.json/route.ts", "data/posts.ts")
+  ),
+  "/llms.txt": latestDate(
+    latestBlogDate,
+    latestVerificationDate,
+    latestTrackedFileDate(
+      "app/llms.txt/route.ts",
+      "data/posts.ts",
+      "data/hospitals.ts",
+      "data/procedures.ts",
+      "data/case-studies.ts"
+    )
+  ),
+  "/llms-full.txt": latestDate(
+    latestBlogDate,
+    latestVerificationDate,
+    latestTrackedFileDate(
+      "app/llms-full.txt/route.ts",
+      "data/posts.ts",
+      "data/hospitals.ts",
+      "data/procedures.ts",
+      "data/case-studies.ts",
+      "data/authors.ts"
+    )
+  ),
+  "/knowledge.json": latestDate(
+    latestBlogDate,
+    latestVerificationDate,
+    latestCompanyInfoDate,
+    latestTrackedFileDate(
+      "app/knowledge.json/route.ts",
+      "data/posts.ts",
+      "data/hospitals.ts",
+      "data/procedures.ts",
+      "data/case-studies.ts",
+      "data/authors.ts",
+      "data/company-profile.ts"
+    )
+  )
 };
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -194,6 +237,31 @@ export default function sitemap(): MetadataRoute.Sitemap {
       latestTrackedFileDate("app/[slug]/page.tsx", "data/cities.ts") ||
       new Date("2026-02-27")
   }));
+
+  const marketPages = marketLandingPages.map((page) => {
+    const relatedProcedureUpdate = editorialUpdates.find(
+      (update) => update.page === `/${page.procedureSlug}`
+    );
+    const relatedPostDate = latestDate(
+      ...blogPosts
+        .filter(
+          (post) =>
+            post.relatedProcedureSlug === page.procedureSlug &&
+            (!post.countryFocus || post.countryFocus === page.countryName)
+        )
+        .map((post) => toDate(post.dateUpdated))
+    );
+
+    return {
+      url: `${siteUrl}/${page.slug}`,
+      lastModified:
+        latestDate(
+          toDate(relatedProcedureUpdate?.date),
+          relatedPostDate,
+          latestTrackedFileDate("app/[slug]/page.tsx", "data/market-pages.ts", "data/procedures.ts")
+        ) || new Date("2026-02-27")
+    };
+  });
 
   const hospitalPages = hospitals.map((hospital) => {
     const trustProfile = hospitalTrustProfiles.find((profile) => profile.hospitalSlug === hospital.slug);
@@ -248,6 +316,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...staticPages,
     ...procedurePages,
     ...cityGuidePages,
+    ...marketPages,
     ...hospitalPages,
     ...blogPages,
     ...categoryPages,

@@ -164,3 +164,28 @@ export interface MonthlyTrustMetric {
   complaintResolutionHours: number;
   followUpCompletionPct: number;
 }
+
+export interface MarketLandingPage {
+  slug: string;
+  countryCode: string;
+  countryName: string;
+  procedureSlug: Procedure["slug"];
+  title: string;
+  heroTitle: string;
+  heroDescription: string;
+  metaDescription: string;
+  shortAnswer: string;
+  marketContext: string;
+  collectionSummary: string;
+  comparatorLabel: string;
+  homeMarketReferenceNote?: string;
+  homeMarketPriceUsd: number;
+  homeMarketAppointmentWait: string;
+  homeMarketTreatmentTime: string;
+  chinaPriceUsd: number;
+  chinaAppointmentWait: string;
+  chinaTreatmentTime: string;
+  planningChecklist: string[];
+  whyPatientsConsiderChina: string[];
+  faqItems: FaqItem[];
+}

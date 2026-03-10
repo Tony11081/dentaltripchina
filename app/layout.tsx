@@ -7,18 +7,28 @@ import { GAScript } from "@/components/ga-script";
 import { FunnelTracker } from "@/components/funnel-tracker";
 import { JsonLd } from "@/components/json-ld";
 import { companyProfile, companyProfileStatus } from "@/data/company-profile";
-import { absoluteUrl, defaultSocialImage } from "@/lib/metadata";
+import {
+  absoluteUrl,
+  defaultRobots,
+  defaultSocialImage,
+  siteAlternateTypes
+} from "@/lib/metadata";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://dentaltripchina.com";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
+  applicationName: "DentalTripChina",
   title: {
     default: "Medical Tourism China - Save 70%+ | DentalTripChina",
     template: "%s | DentalTripChina"
   },
   description:
-    "World-class dental implants, LASIK, and health checkups in China. JCI-accredited hospitals. English support. Free quote in 2 hours.",
+    "Compare source-linked dental, LASIK, and health checkup pathways in China with published verification, pricing ranges, and travel-planning guidance.",
+  alternates: {
+    types: siteAlternateTypes
+  },
+  robots: defaultRobots,
   openGraph: {
     siteName: "DentalTripChina",
     images: [
@@ -39,11 +49,31 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     "@context": "https://schema.org",
     "@type": "Organization",
     name: companyProfile.brandName,
+    alternateName: companyProfile.legalEntityName,
     url: siteUrl,
     email: companyProfile.supportEmail,
     telephone: companyProfile.supportPhone,
+    logo: {
+      "@type": "ImageObject",
+      url: absoluteUrl("/icon")
+    },
     description:
       "Cross-border treatment coordination for dental care, LASIK, and health checkups in China.",
+    knowsAbout: [
+      "Dental implants in China",
+      "LASIK in China",
+      "Health checkups in China",
+      "Medical travel planning",
+      "Hospital verification",
+      "Cross-border treatment coordination"
+    ],
+    areaServed: [
+      { "@type": "Country", name: "China" },
+      { "@type": "Country", name: "United Kingdom" },
+      { "@type": "Country", name: "United States" },
+      { "@type": "Country", name: "Australia" },
+      { "@type": "Country", name: "Canada" }
+    ],
     contactPoint: {
       "@type": "ContactPoint",
       telephone: companyProfile.supportPhone,
@@ -68,15 +98,25 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     "@context": "https://schema.org",
     "@type": "WebSite",
     name: "DentalTripChina.com",
-    url: siteUrl
+    url: siteUrl,
+    inLanguage: "en-GB",
+    publisher: {
+      "@id": `${siteUrl}#organization`
+    }
   };
 
   return (
     <html lang="en-GB">
+      <head>
+        <link rel="alternate" type="application/rss+xml" href={absoluteUrl("/rss.xml")} />
+        <link rel="alternate" type="application/feed+json" href={absoluteUrl("/feed.json")} />
+        <link rel="alternate" type="text/plain" href={absoluteUrl("/llms.txt")} />
+        <link rel="alternate" type="application/json" href={absoluteUrl("/knowledge.json")} />
+      </head>
       <body>
         <GAScript />
         <FunnelTracker />
-        <JsonLd data={orgSchema} />
+        <JsonLd data={{ ...orgSchema, "@id": `${siteUrl}#organization` }} />
         <JsonLd data={websiteSchema} />
         <SiteHeader />
         <main>{children}</main>

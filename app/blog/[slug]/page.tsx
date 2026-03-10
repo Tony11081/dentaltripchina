@@ -13,6 +13,7 @@ import { Breadcrumbs } from "@/components/breadcrumbs";
 import { blogPosts } from "@/data/posts";
 import { blogTrustProfiles } from "@/data/trust";
 import { BlogReviewBadge, SourceReferenceSection } from "@/components/trust-sections";
+import { ExtractableSummary } from "@/components/extractable-summary";
 import { LocalizedPrice } from "@/components/localized-price";
 import { absoluteUrl, buildMetadata } from "@/lib/metadata";
 import { getBlogPostImage } from "@/lib/site-images";
@@ -203,12 +204,18 @@ export default async function BlogPostPage({
         publisher: {
           "@type": "Organization",
           name: "DentalTripChina",
-          url: absoluteUrl("/")
+          url: absoluteUrl("/"),
+          logo: {
+            "@type": "ImageObject",
+            url: absoluteUrl("/icon")
+          }
         },
         isAccessibleForFree: true,
         inLanguage: "en-GB",
         about: aboutEntities,
-        citation: citationUrls
+        citation: citationUrls,
+        abstract: post.excerpt,
+        publishingPrinciples: absoluteUrl("/editorial-policy")
       },
       {
         "@type": "WebPage",
@@ -290,6 +297,45 @@ export default async function BlogPostPage({
             {post.budgetFocus ? <span className="badge">{post.budgetFocus}</span> : null}
             {post.timelineFocus ? <span className="badge">{post.timelineFocus}</span> : null}
           </div>
+
+          <ExtractableSummary
+            eyebrow="Quick Take"
+            title="Fast Summary"
+            description="This block is the shortest useful version of the article for scan-reading, search previews, and AI retrieval."
+            id="article-summary"
+            items={[
+              {
+                label: "Short answer",
+                value: post.excerpt
+              },
+              {
+                label: "Country focus",
+                value: post.countryFocus || "International patients"
+              },
+              {
+                label: "Budget focus",
+                value: post.budgetFocus || "See article body for range details"
+              },
+              {
+                label: "Timeline focus",
+                value: post.timelineFocus || "Varies by candidacy and treatment plan"
+              },
+              {
+                label: "Related procedure",
+                value: relatedProcedure ? (
+                  <Link href={`/${relatedProcedure.slug}`}>{relatedProcedure.title}</Link>
+                ) : (
+                  "General planning content"
+                )
+              },
+              {
+                label: "Medical review status",
+                value: trust
+                  ? `${trust.medicalReviewer.name} reviewed this article on ${trust.medicalReviewer.reviewDate}.`
+                  : `Updated ${post.dateUpdated}.`
+              }
+            ]}
+          />
 
           <div className="article-content" id="article-body">
             {post.content.map((paragraph) => (

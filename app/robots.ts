@@ -3,6 +3,14 @@ import type { MetadataRoute } from "next";
 export default function robots(): MetadataRoute.Robots {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://dentaltripchina.com";
   const disallow = ["/api/", "/thank-you"];
+  const discoveryRoutes = [
+    "/",
+    "/llms.txt",
+    "/llms-full.txt",
+    "/rss.xml",
+    "/feed.json",
+    "/knowledge.json"
+  ];
 
   return {
     rules: [
@@ -18,12 +26,12 @@ export default function robots(): MetadataRoute.Robots {
       },
       {
         userAgent: ["OAI-SearchBot", "ChatGPT-User"],
-        allow: ["/", "/llms.txt", "/llms-full.txt", "/rss.xml"],
+        allow: discoveryRoutes,
         disallow
       },
       {
         userAgent: ["GPTBot", "Google-Extended"],
-        allow: ["/", "/llms.txt", "/llms-full.txt", "/rss.xml"],
+        allow: discoveryRoutes,
         disallow
       }
     ],
