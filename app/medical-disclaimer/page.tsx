@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { Breadcrumbs } from "@/components/breadcrumbs";
+import { companyProfile } from "@/data/company-profile";
 import { buildMetadata } from "@/lib/metadata";
 import { pageImageAssets } from "@/lib/site-images";
 
@@ -59,6 +60,23 @@ export default function MedicalDisclaimerPage() {
         </article>
 
         <article className="card trust-block">
+          <h2>Clinical Liability and Service Scope</h2>
+          <p>
+            Clinical responsibility and malpractice liability rest with the treating hospital
+            and licensed clinicians.
+          </p>
+          <p>
+            {companyProfile.legalEntityName} does not practice medicine, diagnose, prescribe,
+            or guarantee treatment outcomes.
+          </p>
+          <p className="trust-note">
+            Our role is limited to non-clinical coordination services, including provider
+            matching, scheduling, translation support, records handling, billing clarification,
+            and patient communication.
+          </p>
+        </article>
+
+        <article className="card trust-block">
           <h2>Emergency Rule</h2>
           <p>
             If you have severe pain, fever, heavy bleeding, acute vision change, chest pain,
@@ -72,9 +90,9 @@ export default function MedicalDisclaimerPage() {
         <article className="card trust-block">
           <h2>Post-Op Escalation Commitment</h2>
           <ul className="trust-list">
-            <li>Red-flag escalation target: 15 minutes.</li>
-            <li>Clinical pathway guidance target: 2 hours.</li>
-            <li>Local continuity handoff summary target: 24 hours.</li>
+            <li>Urgent non-emergency concerns are targeted for escalation within 15 minutes.</li>
+            <li>Documented next-step guidance is targeted within 2 hours.</li>
+            <li>Guidance may include hospital coordination, review arrangements, translation support, medication clarification, or advice to seek local emergency care.</li>
           </ul>
         </article>
       </section>

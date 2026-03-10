@@ -6,7 +6,7 @@ export function isPublishedCompanyField(value: string) {
 
 export const companyProfile = {
   brandName: "DentalTripChina.com",
-  legalEntityName: process.env.DTC_PUBLIC_LEGAL_ENTITY_NAME || "",
+  legalEntityName: process.env.DTC_PUBLIC_LEGAL_ENTITY_NAME || "北企国际（北京）有限公司",
   registrationNumber: process.env.DTC_PUBLIC_REGISTRATION_NUMBER || "",
   registrationJurisdiction: process.env.DTC_PUBLIC_REGISTRATION_JURISDICTION || "",
   registeredAddress: process.env.DTC_PUBLIC_REGISTERED_ADDRESS || "",
@@ -20,7 +20,20 @@ export const companyProfile = {
     "xray@dentaltripchina.com",
   supportPhone: process.env.DTC_PUBLIC_SUPPORT_PHONE || `+${whatsappNumber}`,
   businessHours:
-    process.env.DTC_PUBLIC_BUSINESS_HOURS || "Mon-Sun 08:00-22:00 China Time (UTC+8)",
+    process.env.DTC_PUBLIC_BUSINESS_HOURS ||
+    "Pre-booking support: Mon-Sun 08:00-22:00 China Time (UTC+8)",
+  activeClientSupportHours:
+    process.env.DTC_PUBLIC_ACTIVE_SUPPORT_HOURS ||
+    "Active clients receive 24/7 urgent coordination support during travel and the immediate post-treatment period.",
+  partnershipModel:
+    process.env.DTC_PUBLIC_PARTNERSHIP_MODEL ||
+    "We work with officially partnered hospitals and departments in Beijing and Shanghai. Final provider choice remains with the patient.",
+  serviceFeeSummary:
+    process.env.DTC_PUBLIC_SERVICE_FEE_SUMMARY ||
+    "We do not take hospital commissions. We charge a separate service fee for coordination, translation support, provider matching, scheduling, and travel support within the agreed scope.",
+  treatmentPaymentSummary:
+    process.env.DTC_PUBLIC_TREATMENT_PAYMENT_SUMMARY ||
+    "Hospital treatment fees are paid directly to the hospital. Our coordination fee is billed separately by us.",
   infoLastUpdated: process.env.DTC_PUBLIC_COMPANY_INFO_UPDATED || "March 9, 2026"
 };
 
@@ -34,7 +47,7 @@ export const companyProfileStatus = {
 };
 
 export const companyIdentityDisclosureNote =
-  "Public legal entity details are not currently published on the website. Add verified legal name, registration number, jurisdiction, and registered office before treating the entity profile as complete.";
+  "Legal entity information is published on this website. Additional registration fields are added once they are confirmed for public disclosure.";
 
 export const publishedCompanyIdentityItems = [
   {

@@ -46,6 +46,58 @@ export default function PricingPage() {
         ]}
       />
 
+      <section className="section container">
+        <p className="section-kicker">Before You Compare</p>
+        <h2>What These Numbers Mean in Practice</h2>
+        <div className="card-grid three">
+          <article className="card trust-block">
+            <h3>Planning Estimate, Not Final Quote</h3>
+            <p>
+              Prices on this page are planning estimates, not final medical quotations.
+              Final hospital pricing depends on diagnostics, case complexity, materials,
+              and confirmed treatment scope.
+            </p>
+            <p className="trust-note">
+              Itemized quotes are available before travel.
+            </p>
+          </article>
+
+          <article className="card trust-block">
+            <h3>What Is Usually Not Included</h3>
+            <p>
+              International airfare is not included unless explicitly stated. Hotel,
+              medication, follow-up, local transfers, and additional diagnostics may be
+              quoted separately or adjusted after review.
+            </p>
+          </article>
+
+          <article className="card trust-block">
+            <h3>Who You Pay and How</h3>
+            <p>
+              Hospital treatment fees are paid directly to the hospital. Our coordination
+              fee is billed separately by us.
+            </p>
+            <p className="trust-note">
+              Formal invoices are available for our billed services and for hospital billing
+              where provided by the hospital.
+            </p>
+          </article>
+
+          <article className="card trust-block">
+            <h3>Service Fee, Cancellation, and Scope Changes</h3>
+            <p>
+              Our service fee starts once case work begins. If a client cancels mid-process,
+              the refundable portion depends on work already completed and any committed
+              third-party costs.
+            </p>
+            <p className="trust-note">
+              If added coordination time materially expands the service scope, extra service
+              time may be billed. Hospital refund rules remain under each provider&apos;s policy.
+            </p>
+          </article>
+        </div>
+      </section>
+
       <section className="section container" id="pricing-table">
         <nav className="section-nav" aria-label="Pricing page sections">
           <a className="section-link" href="#pricing-table">

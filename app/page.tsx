@@ -103,7 +103,7 @@ export default function HomePage() {
 
       <section className="section container">
         <p className="section-kicker">Operator Desk</p>
-        <h2>Contact, Identity, and Responsibility Boundary</h2>
+        <h2>Operator, Partnerships, and Responsibility Boundary</h2>
         <article className="card trust-block">
           {publishedCompanyIdentityItems.length ? (
             publishedCompanyIdentityItems.map((item) => (
@@ -125,14 +125,42 @@ export default function HomePage() {
           <p>
             <strong>Operations desk:</strong> {companyProfile.operationsAddress}
           </p>
+          <p>
+            <strong>Partnership model:</strong> {companyProfile.partnershipModel}
+          </p>
           <p className="trust-note">
-            We are a coordination service for cross-border care planning. Hospitals make final
-            clinical decisions.
+            We are a non-clinical medical travel coordination service. Medical treatment is
+            provided by licensed hospitals and clinicians in China. We do not diagnose,
+            prescribe, or guarantee outcomes.
           </p>
           <p>
             <Link href="/about">Open full company profile</Link>
           </p>
         </article>
+      </section>
+
+      <section className="section container">
+        <p className="section-kicker">Payments & Support</p>
+        <h2>How Fees, Hospital Billing, and Support Windows Work</h2>
+        <div className="card-grid three">
+          <article className="card trust-block">
+            <h3>How We Are Paid</h3>
+            <p>{companyProfile.serviceFeeSummary}</p>
+          </article>
+          <article className="card trust-block">
+            <h3>Who You Pay</h3>
+            <p>{companyProfile.treatmentPaymentSummary}</p>
+            <p className="trust-note">
+              This keeps hospital recommendations separate from commission-based incentives.
+            </p>
+          </article>
+          <article className="card trust-block">
+            <h3>Support Hours</h3>
+            <p>{companyProfile.businessHours}</p>
+            <p>{companyProfile.activeClientSupportHours}</p>
+            <p className="trust-note">Urgent post-treatment concerns follow the published 15-minute escalation and 2-hour next-step guidance targets.</p>
+          </article>
+        </div>
       </section>
 
       <section className="section container">
@@ -244,7 +272,7 @@ export default function HomePage() {
         <h2>Real Cases and Patient Voices</h2>
         <p className="muted section-lede">
           Read full case timelines with total spend and follow-up details, then compare with
-          verified patient quotes.
+          disclosure-labeled patient stories and source notes.
         </p>
         <div className="card-grid two">
           {featuredCases.map((item) => (
@@ -260,7 +288,8 @@ export default function HomePage() {
               <h3>{item.name}</h3>
               <p>“{item.content}”</p>
               <p className="trust-note">
-                {item.verified ? "Verified Patient" : "Unverified"} | {item.incentiveDisclosure}
+                {item.verified ? "Documented story" : "Source-pending submission"} |{" "}
+                {item.incentiveDisclosure}
               </p>
             </article>
           ))}

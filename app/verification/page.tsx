@@ -29,7 +29,7 @@ export default function VerificationPage() {
         <h1>Doctor and Hospital Verification</h1>
         <p className="section-lede muted">
           We publish doctor license references, verification links, latest verification
-          date, and scope boundaries so patients can assess suitability before booking.
+          date, official hospital sources, and scope boundaries so patients can assess suitability before booking.
         </p>
         <figure className="editorial-image">
           <Image
@@ -39,6 +39,36 @@ export default function VerificationPage() {
             height={900}
           />
         </figure>
+      </section>
+
+      <section className="section container card-grid three">
+        <article className="card trust-block">
+          <h2>What “Verified Hospital” Means</h2>
+          <p>
+            “Verified Hospital” means the institution is operating legally under Chinese
+            healthcare regulation and that we have cross-checked key public information such
+            as official hospital disclosures, department information, and relevant accreditation
+            or registry references.
+          </p>
+          <p className="trust-note">It does not mean a government guarantee of outcomes.</p>
+        </article>
+
+        <article className="card trust-block">
+          <h2>Official Links</h2>
+          <p>
+            Where available, we link directly to hospital websites, public registries, and
+            official source materials so patients can verify key facts themselves.
+          </p>
+        </article>
+
+        <article className="card trust-block">
+          <h2>Doctor Assignment Note</h2>
+          <p>
+            Doctor profiles on this page are representative examples of verified physicians
+            within partner institutions. Final doctor assignment depends on specialty fit,
+            availability, and the confirmed treatment plan.
+          </p>
+        </article>
       </section>
 
       <section className="section container card-grid three">
@@ -69,6 +99,10 @@ export default function VerificationPage() {
 
       <section className="section container">
         <h2>Doctor Verification and Scope Boundaries</h2>
+        <p className="section-lede muted">
+          Patients should use the registry links below to verify license references and review
+          scope limits before booking. Final allocation may differ based on confirmed case fit.
+        </p>
         <div className="table-scroll">
           <table className="price-table timeline-table">
             <thead>

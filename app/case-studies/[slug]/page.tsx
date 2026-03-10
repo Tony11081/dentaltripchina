@@ -122,7 +122,7 @@ export default async function CaseStudyDetailPage({
           <article className="card trust-block">
             <h3>Verification</h3>
             <p>
-              {item.testimonial.verified ? "Verified patient evidence on file" : "Unverified submission"}
+              {item.testimonial.verified ? "Documented story with source note on file" : "Source-pending submission"}
             </p>
             <p className="trust-note">{item.testimonial.incentiveDisclosure}</p>
           </article>

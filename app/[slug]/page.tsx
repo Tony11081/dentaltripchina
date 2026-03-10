@@ -403,10 +403,10 @@ export default async function RootSlugPage({
 
         <section className="section container card-grid three">
           <article className="card trust-block">
-            <h3>Not Suitable Screening</h3>
+            <h3>Fit Before Booking</h3>
             <p>
-              Use the pre-screen tool to identify profiles that should pause travel until
-              physician clearance is completed.
+              If your available travel window is too short for safe treatment and follow-up,
+              we will tell you directly before booking and recommend pre-clearance or postponement.
             </p>
             <p>
               <Link href="/eligibility-screening">Open screening tool</Link>
@@ -414,22 +414,24 @@ export default async function RootSlugPage({
           </article>
 
           <article className="card trust-block">
-            <h3>Post-Op SLA</h3>
+            <h3>Pre-Travel Quote and Video Consultation</h3>
             <p>
-              Red-flag escalation target: 15 minutes. Clinical pathway target: 2 hours.
+              Itemized quotes can be issued before travel. Doctor video consultation may be
+              arranged after deposit and case pre-screening, depending on hospital and specialty availability.
             </p>
             <p>
-              <Link href="/care-sla">Read SLA details</Link>
+              <Link href="/contact">Request a quote</Link>
             </p>
           </article>
 
           <article className="card trust-block">
-            <h3>Full Budget Planning</h3>
+            <h3>Post-Op Support and Responsibility</h3>
             <p>
-              Build low/median/high budget ranges including travel and follow-up costs.
+              Urgent non-emergency concerns target 15-minute escalation and 2-hour next-step
+              guidance. Clinical responsibility remains with the treating hospital and licensed clinicians.
             </p>
             <p>
-              <Link href="/cost-calculator">Open cost calculator</Link>
+              <Link href="/care-sla">Read SLA details</Link>
             </p>
           </article>
         </section>

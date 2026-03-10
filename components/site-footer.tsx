@@ -2,10 +2,16 @@ import Link from "next/link";
 import {
   companyIdentityDisclosureNote,
   companyProfile,
-  companyProfileStatus
+  publishedCompanyIdentityItems
 } from "@/data/company-profile";
 
 export function SiteFooter() {
+  const legalDisclosure = publishedCompanyIdentityItems.length
+    ? publishedCompanyIdentityItems
+        .map((item) => `${item.label}: ${item.value}`)
+        .join(" | ")
+    : companyIdentityDisclosureNote;
+
   return (
     <footer className="site-footer">
       <div className="container">
@@ -79,12 +85,15 @@ export function SiteFooter() {
 
         <p className="disclaimer">
           Medical disclaimer: DentalTripChina.com provides coordination support and
-          does not replace professional diagnosis or treatment advice.
+          does not replace professional diagnosis or treatment advice. Clinical responsibility
+          remains with the treating hospital and licensed clinicians.
           <br />
-          {companyProfileStatus.hasPublishedLegalEntity &&
-          companyProfileStatus.hasPublishedRegistrationNumber
-            ? `Legal entity: ${companyProfile.legalEntityName} | Registration: ${companyProfile.registrationNumber}`
-            : companyIdentityDisclosureNote}
+          {companyProfile.treatmentPaymentSummary}
+          <br />
+          {legalDisclosure}
+          <br />
+          Images on this website are representative visuals unless explicitly labeled as
+          documentary photography.
         </p>
       </div>
     </footer>

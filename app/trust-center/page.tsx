@@ -54,7 +54,7 @@ export default function TrustCenterPage() {
       <Hero
         eyebrow="Trust Center"
         title="Safety, Credentials, and Transparency"
-        subtitle="Use this page as the evidence layer behind provider selection, content claims, and post-op escalation."
+        subtitle="Use this page as the evidence layer behind provider selection, official-source checks, non-clinical service boundaries, and post-op escalation."
         ctaHref="/verification"
         ctaText="Open verification ledger"
         heroImageSrc={pageImageAssets.trustCenterHero.src}
@@ -124,6 +124,35 @@ export default function TrustCenterPage() {
         </div>
       </section>
 
+      <section className="section container">
+        <p className="section-kicker">Definitions</p>
+        <h2>What Verification Means and Where Responsibility Sits</h2>
+        <div className="card-grid three">
+          <article className="card trust-block">
+            <h3>What “Verified Hospital” Means</h3>
+            <p>{siteTrustStatements.verifiedHospitalDefinition}</p>
+          </article>
+          <article className="card trust-block">
+            <h3>Source Links and Evidence</h3>
+            <p>
+              Where available, we provide direct links to hospital websites, public
+              registries, and source materials so patients can verify key facts themselves.
+            </p>
+          </article>
+          <article className="card trust-block">
+            <h3>Who Pays and Who Is Responsible</h3>
+            <p>
+              Hospital treatment fees are paid directly to the hospital. Clinical responsibility
+              remains with the treating hospital and licensed clinicians.
+            </p>
+            <p className="trust-note">
+              Our role is coordination, translation, records transfer, scheduling, and
+              continuity support.
+            </p>
+          </article>
+        </div>
+      </section>
+
       <section className="section container" id="verification-ledger">
         <p className="section-kicker">Hospital Credentials</p>
         <h2>Verification Ledger</h2>
@@ -182,10 +211,11 @@ export default function TrustCenterPage() {
 
       <EmergencyPathway
         items={[
-          "Urgent symptom reports are triaged immediately and escalated to provider channels.",
-          "In-country patients are directed to nearest clinically appropriate emergency facility.",
-          "Returned patients receive continuity documentation for local follow-up.",
-          "Serious events are logged and included in quarterly quality review."
+          "For urgent non-emergency concerns, we aim to acknowledge and start escalation within 15 minutes.",
+          "Within 2 hours, we aim to provide a documented next-step response that may include hospital coordination, same-day review arrangements, translation support, medication clarification, or advice to seek local emergency care.",
+          "In any medical emergency, patients should go to the nearest emergency department first.",
+          "Clinical responsibility remains with the treating hospital and licensed clinicians; our role is to coordinate communication, records transfer, appointment scheduling, translation, and continuity support.",
+          "If a dispute arises, we support the patient by organizing records, translations, timelines, and communication with the provider."
         ]}
       />
 
@@ -211,7 +241,7 @@ export default function TrustCenterPage() {
           </article>
           <article className="card trust-block">
             <h3>Post-Op SLA & Metrics</h3>
-            <p>Published response commitments and monthly performance indicators.</p>
+            <p>Published 15-minute escalation and 2-hour next-step guidance commitments with monthly performance indicators.</p>
             <p>
               <Link href="/care-sla">SLA</Link> | <Link href="/trust-dashboard">Dashboard</Link>
             </p>

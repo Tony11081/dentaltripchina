@@ -7,6 +7,7 @@ import {
   companyProfile,
   publishedCompanyIdentityItems
 } from "@/data/company-profile";
+import { siteTrustStatements } from "@/data/trust";
 import { buildMetadata } from "@/lib/metadata";
 import { pageImageAssets } from "@/lib/site-images";
 
@@ -31,13 +32,13 @@ export default function AboutPage() {
       <Hero
         eyebrow="About DentalTripChina"
         title="Built for Safe, Transparent Medical Travel"
-        subtitle="We are a medical travel coordination service. We do not replace hospital diagnosis or clinical decision-making."
+        subtitle="We coordinate care planning with officially partnered hospitals in Beijing and Shanghai. We do not replace hospital diagnosis or clinical decision-making."
         heroImageSrc={pageImageAssets.aboutHero.src}
         heroImageAlt={pageImageAssets.aboutHero.alt}
         heroMetrics={[
           { value: "Coordination", label: "Service role" },
           { value: "2h", label: "Response target" },
-          { value: "EN", label: "Patient support" }
+          { value: "24/7", label: "Active-client urgent support" }
         ]}
         panelTitle="What we handle and what stays with the hospital"
         panelDescription="The about page should make commercial scope and clinical boundaries obvious before anyone books."
@@ -50,10 +51,11 @@ export default function AboutPage() {
 
       <section className="section container card-grid three">
         <article className="card">
-          <h3>Hospital Matching</h3>
+          <h3>Official Hospital Partnerships</h3>
           <p>
-            We shortlist providers by treatment fit, availability, communication standards,
-            and patient travel constraints.
+            We work with officially partnered hospitals and departments and help patients
+            compare options by treatment fit, availability, communication standards, and
+            travel constraints.
           </p>
         </article>
         <article className="card">
@@ -65,7 +67,8 @@ export default function AboutPage() {
         <article className="card">
           <h3>English Support</h3>
           <p>
-            Our process prioritizes institutions with dedicated international service teams.
+            English-speaking coordination and interpretation support are arranged throughout the
+            planning and in-country treatment process.
           </p>
         </article>
       </section>
@@ -113,7 +116,10 @@ export default function AboutPage() {
                 </a>
               </li>
               <li>
-                <strong>Hours:</strong> {companyProfile.businessHours}
+                <strong>Pre-booking support:</strong> {companyProfile.businessHours}
+              </li>
+              <li>
+                <strong>Active-client support:</strong> {companyProfile.activeClientSupportHours}
               </li>
             </ul>
             <p>
@@ -128,26 +134,31 @@ export default function AboutPage() {
         <h2>How We Work and Where Responsibility Sits</h2>
         <div className="card-grid three">
           <article className="card trust-block">
-            <h3>Service Role Boundary</h3>
+            <h3>Commercial Independence</h3>
             <p>
-              We are a coordination service. Hospitals and licensed doctors make final
-              diagnosis, candidacy, and treatment decisions.
+              {companyProfile.serviceFeeSummary}
             </p>
           </article>
 
           <article className="card trust-block">
-            <h3>Commercial Transparency</h3>
+            <h3>Who You Pay</h3>
             <p>
-              Cost plans separate treatment fees from travel/logistics. Incentives or
-              referral relationships are disclosed in writing before booking.
+              {companyProfile.treatmentPaymentSummary}
+            </p>
+            <p className="trust-note">
+              Itemized quotes can be provided before travel, and hospital billing remains
+              separate from our coordination fee.
             </p>
           </article>
 
           <article className="card trust-block">
-            <h3>Escalation and Complaint Path</h3>
+            <h3>Doctors, Liability, and Advocacy</h3>
             <p>
-              Red-flag symptoms follow published SLA pathways. Formal complaints are tracked
-              with handling timelines and closure records.
+              {siteTrustStatements.doctorAssignmentPolicy}
+            </p>
+            <p className="trust-note">
+              Clinical responsibility remains with the treating hospital and licensed clinicians.
+              We support patients with records, translations, and escalation coordination.
             </p>
           </article>
         </div>

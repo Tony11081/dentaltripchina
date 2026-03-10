@@ -50,6 +50,7 @@ export default function PrivacyPage() {
             <li>Identity and contact details (name, email, WhatsApp, country).</li>
             <li>Treatment intent, timeline preferences, and city preference.</li>
             <li>Optional notes you provide for case triage.</li>
+            <li>Initial anonymous or partial-information enquiries are accepted before full case review.</li>
             <li>Operational logs (response timing, form events, support history).</li>
           </ul>
         </article>
@@ -57,7 +58,8 @@ export default function PrivacyPage() {
         <article className="card trust-block">
           <h2>Cross-Border Medical Data Handling</h2>
           <ul className="trust-list">
-            <li>Data is shared only with shortlisted providers needed for coordination.</li>
+            <li>Records are handled on a need-to-know basis by authorized coordination staff.</li>
+            <li>With patient consent, records may be shared with up to 3 shortlisted hospitals for case review and quote comparison.</li>
             <li>Minimum-necessary fields are transferred for scheduling and triage.</li>
             <li>Transfers occur over access-controlled channels with role-based permissions.</li>
             <li>No sale of patient data to advertisers or data brokers.</li>
@@ -86,6 +88,18 @@ export default function PrivacyPage() {
           </ol>
           <p>
             Request deletion via <Link href="/contact">Contact page</Link>.
+          </p>
+        </article>
+
+        <article className="card trust-block">
+          <h2>Communication Channels</h2>
+          <p>
+            Email-only communication is supported and does not automatically slow the process.
+            WhatsApp is optional.
+          </p>
+          <p className="trust-note">
+            Full quoting, hospital review, and booking require identity and medical details even
+            if the first enquiry is anonymous.
           </p>
         </article>
       </section>

@@ -226,9 +226,9 @@ const defaultTrustProfile: Omit<ProcedureTrustProfile, "procedureSlug" | "chinaT
     "Extended observation if clinical recovery is delayed"
   ],
   refundPolicy:
-    "Unconsumed coordination fees may be refunded according to signed service terms; hospital clinical fees follow provider policy.",
+    "Our coordination fee starts once case work begins. If a client cancels mid-process, the refundable portion depends on work already completed and any committed third-party costs. Hospital clinical fees follow provider policy.",
   reschedulePolicy:
-    "One free reschedule is available with at least 72-hour notice; subsequent changes may incur provider penalties.",
+    "Rescheduling depends on hospital availability and timing. Hospital penalties may apply after confirmation cutoff, and added coordination time may be billed when the service scope materially expands.",
   noOutcomeGuarantee:
     "Clinical outcomes vary by patient condition. No guaranteed medical outcome or timeline is promised."
 };
@@ -320,18 +320,26 @@ export const blogTrustProfiles: BlogTrustProfile[] = blogPosts.map((post) => ({
 
 export const siteTrustStatements = {
   testimonialPolicy:
-    "Patient stories are published only with consent and verification evidence. If any incentive is provided, it is explicitly disclosed beside the testimonial.",
+    "Patient stories are published with consent and disclosure notes. Some stories may include internal documentation checks, but they should not be interpreted as an independent third-party patient verification system.",
   privacySummary:
-    "We collect only the minimum required information for treatment matching and logistics. Data is access-controlled, retention-limited, and never sold.",
+    "We collect only the minimum required information for treatment matching and logistics. Records are handled on a need-to-know basis by authorized coordination staff, shared only as needed for case review, and never sold.",
   dataHandling: [
     "Purpose: case evaluation, appointment coordination, and patient communication",
     "Retention: inquiry data is retained for up to 24 months unless deletion is requested",
-    "Cross-border transfer: data may be shared with selected providers strictly for treatment coordination"
+    "Cross-border transfer: with patient consent, records may be shared with up to 3 shortlisted hospitals for case review and quote comparison"
   ],
   contentReviewPolicy:
     "Medical pages are reviewed by a qualified clinical reviewer and show the latest review date.",
   legalDisclaimer:
-    "DentalTripChina.com is a coordination service. Final diagnosis and treatment decisions are made by licensed medical professionals.",
+    "DentalTripChina.com is a non-clinical coordination service. Clinical responsibility and treatment decisions remain with the treating hospital and licensed clinicians.",
   incentiveDisclosurePolicy:
-    "Testimonials are labeled as verified or unverified. Any voucher, fee reduction, or service benefit is disclosed on the testimonial card."
+    "Any voucher, fee reduction, or service benefit is disclosed on the testimonial or case card. Patient stories are labeled as documented stories or source-pending submissions rather than 'verified patient' claims.",
+  doctorAssignmentPolicy:
+    "Doctor profiles on this website are representative examples of verified physicians within partner institutions. Final doctor assignment depends on specialty fit, availability, and the confirmed treatment plan.",
+  verifiedHospitalDefinition:
+    "\"Verified Hospital\" means the institution is operating legally under Chinese healthcare regulation and that we have cross-checked key public information such as official hospital disclosures, department information, and relevant accreditation or registry references. It does not mean a government guarantee of outcomes.",
+  patientAdvocacyPolicy:
+    "If a dispute arises, we support the patient by organizing records, translations, timelines, and communication with the provider. We do not replace formal legal or clinical channels, but we help the patient understand the process and next steps.",
+  imageNotice:
+    "Images on this website are representative visuals used for planning and presentation. They should not be interpreted as documentary photographs of a specific doctor, patient, or treatment event unless explicitly stated."
 };

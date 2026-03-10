@@ -29,7 +29,7 @@ export default function ContactPage() {
       <Hero
         eyebrow="Free Consultation"
         title="Request Your Personalized Treatment Plan"
-        subtitle="Share your needs and choose your contact channel: email only, WhatsApp, or both."
+        subtitle="Share your needs and choose your contact channel: email only, WhatsApp, or both. Anonymous first contact is possible, and active clients receive 24/7 urgent coordination support."
         secondaryHref={`mailto:${companyProfile.supportEmail}`}
         secondaryText="Email Support"
         heroImageSrc={pageImageAssets.contactHero.src}
@@ -78,6 +78,7 @@ export default function ContactPage() {
               </a>
             </p>
             <p className="trust-note">{companyProfile.businessHours}</p>
+            <p className="trust-note">{companyProfile.activeClientSupportHours}</p>
           </article>
         </div>
       </section>
@@ -85,8 +86,43 @@ export default function ContactPage() {
       <section className="section container">
         <div className="cta-box">
           <h2>Inquiry Form</h2>
-          <p>You can submit with email only. WhatsApp is optional.</p>
+          <p>You can submit with email only. WhatsApp is optional and does not automatically speed up the process.</p>
           <InquiryForm />
+        </div>
+      </section>
+
+      <section className="section container">
+        <p className="section-kicker">Before You Submit</p>
+        <h2>What Happens After First Contact</h2>
+        <div className="card-grid three">
+          <article className="card trust-block">
+            <h3>Email-Only and Anonymous Enquiries</h3>
+            <p>
+              Email-only enquiries are fully supported. Initial anonymous or partial-information
+              enquiries are possible, although final quoting, hospital review, and scheduling
+              require identity and medical details.
+            </p>
+          </article>
+
+          <article className="card trust-block">
+            <h3>Records Review and Video Consultation</h3>
+            <p>
+              With your consent, records may be shared with up to 3 shortlisted hospitals for
+              case review and quote comparison.
+            </p>
+            <p className="trust-note">
+              Doctor video consultation may be arranged after deposit and case pre-screening,
+              depending on hospital and specialty availability.
+            </p>
+          </article>
+
+          <article className="card trust-block">
+            <h3>Travel Coordination</h3>
+            <p>
+              We can coordinate invitation materials, appointment confirmations, airport pickup,
+              and delay-response planning once your case is active.
+            </p>
+          </article>
         </div>
       </section>
 
@@ -106,8 +142,9 @@ export default function ContactPage() {
           <article className="card trust-block">
             <h3>Response Promise</h3>
             <p>
-              We respond within 2 hours for standard inquiries and escalate urgent
-              concerns immediately through provider channels.
+              We aim to respond within 2 hours for standard inquiries. Active clients with
+              urgent non-emergency post-treatment concerns enter the published 15-minute
+              escalation and 2-hour next-step guidance pathway.
             </p>
             <p className="trust-note">
               Never share passports or sensitive records over unsecured channels.
@@ -118,7 +155,8 @@ export default function ContactPage() {
             <h3>Patient Rights</h3>
             <p>
               You can request correction or deletion of your inquiry data. We honor
-              valid requests according to applicable privacy rules.
+              valid requests according to applicable privacy rules, and email-only
+              communication remains available if you do not want to use WhatsApp.
             </p>
             <p>
               <Link href="/trust-center">Read full trust and policy details</Link>

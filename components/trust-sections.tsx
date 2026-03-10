@@ -49,6 +49,7 @@ export function DoctorProfiles({ doctors }: DoctorProfilesProps) {
     <section className="section container">
       <p className="section-kicker">Doctor Desk</p>
       <h2>Named Specialists</h2>
+      <p className="section-lede muted">{siteTrustStatements.doctorAssignmentPolicy}</p>
       <div className="card-grid two">
         {doctors.map((doctor) => (
           <article className="card trust-block" key={doctor.licenseNumber}>
@@ -221,10 +222,10 @@ export function SiteDisclosurePanel() {
   return (
     <section className="section container">
       <p className="section-kicker">Trust Policy</p>
-      <h2>How We Handle Safety, Privacy, and Claims</h2>
+      <h2>How We Handle Safety, Privacy, Claims, and Images</h2>
       <div className="card-grid three">
         <article className="card trust-block">
-          <h3>Testimonials and Claims</h3>
+          <h3>Patient Stories and Claims</h3>
           <p>{siteTrustStatements.testimonialPolicy}</p>
           <p className="trust-note">{siteTrustStatements.incentiveDisclosurePolicy}</p>
         </article>
@@ -245,6 +246,14 @@ export function SiteDisclosurePanel() {
           <p className="trust-note">{siteTrustStatements.legalDisclaimer}</p>
           <p>
             <Link href="/trust-center">Open full Trust Center</Link>
+          </p>
+        </article>
+
+        <article className="card trust-block">
+          <h3>Image Notice</h3>
+          <p>{siteTrustStatements.imageNotice}</p>
+          <p className="trust-note">
+            Documentary photography is identified explicitly when used.
           </p>
         </article>
       </div>

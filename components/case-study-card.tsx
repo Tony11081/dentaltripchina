@@ -33,7 +33,7 @@ export function CaseStudyCard({ item }: CaseStudyCardProps) {
       </p>
       <div className="badge-row">
         <span className="badge">{item.complication.occurred ? "Complication Managed" : "No Complication"}</span>
-        <span className="badge">{item.testimonial.verified ? "Verified Patient" : "Unverified"}</span>
+        <span className="badge">{item.testimonial.verified ? "Documented Story" : "Source Pending"}</span>
       </div>
       <p>
         <Link className="btn btn-secondary" href={`/case-studies/${item.slug}`}>

@@ -8,9 +8,9 @@ import { buildMetadata } from "@/lib/metadata";
 import { pageImageAssets } from "@/lib/site-images";
 
 export const metadata: Metadata = buildMetadata({
-  title: "Verified Patient Testimonials",
+  title: "Patient Testimonials",
   description:
-    "Read disclosure-labeled patient testimonials and see how verification and incentive policies are handled.",
+    "Read disclosure-labeled patient testimonials and see how source notes and incentive policies are handled.",
   path: "/testimonials",
   imagePath: pageImageAssets.testimonialsHero.src
 });
@@ -28,7 +28,7 @@ export default function TestimonialsPage() {
       <Hero
         eyebrow="Patient Stories"
         title="Experiences from International Patients"
-        subtitle="Verified and disclosure-labeled testimonials from patients who traveled to China for treatment."
+        subtitle="Disclosure-labeled patient stories and source notes from people who traveled to China for treatment."
         heroImageSrc={pageImageAssets.testimonialsHero.src}
         heroImageAlt={pageImageAssets.testimonialsHero.alt}
       />
@@ -42,13 +42,13 @@ export default function TestimonialsPage() {
             </p>
             <p>{item.content}</p>
             <p className={`badge ${item.verified ? "verified-badge" : "unverified-badge"}`}>
-              {item.verified ? "Verified Patient" : "Unverified Submission"}
+              {item.verified ? "Documented Story" : "Source-Pending Submission"}
             </p>
             <p className="trust-note">
               <strong>Incentive disclosure:</strong> {item.incentiveDisclosure}
             </p>
             <p className="muted">
-              <strong>Verification method:</strong> {item.verificationMethod}
+              <strong>Source note:</strong> {item.verificationMethod}
             </p>
           </article>
         ))}

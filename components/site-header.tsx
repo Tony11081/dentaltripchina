@@ -103,7 +103,7 @@ export function SiteHeader() {
         </button>
 
         <div className="header-actions">
-          <span className="support-pill">24/7 English Support</span>
+          <span className="support-pill">Pre-booking 08:00-22:00 | 24/7 active care</span>
           <Link href="/contact" className="btn btn-primary header-quote">
             <span className="header-quote-desktop">Free Quote</span>
             <span className="header-quote-mobile">Quote</span>
