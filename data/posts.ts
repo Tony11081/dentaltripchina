@@ -366,5 +366,33 @@ export const blogPosts: BlogPost[] = [
     timelineFocus: "Pre-travel 2-4 weeks",
     relatedProcedureSlug: "health-checkup-china",
     relatedCaseSlug: "ca-health-checkup-incidental-findings"
+  },
+  {
+    slug: "us-all-on-4-cost-china-vs-home",
+    title: "US Patients: All-on-4 Cost in China vs Home — What Your Budget Actually Covers",
+    category: "cost-comparisons",
+    tags: ["All-on-4 cost US", "full mouth implants China", "dental travel budget"],
+    excerpt: "A side-by-side cost framework comparing US and China All-on-4 pathways, including hidden expenses most patients miss.",
+    content: [
+      "All-on-4 full-arch treatment in the US can range widely depending on provider type, geographic location, and whether the quote includes prosthetic stages. Many US patients first explore international options after seeing a domestic quote that feels incomplete: the base price excludes imaging, sedation, provisional restorations, or extended follow-up. Before comparing China alternatives, the essential step is to understand what your US quote actually covers. Two numbers that look different may not be equivalent offers.",
+      "A common US cost structure separates surgical placement from prosthetic restoration. The surgical fee may cover implant placement and anesthesia, while the prosthetic phase — temporary teeth, final arch fabrication, and adjustment visits — is billed separately. Some US practices bundle these into one pathway fee, but patients often discover mid-process that certain stages carry additional charges. This scope fragmentation is one of the primary reasons US patients start researching cross-border options.",
+      "China-based All-on-4 pathways typically present a more consolidated package structure. A well-scoped offer should list diagnostics, surgical placement, provisional restoration, follow-up visits, and medication assumptions in one framework. The advantage is not simply lower headline price; it is greater scope visibility at the planning stage. Patients who compare a bundled China offer against a fragmented US offer may find the actual price gap is smaller than it first appears — or larger, depending on what each side includes.",
+      "For US patients, the budget model should include five operational blocks: treatment core, travel and accommodation, follow-up and medication, continuity documentation, and contingency reserve. Treatment core covers the clinical pathway. Travel includes round-trip flights and hotel nights near the provider. Follow-up covers post-op checks and any prescription needs. Continuity covers handoff preparation for your US dentist. Contingency protects against findings that alter the plan after imaging or early healing review.",
+      "The contingency block deserves special attention in All-on-4 planning. Full-arch pathways are more sensitive to bone condition, bite design, and tissue response than single-implant cases. Even well-screened patients can face mid-course adjustments. A realistic contingency allocation prevents financial pressure from influencing clinical decisions. Patients who reserve nothing for contingencies are more likely to compress recovery or skip recommended observation, both of which increase long-term risk.",
+      "Timeline planning is where US patients often underestimate complexity. A safe All-on-4 trip usually requires more days than a single-implant pathway because the procedure has larger functional implications and needs structured early monitoring. Patients should plan for pre-arrival record review, in-country diagnostics, surgical planning confirmation, procedure day, and multiple follow-up checkpoints before long-haul return. Hard return schedules that conflict with clinical milestones are the most common source of avoidable stress.",
+      "US insurance context also shapes the comparison. Most US dental insurance plans offer limited coverage for implant-supported restorations, and All-on-4 frequently falls outside standard benefit structures. Many US patients are already approaching this pathway as largely out-of-pocket, which changes the comparison framework. When out-of-pocket is the baseline, international cost advantages become more tangible because there is less insurance abstraction obscuring true spend.",
+      "Provider comparison should focus on scope clarity and documented boundaries. Confirm whether quoted costs include all diagnostics, provisional stages, follow-up visits, and expected medication. Ask what triggers additional charges and whether the provider declines cases that do not meet candidacy thresholds. A provider willing to say no to marginal cases is often more trustworthy than one that accepts every inquiry. Boundary clarity is a quality signal in complex restorative care.",
+      "After returning to the US, continuity planning should be treated as part of the treatment pathway, not as an administrative afterthought. Request a concise handoff document covering diagnostics, implant system details, procedure notes, and follow-up checkpoints. US-based restorative dentists can then maintain the final prosthetic phase or monitor long-term integration more efficiently when they have structured context. Good continuity reduces duplicated imaging and prevents information gaps.",
+      "Bottom line: All-on-4 in China can offer meaningful value for selected US patients, particularly when the domestic quote is fragmented and out-of-pocket exposure is high. But the decision should be scope-driven, not price-driven. Compare complete pathways, budget with three scenarios, preserve follow-up windows, and prepare continuity before departure. That framework turns a significant medical decision into a structured, lower-risk plan."
+    ],
+    datePublished: "2026-03-27",
+    dateUpdated: "2026-03-27",
+    authorName: "Olivia Bennett",
+    coverImage: getBlogCategoryImage("cost-comparisons").src,
+    authorSlug: "olivia-bennett",
+    countryFocus: "United States",
+    budgetFocus: "USD 8,000-15,000",
+    timelineFocus: "10-14 days",
+    relatedProcedureSlug: "all-on-4-china"
   }
 ];
