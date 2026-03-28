@@ -394,5 +394,33 @@ export const blogPosts: BlogPost[] = [
     budgetFocus: "USD 8,000-15,000",
     timelineFocus: "10-14 days",
     relatedProcedureSlug: "all-on-4-china"
+  },
+  {
+    slug: "veneers-china-cost-australia-planning-guide",
+    title: "Veneers in China from Australia: Cost Comparison and 7-Day Planning Guide",
+    category: "cost-comparisons",
+    tags: ["veneers cost Australia", "cosmetic dentistry China", "dental veneer travel"],
+    excerpt: "A cost-driven comparison of Australian and China veneer pathways with a practical 7-day trip framework.",
+    content: [
+      "Australian patients exploring veneer treatment in China usually start with one question: how much can I actually save? The honest answer depends on veneer type, case complexity, and what each quote includes. Comparing a per-tooth headline price from Australia against a bundled China offer without checking scope equivalence leads to misleading conclusions. The first step is always to understand what your Australian quote covers — lab fees, preparation, fitting, adjustments, and review visits — before evaluating international alternatives.",
+      "In Australia, porcelain veneer pricing typically ranges higher per unit due to lab costs, specialist fees, and clinic overheads in major cities. Composite veneers sit lower but carry different longevity and maintenance profiles. Many Australian patients receive quotes that separate consultation, preparation, fitting, and review into distinct billing stages. This fragmentation can make the true total unclear until treatment is underway. When patients see mid-process additions, confidence drops and budget stress rises.",
+      "China-based veneer pathways often present a more consolidated cost structure. A well-scoped offer should outline consultation, diagnostic imaging, design planning, preparation, fitting, adjustment visits, and immediate follow-up within one framework. The value proposition is not simply lower price per unit; it is greater cost visibility at the planning stage. Patients who compare a bundled China pathway against a fragmented Australian pathway sometimes find the real gap is narrower than expected, or wider, depending on inclusion depth.",
+      "Candidacy assessment is the most important planning step, and it should happen before any flight booking. Veneers are not suitable for every case. Patients with significant bite misalignment, heavy bruxism, or insufficient enamel may need alternative approaches or pre-treatment conditioning. Sending photos, dental records, and a clear wish list to the provider before travel reduces the risk of arriving and hearing that your case requires a different plan. Pre-screening protects both timeline and budget.",
+      "A practical 7-day itinerary for Australian veneer patients usually follows this structure: arrival and consultation on day one, diagnostics and design confirmation on days two and three, preparation and mock-up on day four, fitting and initial adjustment on day five, refinement and observation on day six, and final review before departure on day seven. This model works best for moderate-complexity cases with clear esthetic goals. Patients needing substantial bite correction or multiple restorations may require a longer window.",
+      "Budget planning should use a three-layer model. The base layer covers core treatment: consultation, imaging, design, preparation, fitting, and standard adjustments. The middle layer adds travel costs: return flights from Australia, hotel nights near the clinic, local transport, and meals. The top layer reserves contingency for additional refinement visits, shade changes after fitting, or extended observation if healing takes longer than expected. Patients who budget only for the base layer often feel pressured to accept outcomes before they are fully satisfied.",
+      "Travel logistics from Australia deserve careful attention to time zones and arrival timing. Flights from Sydney or Melbourne to Shanghai or Beijing are manageable in duration, but jet lag can affect comfort during early appointments. Arriving one day before the first clinical touchpoint gives the body time to adjust and reduces the chance of making esthetic decisions while fatigued. Accommodation near the treatment corridor shortens transfer times and supports punctual attendance at design and fitting sessions.",
+      "Post-return continuity should be planned before departure. Request a summary document covering veneer specifications, material details, shade codes, and recommended maintenance intervals. Share this with your Australian dentist so they can monitor long-term integration and respond quickly if sensitivity or margin concerns develop. Good continuity documentation prevents information loss and avoids unnecessary duplicate imaging if issues arise after return.",
+      "Cost comparison is a legitimate reason to explore international veneer options, but it should not override candidacy discipline. A veneer that is cheap but unsuitable for your bite pattern or enamel condition will cost more in the long run through revision or replacement. The strongest patients for cross-border veneers are those with moderate cosmetic goals, stable oral health, and realistic timeline expectations. If your case is complex, a longer planning window or home-based specialist may be the safer choice.",
+      "For Australian patients, the veneer decision framework should include four checkpoints: validate candidacy with pre-screening records, compare complete scope not headline price, budget with travel and contingency layers included, and prepare continuity documentation before return. Patients who follow this framework typically report higher satisfaction and fewer post-trip surprises. The goal is not the cheapest veneer; it is the right veneer at a predictable total cost with clear aftercare support."
+    ],
+    datePublished: "2026-03-28",
+    dateUpdated: "2026-03-28",
+    authorName: "Olivia Bennett",
+    coverImage: getBlogCategoryImage("dental").src,
+    authorSlug: "olivia-bennett",
+    countryFocus: "Australia",
+    budgetFocus: "AUD 4,000-9,000",
+    timelineFocus: "7-8 days",
+    relatedProcedureSlug: "veneers-china"
   }
 ];
