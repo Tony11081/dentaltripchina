@@ -378,7 +378,7 @@ export function InquiryForm() {
       {renderFieldError("consent")}
 
       <button type="submit" className="btn btn-primary" disabled={loading}>
-        {loading ? "Submitting..." : "Request Free Consultation"}
+        {loading ? "Sending..." : "Get my free quote"}
       </button>
 
       {message ? (

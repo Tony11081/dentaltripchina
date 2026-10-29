@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { SealMark } from "@/components/seal-mark";
 import { hasWhatsapp, whatsappHref } from "@/lib/contact";
 
 const desktopNavItems = [
@@ -73,7 +74,7 @@ export function SiteHeader() {
     <header className="site-header">
       <div className="container header-inner">
         <Link href="/" className="logo" aria-label="DentalTripChina home">
-          <span className="logo-mark" aria-hidden="true">齿</span>
+          <SealMark />
           <span className="logo-word">
             DentalTrip<span>China</span>
           </span>

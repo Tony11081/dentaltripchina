@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { SealMark } from "@/components/seal-mark";
 import { telHref } from "@/lib/contact";
 import {
   companyIdentityDisclosureNote,
@@ -19,7 +20,7 @@ export function SiteFooter() {
         <div className="footer-top">
           <div className="footer-brand">
             <span className="footer-kicker">
-              <span className="logo-mark" aria-hidden="true">齿</span>
+              <SealMark size={30} />
               DentalTripChina
             </span>
             <p>

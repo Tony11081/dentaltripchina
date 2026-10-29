@@ -139,12 +139,14 @@ export default function HomePage() {
 
       <section className="hospital-strip" aria-label="Partner hospitals">
         <div className="container hospital-strip-inner">
-          <p className="hospital-strip-label">Treatment at JCI-accredited hospitals</p>
+          <p className="hospital-strip-label">Our partner hospitals</p>
           {featuredHospitals.map((hospital) => (
             <p className="hospital-strip-item" key={hospital.slug}>
               <strong>{hospital.name}</strong>
               <span>
-                {cityName[hospital.city]}, accredited since {hospital.jciYear}
+                {hospital.jciYear > 0
+                  ? `${cityName[hospital.city]}, JCI accredited since ${hospital.jciYear}`
+                  : `${cityName[hospital.city]}, specialist eye hospital`}
               </span>
             </p>
           ))}
@@ -258,8 +260,8 @@ export default function HomePage() {
       <section className="section container" aria-labelledby="hospitals-title">
         <h2 id="hospitals-title">The hospitals we work with</h2>
         <p className="section-lede">
-          Private international hospitals with English-speaking staff and Joint Commission
-          International accreditation. You choose the hospital; we explain the options.
+          International hospitals with English-speaking staff, most of them accredited by Joint
+          Commission International. You choose the hospital; we explain the options.
         </p>
         <div className="home-hospitals">
           {featuredHospitals.map((hospital) => (
@@ -279,11 +281,13 @@ export default function HomePage() {
               </h3>
               <p>{hospital.summary}</p>
               <ul className="home-hospital-meta">
-                <li className="jci">
-                  <a href={hospital.jciVerifyUrl} target="_blank" rel="noopener noreferrer">
-                    JCI accredited since {hospital.jciYear}
-                  </a>
-                </li>
+                {hospital.jciYear > 0 && (
+                  <li className="jci">
+                    <a href={hospital.jciVerifyUrl} target="_blank" rel="noopener noreferrer">
+                      JCI accredited since {hospital.jciYear}
+                    </a>
+                  </li>
+                )}
                 {hospital.englishStaff && <li>English-speaking staff</li>}
               </ul>
             </article>

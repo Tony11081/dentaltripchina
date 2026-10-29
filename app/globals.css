@@ -250,20 +250,8 @@ h4 {
 }
 
 .logo-mark {
-  width: 34px;
-  height: 34px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  display: block;
   flex: 0 0 auto;
-  border-radius: 4px;
-  color: #fff;
-  background: var(--seal);
-  font-family: "Songti SC", "Noto Serif SC", "SimSun", serif;
-  font-size: 1.2rem;
-  font-weight: 700;
-  line-height: 1;
-  box-shadow: inset 0 0 0 2px var(--seal), inset 0 0 0 3px rgba(255, 255, 255, 0.7);
 }
 
 .logo-word span {
@@ -990,7 +978,7 @@ h4 {
 
 .phone-split {
   display: grid;
-  grid-template-columns: 1fr 1.6fr;
+  grid-template-columns: minmax(118px, 1fr) 1.4fr;
   gap: 8px;
 }
 
@@ -1827,6 +1815,11 @@ h4 {
   align-items: start;
 }
 
+.home-quote-inner > div:first-child {
+  position: sticky;
+  top: 104px;
+}
+
 .home-quote-steps {
   margin: 24px 0 0;
   padding: 0 0 0 22px;
@@ -1891,7 +1884,9 @@ h4 {
   .nav-list {
     gap: 20px;
   }
+}
 
+@media (max-width: 900px) {
   .journey {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     row-gap: 36px;
@@ -1922,6 +1917,10 @@ h4 {
 
   .home-hero-copy {
     padding-top: 0;
+  }
+
+  .home-quote-inner > div:first-child {
+    position: static;
   }
 
   .home-hospitals,
