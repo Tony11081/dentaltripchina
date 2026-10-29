@@ -1,4 +1,4 @@
-const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "8613800138000";
+import { whatsappNumber } from "@/lib/contact";
 
 export function isPublishedCompanyField(value: string) {
   return value.trim().length > 0;
@@ -18,7 +18,7 @@ export const companyProfile = {
     process.env.DTC_PUBLIC_XRAY_EMAIL ||
     process.env.DTC_PUBLIC_SUPPORT_EMAIL ||
     "xray@dentaltripchina.com",
-  supportPhone: process.env.DTC_PUBLIC_SUPPORT_PHONE || `+${whatsappNumber}`,
+  supportPhone: process.env.DTC_PUBLIC_SUPPORT_PHONE || (whatsappNumber ? `+${whatsappNumber}` : ""),
   businessHours:
     process.env.DTC_PUBLIC_BUSINESS_HOURS ||
     "Pre-booking support: Mon-Sun 08:00-22:00 China Time (UTC+8)",

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { mailerReady, sendMail } from "@/lib/mailer";
 import { companyProfile } from "@/data/company-profile";
+import { notifyLead, saveLead } from "@/lib/lead-store";
 
 const MAX_FILES = 3;
 const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024;
@@ -156,62 +157,77 @@ export async function POST(request: Request) {
   }
 
   const operatorEmail = process.env.DTC_OPERATOR_EMAIL;
+  const summary = [
+    `Name: ${data.fullName}`,
+    `Email: ${data.email}`,
+    `Contact preference: ${data.contactPreference}`,
+    `WhatsApp: ${data.whatsapp || "Not provided"}`,
+    `Country: ${data.country}`,
+    `Procedures: ${data.procedures.join(", ")}`,
+    `Preferred City: ${data.city || "Not decided"}`,
+    `Travel Dates: ${data.travelDates || "Not provided"}`,
+    `Notes: ${data.notes || "Not provided"}`,
+    `Attachments: ${
+      attachments.length ? attachments.map((item) => item.filename).join(", ") : "No files uploaded"
+    }`
+  ].join("\n");
 
-  if (!operatorEmail || !mailerReady) {
-    console.error(
-      "[inquiry] Missing operator routing or SMTP configuration, refusing submission to prevent lead loss."
-    );
+  // 1) Persist first: the lead must survive even if email is missing or fails.
+  let leadId = "";
+  try {
+    const saved = await saveLead("inquiry", { ...data }, attachments);
+    leadId = saved.id;
+  } catch (error) {
+    console.error("[inquiry] Failed to persist lead.", error);
+  }
+
+  // 2) Email the operator when SMTP is configured.
+  let emailed = false;
+  if (operatorEmail && mailerReady) {
+    try {
+      await sendMail({
+        to: operatorEmail,
+        subject: `[DentalTripChina] New inquiry from ${data.fullName}`,
+        replyTo: data.email,
+        text: ["New inquiry submission", "---------------------", summary, leadId ? `Lead ID: ${leadId}` : ""]
+          .filter(Boolean)
+          .join("\n"),
+        attachments
+      });
+      emailed = true;
+    } catch (error) {
+      console.error("[inquiry] Failed to send operator email.", error);
+    }
+  }
+
+  if (!leadId && !emailed) {
+    console.error("[inquiry] Lead could not be stored or emailed.");
     return NextResponse.json(
       {
         ok: false,
-        message:
-          `Inquiry service is temporarily unavailable. Please email ${companyProfile.supportEmail} while we restore operator routing.`
+        message: `Inquiry service is temporarily unavailable. Please email ${companyProfile.supportEmail} and we will reply quickly.`
       },
       { status: 503 }
     );
   }
 
-  try {
-    await sendMail({
-      to: operatorEmail,
-      subject: `[DentalTripChina] New inquiry from ${data.fullName}`,
-      replyTo: data.email,
-      text: [
-        "New inquiry submission",
-        "---------------------",
-        `Name: ${data.fullName}`,
-        `Email: ${data.email}`,
-        `Contact preference: ${data.contactPreference}`,
-        `WhatsApp: ${data.whatsapp || "Not provided"}`,
-        `Country: ${data.country}`,
-        `Procedures: ${data.procedures.join(", ")}`,
-        `Preferred City: ${data.city || "Not decided"}`,
-        `Travel Dates: ${data.travelDates || "Not provided"}`,
-        `Notes: ${data.notes || "Not provided"}`,
-        `Attachments: ${
-          attachments.length
-            ? attachments.map((item) => item.filename).join(", ")
-            : "No files uploaded"
-        }`
-      ].join("\n"),
-      attachments
-    });
+  console.info(`[inquiry] Lead received ${leadId || "(email only)"} emailed=${emailed}`);
+  await notifyLead(
+    `New DTC inquiry: ${data.procedures.join(", ")}`,
+    [summary, leadId ? `Lead ID: ${leadId}` : ""].filter(Boolean).join("\n")
+  );
 
-    await sendMail({
-      to: data.email,
-      subject: "We received your enquiry | DentalTripChina.com",
-      text: `Thank you, ${data.fullName.split(" ")[0]}! We will respond via your preferred channel within 2 hours. Check your spam folder if you don't hear from us.`
-    });
-  } catch (error) {
-    console.error("[inquiry] Failed to send inquiry email.", error);
-    return NextResponse.json(
-      {
-        ok: false,
-        message:
-          `Inquiry service is temporarily unavailable. Please email ${companyProfile.supportEmail} while we restore operator routing.`
-      },
-      { status: 503 }
-    );
+  // 3) Courtesy auto-reply to the patient (best effort).
+  if (mailerReady) {
+    try {
+      await sendMail({
+        to: data.email,
+        subject: "We received your enquiry | DentalTripChina.com",
+        text: `Thank you, ${data.fullName.split(" ")[0]}! We will respond via your preferred channel within 2 hours. Check your spam folder if you don't hear from us.`
+      });
+    } catch (error) {
+      console.error("[inquiry] Failed to send auto-reply.", error);
+    }
   }
 
   return NextResponse.json({

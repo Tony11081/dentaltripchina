@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { telHref } from "@/lib/contact";
 import { Hero } from "@/components/hero";
 import Link from "next/link";
 import { TrustBar } from "@/components/trust-bar";
@@ -125,11 +126,13 @@ export default function HomePage() {
           )}
           <p>
             <strong>Support channels:</strong>{" "}
-            <a href={`mailto:${companyProfile.supportEmail}`}>{companyProfile.supportEmail}</a>{" "}
-            |{" "}
-            <a href={`tel:${companyProfile.supportPhone.replace(/\s+/g, "")}`}>
-              {companyProfile.supportPhone}
-            </a>
+            <a href={`mailto:${companyProfile.supportEmail}`}>{companyProfile.supportEmail}</a>
+            {companyProfile.supportPhone && (
+              <>
+                {" "}|{" "}
+                <a href={telHref(companyProfile.supportPhone)}>{companyProfile.supportPhone}</a>
+              </>
+            )}
           </p>
           <p>
             <strong>Operations desk:</strong> {companyProfile.operationsAddress}

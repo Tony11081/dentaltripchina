@@ -1,12 +1,11 @@
 "use client";
 
 import { trackEvent } from "@/lib/analytics";
+import { hasWhatsapp, whatsappHref } from "@/lib/contact";
 
 export function WhatsAppButton() {
-  const number = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "8613800138000";
-  const href = `https://wa.me/${number}?text=${encodeURIComponent(
-    "Hi, I'm interested in medical care in China. Can you help?"
-  )}`;
+  if (!hasWhatsapp) return null;
+  const href = whatsappHref();
 
   return (
     <a

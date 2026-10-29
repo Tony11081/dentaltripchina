@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { telHref } from "@/lib/contact";
 import Link from "next/link";
 import { Hero } from "@/components/hero";
 import { Breadcrumbs } from "@/components/breadcrumbs";
@@ -71,12 +72,12 @@ export default function ContactPage() {
           </article>
 
           <article className="card trust-block">
-            <h3>Phone and Hours</h3>
-            <p>
-              <a href={`tel:${companyProfile.supportPhone.replace(/\s+/g, "")}`}>
-                {companyProfile.supportPhone}
-              </a>
-            </p>
+            <h3>{companyProfile.supportPhone ? "Phone and Hours" : "Support Hours"}</h3>
+            {companyProfile.supportPhone && (
+              <p>
+                <a href={telHref(companyProfile.supportPhone)}>{companyProfile.supportPhone}</a>
+              </p>
+            )}
             <p className="trust-note">{companyProfile.businessHours}</p>
             <p className="trust-note">{companyProfile.activeClientSupportHours}</p>
           </article>

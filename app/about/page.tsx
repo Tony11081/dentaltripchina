@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { telHref } from "@/lib/contact";
 import Link from "next/link";
 import { Hero } from "@/components/hero";
 import { Breadcrumbs } from "@/components/breadcrumbs";
@@ -109,12 +110,12 @@ export default function AboutPage() {
                 <strong>X-ray inbox:</strong>{" "}
                 <a href={`mailto:${companyProfile.xrayInboxEmail}`}>{companyProfile.xrayInboxEmail}</a>
               </li>
-              <li>
-                <strong>Phone:</strong>{" "}
-                <a href={`tel:${companyProfile.supportPhone.replace(/\s+/g, "")}`}>
-                  {companyProfile.supportPhone}
-                </a>
-              </li>
+              {companyProfile.supportPhone && (
+                <li>
+                  <strong>Phone:</strong>{" "}
+                  <a href={telHref(companyProfile.supportPhone)}>{companyProfile.supportPhone}</a>
+                </li>
+              )}
               <li>
                 <strong>Pre-booking support:</strong> {companyProfile.businessHours}
               </li>

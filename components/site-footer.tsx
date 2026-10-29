@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { telHref } from "@/lib/contact";
 import {
   companyIdentityDisclosureNote,
   companyProfile,
@@ -27,12 +28,12 @@ export function SiteFooter() {
               <strong>Email:</strong>{" "}
               <a href={`mailto:${companyProfile.supportEmail}`}>{companyProfile.supportEmail}</a>
             </p>
-            <p>
-              <strong>Phone:</strong>{" "}
-              <a href={`tel:${companyProfile.supportPhone.replace(/\s+/g, "")}`}>
-                {companyProfile.supportPhone}
-              </a>
-            </p>
+            {companyProfile.supportPhone && (
+              <p>
+                <strong>Phone:</strong>{" "}
+                <a href={telHref(companyProfile.supportPhone)}>{companyProfile.supportPhone}</a>
+              </p>
+            )}
           </div>
           <ul className="footer-links">
             <li>

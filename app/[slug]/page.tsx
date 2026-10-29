@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { whatsappHref } from "@/lib/contact";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Hero } from "@/components/hero";
@@ -274,9 +275,7 @@ export default async function RootSlugPage({
           subtitle={procedure.excerpt}
           heroImageSrc={procedureImage.src}
           heroImageAlt={procedureImage.alt}
-          secondaryHref={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "8613800138000"}?text=${encodeURIComponent(
-            `Hi, I'd like to know more about ${procedure.title} in China. Can you help?`
-          )}`}
+          secondaryHref={whatsappHref(`Hi, I'd like to know more about ${procedure.title} in China. Can you help?`)}
           heroMetrics={[
             { value: `${procedure.savingsPct}%`, label: "Typical savings" },
             { value: procedure.durationDays, label: "Typical stay" },

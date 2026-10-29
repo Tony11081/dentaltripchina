@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { hasWhatsapp, whatsappHref } from "@/lib/contact";
 
 const desktopNavItems = [
   { href: "/how-it-works", label: "How It Works" },
@@ -52,10 +53,6 @@ const drawerGroups = [
 export function SiteHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "8613800138000";
-  const whatsappHref = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
-    "Hi, I'm interested in medical care in China. Can you help?"
-  )}`;
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -151,9 +148,11 @@ export function SiteHeader() {
           <Link href="/contact" className="btn btn-primary" onClick={() => setMenuOpen(false)}>
             Free Quote
           </Link>
-          <a href={whatsappHref} target="_blank" rel="noopener noreferrer">
-            Chat on WhatsApp
-          </a>
+          {hasWhatsapp && (
+            <a href={whatsappHref()} target="_blank" rel="noopener noreferrer">
+              Chat on WhatsApp
+            </a>
+          )}
         </div>
       </aside>
     </header>

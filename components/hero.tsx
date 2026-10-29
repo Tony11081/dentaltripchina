@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { trackEvent } from "@/lib/analytics";
+import { hasWhatsapp, whatsappHref } from "@/lib/contact";
 
 interface HeroProps {
   eyebrow: string;
@@ -48,13 +49,11 @@ export function Hero({
     "Travel and transfer coordination"
   ]
 }: HeroProps) {
-  const whatsappNumber =
-    process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "8613800138000";
-  const waHref =
-    secondaryHref ||
-    `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
-      "Hi, I'm interested in medical care in China. Can you help?"
-    )}`;
+  // Without a real WhatsApp number, a WhatsApp CTA falls back to a free-quote link.
+  const usesWhatsapp = !secondaryHref || secondaryHref.includes("wa.me");
+  const waHref = secondaryHref && (!usesWhatsapp || hasWhatsapp) ? secondaryHref : whatsappHref();
+  const secondaryLabel = usesWhatsapp && !hasWhatsapp ? "Ask a question" : secondaryText;
+  const opensNewTab = /^https?:/.test(waHref);
 
   return (
     <section className="hero">
@@ -84,8 +83,8 @@ export function Hero({
             <a
               className="btn btn-secondary"
               href={waHref}
-              target="_blank"
-              rel="noopener noreferrer"
+              target={opensNewTab ? "_blank" : undefined}
+              rel={opensNewTab ? "noopener noreferrer" : undefined}
               onClick={() => {
                 trackEvent(waHref.includes("wa.me") ? "funnel_whatsapp_click" : "funnel_secondary_click", {
                   location: "hero",
@@ -93,7 +92,7 @@ export function Hero({
                 });
               }}
             >
-              {secondaryText}
+              {secondaryLabel}
             </a>
           </div>
         </div>

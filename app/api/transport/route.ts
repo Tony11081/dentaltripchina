@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { companyProfile } from "@/data/company-profile";
 import { mailerReady, sendMail } from "@/lib/mailer";
+import { notifyLead, saveLead } from "@/lib/lead-store";
 
 const schema = z
   .object({
@@ -92,61 +93,72 @@ export async function POST(request: Request) {
 
   const data = parsed.data;
   const operatorEmail = process.env.DTC_OPERATOR_EMAIL;
+  const summary = [
+    `Name: ${data.fullName}`,
+    `Contact: ${data.contact}`,
+    `City: ${data.city}`,
+    `Airport: ${data.airport || "N/A"}`,
+    `Destination: ${data.destination}`,
+    `Arrival Date: ${data.arrivalDate}`,
+    `Arrival Time: ${data.arrivalTime || "Not provided"}`,
+    `Return Transfer: ${data.returnTransfer}`,
+    `Return Date: ${data.returnDate || "Not provided"}`,
+    `Passengers: ${data.passengers}`,
+    `Luggage: ${data.luggage}`,
+    `Vehicle Preference: ${data.vehiclePreference || "No preference"}`,
+    `Special Requirements: ${(data.specialRequirements || []).join(", ") || "None"}`
+  ].join("\n");
 
-  if (!operatorEmail || !mailerReady) {
-    console.error(
-      "[transport] Missing operator routing or SMTP configuration, refusing submission to prevent lead loss."
-    );
+  let leadId = "";
+  try {
+    leadId = (await saveLead("transport", { ...data })).id;
+  } catch (error) {
+    console.error("[transport] Failed to persist lead.", error);
+  }
+
+  let emailed = false;
+  if (operatorEmail && mailerReady) {
+    try {
+      await sendMail({
+        to: operatorEmail,
+        subject: `[DentalTripChina] New transport request from ${data.fullName}`,
+        text: ["Transport quote request", "----------------------", summary, leadId ? `Lead ID: ${leadId}` : ""]
+          .filter(Boolean)
+          .join("\n")
+      });
+      emailed = true;
+    } catch (error) {
+      console.error("[transport] Failed to send operator email.", error);
+    }
+  }
+
+  if (!leadId && !emailed) {
+    console.error("[transport] Lead could not be stored or emailed.");
     return NextResponse.json(
       {
         ok: false,
-        message:
-          `Transport quote service is temporarily unavailable. Please email ${companyProfile.supportEmail} while we restore operator routing.`
+        message: `Transport quote service is temporarily unavailable. Please email ${companyProfile.supportEmail} and we will reply quickly.`
       },
       { status: 503 }
     );
   }
 
-  try {
-    await sendMail({
-      to: operatorEmail,
-      subject: `[DentalTripChina] New transport request from ${data.fullName}`,
-      text: [
-        "Transport quote request",
-        "----------------------",
-        `Name: ${data.fullName}`,
-        `Contact: ${data.contact}`,
-        `City: ${data.city}`,
-        `Airport: ${data.airport || "N/A"}`,
-        `Destination: ${data.destination}`,
-        `Arrival Date: ${data.arrivalDate}`,
-        `Arrival Time: ${data.arrivalTime || "Not provided"}`,
-        `Return Transfer: ${data.returnTransfer}`,
-        `Return Date: ${data.returnDate || "Not provided"}`,
-        `Passengers: ${data.passengers}`,
-        `Luggage: ${data.luggage}`,
-        `Vehicle Preference: ${data.vehiclePreference || "No preference"}`,
-        `Special Requirements: ${(data.specialRequirements || []).join(", ") || "None"}`
-      ].join("\n")
-    });
+  console.info(`[transport] Lead received ${leadId || "(email only)"} emailed=${emailed}`);
+  await notifyLead(
+    `New DTC transport request: ${data.city}`,
+    [summary, leadId ? `Lead ID: ${leadId}` : ""].filter(Boolean).join("\n")
+  );
 
-    if (data.contact.includes("@")) {
+  if (mailerReady && data.contact.includes("@")) {
+    try {
       await sendMail({
         to: data.contact,
         subject: "We received your transport request | DentalTripChina.com",
         text: "We received your transport request. Expect your quote within 2 hours."
       });
+    } catch (error) {
+      console.error("[transport] Failed to send auto-reply.", error);
     }
-  } catch (error) {
-    console.error("[transport] Failed to send transport request email.", error);
-    return NextResponse.json(
-      {
-        ok: false,
-        message:
-          `Transport quote service is temporarily unavailable. Please email ${companyProfile.supportEmail} while we restore operator routing.`
-      },
-      { status: 503 }
-    );
   }
 
   return NextResponse.json({

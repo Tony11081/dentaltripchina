@@ -52,7 +52,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     alternateName: companyProfile.legalEntityName,
     url: siteUrl,
     email: companyProfile.supportEmail,
-    telephone: companyProfile.supportPhone,
+    ...(companyProfile.supportPhone ? { telephone: companyProfile.supportPhone } : {}),
     logo: {
       "@type": "ImageObject",
       url: absoluteUrl("/icon")
@@ -76,7 +76,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     ],
     contactPoint: {
       "@type": "ContactPoint",
-      telephone: companyProfile.supportPhone,
+      ...(companyProfile.supportPhone ? { telephone: companyProfile.supportPhone } : {}),
       contactType: "customer support",
       availableLanguage: ["en-US", "en-GB", "en-AU"]
     }
