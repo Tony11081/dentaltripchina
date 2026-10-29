@@ -10,7 +10,7 @@ export interface PriceGapItem {
   label: string;
   title: string;
   chinaUsd: number;
-  homeUsd: { uk: number; us: number; au: number };
+  homeUsd: { uk: number; us: number; au?: number };
   stay: string;
 }
 
@@ -39,10 +39,12 @@ export function PriceGap({ items, fxNote }: { items: PriceGapItem[]; fxNote: str
   }, []);
 
   const item = items.find((entry) => entry.slug === slug) || items[0];
-  const place = origins.find((entry) => entry.id === origin) || origins[0];
+  // Only offer countries we have a home price for on this treatment.
+  const available = origins.filter((entry) => typeof item.homeUsd[entry.id] === "number");
+  const place = available.find((entry) => entry.id === origin) || available[0];
 
   const figures = useMemo(() => {
-    const home = convertUsd(item.homeUsd[origin], place.currency);
+    const home = convertUsd(item.homeUsd[place.id] ?? item.homeUsd.uk, place.currency);
     const china = convertUsd(item.chinaUsd, place.currency);
     return {
       home: formatCurrency(home, place.currency),
@@ -50,7 +52,7 @@ export function PriceGap({ items, fxNote }: { items: PriceGapItem[]; fxNote: str
       saving: formatCurrency(home - china, place.currency),
       share: Math.round((china / home) * 100)
     };
-  }, [item, origin, place.currency]);
+  }, [item, place.id, place.currency]);
 
   return (
     <section className="price-gap" aria-labelledby="price-gap-title">
@@ -76,8 +78,8 @@ export function PriceGap({ items, fxNote }: { items: PriceGapItem[]; fxNote: str
         </div>
         <label className="price-gap-origin">
           Compared with
-          <select value={origin} onChange={(event) => setOrigin(event.target.value as Origin)}>
-            {origins.map((entry) => (
+          <select value={place.id} onChange={(event) => setOrigin(event.target.value as Origin)}>
+            {available.map((entry) => (
               <option key={entry.id} value={entry.id}>
                 {entry.label}
               </option>

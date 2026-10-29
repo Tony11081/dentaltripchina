@@ -239,7 +239,7 @@ export default function HomePage() {
                       {formatUsd(procedure.prices.usUsd)}
                     </td>
                     <td className="num home" data-label="Australia">
-                      {formatUsd(procedure.prices.auUsd)}
+                      {procedure.prices.auUsd ? formatUsd(procedure.prices.auUsd) : "Not listed"}
                     </td>
                     <td className="stay">
                       {priceGapMeta[procedure.slug]?.stay || procedure.durationDays}
