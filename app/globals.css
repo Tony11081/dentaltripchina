@@ -69,6 +69,7 @@ html {
 
 body {
   min-height: 100vh;
+  overflow-x: clip;
   color: var(--ink);
   background: var(--paper);
   font-family: var(--font-body);
@@ -2092,8 +2093,8 @@ h4 {
     gap: 10px;
   }
 
-  .logo-word span {
-    display: none;
+  .logo-word {
+    font-size: 0.98rem;
   }
 
   .header-actions .btn {
