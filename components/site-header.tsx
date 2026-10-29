@@ -5,13 +5,11 @@ import Link from "next/link";
 import { hasWhatsapp, whatsappHref } from "@/lib/contact";
 
 const desktopNavItems = [
-  { href: "/how-it-works", label: "How It Works" },
-  { href: "/case-studies", label: "Case Center" },
+  { href: "/pricing", label: "Prices" },
   { href: "/hospitals", label: "Hospitals" },
-  { href: "/verification", label: "Verification" },
-  { href: "/trust-center", label: "Trust" },
-  { href: "/blog", label: "Blog" },
-  { href: "/pricing", label: "Pricing" }
+  { href: "/how-it-works", label: "How it works" },
+  { href: "/case-studies", label: "Patient stories" },
+  { href: "/blog", label: "Guides" }
 ];
 
 const drawerGroups = [
@@ -75,8 +73,10 @@ export function SiteHeader() {
     <header className="site-header">
       <div className="container header-inner">
         <Link href="/" className="logo" aria-label="DentalTripChina home">
-          <span className="logo-mark">DTC</span>
-          <span>DentalTripChina.com</span>
+          <span className="logo-mark" aria-hidden="true">齿</span>
+          <span className="logo-word">
+            DentalTrip<span>China</span>
+          </span>
         </Link>
 
         <nav id="primary-navigation" aria-label="Primary" className="primary-nav desktop-nav">
@@ -100,10 +100,9 @@ export function SiteHeader() {
         </button>
 
         <div className="header-actions">
-          <span className="support-pill">Pre-booking 08:00-22:00 | 24/7 active care</span>
           <Link href="/contact" className="btn btn-primary header-quote">
-            <span className="header-quote-desktop">Free Quote</span>
-            <span className="header-quote-mobile">Quote</span>
+            <span className="header-quote-desktop">Get a free quote</span>
+            <span className="header-quote-mobile">Free quote</span>
           </Link>
         </div>
       </div>
@@ -121,7 +120,7 @@ export function SiteHeader() {
         className={`nav-drawer ${menuOpen ? "open" : ""}`}
       >
         <div className="nav-drawer-head">
-          <p>Navigation</p>
+          <p>Menu</p>
           <button type="button" className="nav-close" onClick={() => setMenuOpen(false)}>
             Close
           </button>
@@ -146,7 +145,7 @@ export function SiteHeader() {
 
         <div className="nav-drawer-cta">
           <Link href="/contact" className="btn btn-primary" onClick={() => setMenuOpen(false)}>
-            Free Quote
+            Get a free quote
           </Link>
           {hasWhatsapp && (
             <a href={whatsappHref()} target="_blank" rel="noopener noreferrer">

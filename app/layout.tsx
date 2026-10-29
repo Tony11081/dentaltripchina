@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Bricolage_Grotesque, Public_Sans } from "next/font/google";
 import "./globals.css";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
@@ -13,6 +14,20 @@ import {
   defaultSocialImage,
   siteAlternateTypes
 } from "@/lib/metadata";
+
+const displayFont = Bricolage_Grotesque({
+  subsets: ["latin"],
+  weight: ["500", "600", "700"],
+  variable: "--font-display",
+  display: "swap"
+});
+
+const textFont = Public_Sans({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-text",
+  display: "swap"
+});
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://dentaltripchina.com";
 
@@ -106,7 +121,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   };
 
   return (
-    <html lang="en-GB">
+    <html lang="en-GB" className={`${displayFont.variable} ${textFont.variable}`}>
       <head>
         <link rel="alternate" type="application/rss+xml" href={absoluteUrl("/rss.xml")} />
         <link rel="alternate" type="application/feed+json" href={absoluteUrl("/feed.json")} />

@@ -1,39 +1,94 @@
 import type { Metadata } from "next";
-import { telHref } from "@/lib/contact";
-import { Hero } from "@/components/hero";
 import Link from "next/link";
-import { TrustBar } from "@/components/trust-bar";
-import { ProcedureCard } from "@/components/procedure-card";
-import { HospitalCard } from "@/components/hospital-card";
-import { CaseStudyCard } from "@/components/case-study-card";
+import Image from "next/image";
 import { InquiryForm } from "@/components/inquiry-form";
-import { SiteDisclosurePanel } from "@/components/trust-sections";
-import { CardMedia } from "@/components/card-media";
+import { JsonLd } from "@/components/json-ld";
+import { PriceGap, type PriceGapItem } from "@/components/price-gap";
 import { procedures } from "@/data/procedures";
 import { hospitals } from "@/data/hospitals";
 import { cityGuides } from "@/data/cities";
 import { caseStudies } from "@/data/case-studies";
 import { marketLandingPages } from "@/data/market-pages";
-import { testimonials } from "@/data/testimonials";
-import {
-  companyIdentityDisclosureNote,
-  companyProfile,
-  publishedCompanyIdentityItems
-} from "@/data/company-profile";
+import { companyProfile } from "@/data/company-profile";
 import { buildMetadata } from "@/lib/metadata";
-import { getCityGuideImage, pageImageAssets } from "@/lib/site-images";
+import { formatUsd, getUsdFxReferenceNote } from "@/lib/currency";
+import { pageImageAssets } from "@/lib/site-images";
 
 export const metadata: Metadata = buildMetadata({
-  title: "Medical Tourism China - Save 70%+ | DentalTripChina",
+  title: "Dental Treatment in China at a Third of the Price | DentalTripChina",
   description:
-    "Compare source-linked dental, LASIK, and health checkup pathways in China with published verification, pricing ranges, and travel-planning guidance.",
+    "Dental implants, All-on-4, veneers, LASIK and health checks at JCI-accredited hospitals in Shanghai and Beijing. Compare prices, send your X-ray, and get a quote within 2 hours.",
   path: "/",
   imagePath: pageImageAssets.homeHero.src
 });
 
+// Short labels and plain-language stay times for the price comparison.
+const priceGapMeta: Record<string, { label: string; stay: string }> = {
+  "dental-implants-china": {
+    label: "Dental implant",
+    stay: "3–5 days, then 3–6 months of healing before the final crown"
+  },
+  "all-on-4-china": { label: "All-on-4", stay: "5–7 days" },
+  "veneers-china": { label: "Veneers", stay: "2–4 days" },
+  "root-canal-china": { label: "Root canal", stay: "1–2 days" },
+  "lasik-china": { label: "LASIK", stay: "2–3 days" },
+  "health-checkup-china": { label: "Health check", stay: "1–2 days" }
+};
+
+const cityName: Record<string, string> = { shanghai: "Shanghai", beijing: "Beijing" };
+
+const homeFaqs = [
+  {
+    question: "Can I finish dental implants in one trip?",
+    answer:
+      "Usually not. The first trip covers scans and placing the implant, normally 3–5 days in China. The bone then needs 3–6 months to heal before the final crown is fitted, either on a second short trip or with a dentist at home, agreed before you travel."
+  },
+  {
+    question: "How do I get a price for my own teeth?",
+    answer:
+      "Send an X-ray, a CT scan or clear photos with the quote form. A coordinator reviews them with the hospital and replies with a written plan and estimate, usually within 2 hours."
+  },
+  {
+    question: "Who do I pay, and when?",
+    answer:
+      "You pay the hospital directly for treatment. Our coordination fee is separate and billed by us. We do not take commission from hospitals."
+  },
+  {
+    question: "Do I need a visa?",
+    answer:
+      "Many nationalities can now enter China visa-free for short stays. Rules depend on your passport, so check our visa guide before booking flights."
+  },
+  {
+    question: "What happens if something goes wrong after I fly home?",
+    answer:
+      "Your coordinator stays in touch by message and video after you leave. If you need care, we arrange a review with the hospital and share your records with your dentist at home."
+  }
+];
+
 export default function HomePage() {
-  const featuredCases = caseStudies.slice(0, 2);
-  const featuredQuotes = testimonials.filter((item) => item.verified).slice(0, 2);
+  const fxNote = getUsdFxReferenceNote();
+
+  const priceGapItems: PriceGapItem[] = procedures
+    .filter((procedure) => priceGapMeta[procedure.slug])
+    .map((procedure) => ({
+      slug: procedure.slug,
+      label: priceGapMeta[procedure.slug].label,
+      title: procedure.title.replace(" in China", ""),
+      chinaUsd: procedure.prices.chinaUsd,
+      homeUsd: {
+        uk: procedure.prices.ukUsd,
+        us: procedure.prices.usUsd,
+        au: procedure.prices.auUsd
+      },
+      stay: priceGapMeta[procedure.slug].stay
+    }));
+
+  const featuredHospitals = hospitals.slice(0, 3);
+  const featuredCase = caseStudies[0];
+  const caseTotal = featuredCase
+    ? Object.values(featuredCase.costBreakdown).reduce((sum, value) => sum + value, 0)
+    : 0;
+
   const marketGuideGroups = Array.from(
     marketLandingPages.reduce((groups, page) => {
       const current = groups.get(page.countryName) || [];
@@ -41,336 +96,351 @@ export default function HomePage() {
       groups.set(page.countryName, current);
       return groups;
     }, new Map<string, typeof marketLandingPages>())
-  );
+  ).slice(0, 3);
+
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: homeFaqs.map((faq) => ({
+      "@type": "Question",
+      name: faq.question,
+      acceptedAnswer: { "@type": "Answer", text: faq.answer }
+    }))
+  };
 
   return (
     <>
-      <Hero
-        eyebrow="Dental, LASIK, Checkups"
-        title="World-Class Medical Care in China - Save 70%+"
-        subtitle="Compare treatment plans at trusted hospitals in Shanghai and Beijing with English support and transparent pricing."
-        heroImageSrc={pageImageAssets.homeHero.src}
-        heroImageAlt={pageImageAssets.homeHero.alt}
-        heroImagePriority
-        heroMetrics={[
-          { value: `${procedures.length}`, label: "Core procedures" },
-          { value: `${hospitals.length}`, label: "Verified hospitals" },
-          { value: "2h", label: "Reply target" }
-        ]}
-        panelTitle="Start with price, provider fit, and verification"
-        panelDescription="Use the site as a planning desk, not just a brochure. Compare scope, timing, and trust signals before you enquire."
-        panelList={[
-          "Jump from pricing to provider profiles in one flow",
-          "Check named doctors and verification dates",
-          "Send records only when you are ready"
-        ]}
-      />
+      <JsonLd data={faqSchema} />
 
-      <TrustBar />
+      <section className="home-hero">
+        <div className="container home-hero-inner">
+          <div className="home-hero-copy">
+            <p className="eyebrow">Shanghai and Beijing</p>
+            <h1>Dental care in China, at a third of the price at home.</h1>
+            <p className="home-hero-lede">
+              We match you with internationally accredited hospitals, plan your trip around the
+              treatment, and stay with you in English from the first X-ray to the follow-up at
+              home.
+            </p>
+            <div className="home-hero-actions">
+              <Link className="btn btn-primary" href="#quote">
+                Send your X-ray for a free quote
+              </Link>
+              <Link href="/pricing">See all prices</Link>
+            </div>
+            <p className="home-hero-note">
+              A written plan and estimate, usually within 2 hours. No obligation.
+            </p>
+          </div>
 
-      <section className="section container">
-        <p className="section-kicker">Start Here</p>
-        <h2>Choose the Fastest Next Step</h2>
-        <div className="card-grid four">
-          <article className="card trust-block">
-            <h3>Compare Prices</h3>
-            <p>See procedure-by-procedure pricing and wait-time comparisons before contacting us.</p>
-            <p>
-              <Link className="btn btn-secondary" href="/pricing">
-                Open pricing table
-              </Link>
-            </p>
-          </article>
-          <article className="card trust-block">
-            <h3>Check Hospitals</h3>
-            <p>Review departments, location, and international intake notes for each hospital.</p>
-            <p>
-              <Link className="btn btn-secondary" href="/hospitals">
-                Browse hospitals
-              </Link>
-            </p>
-          </article>
-          <article className="card trust-block">
-            <h3>Verify Trust Signals</h3>
-            <p>Open doctor, hospital, and policy evidence before committing to a plan.</p>
-            <p>
-              <Link className="btn btn-secondary" href="/trust-center">
-                Open trust center
-              </Link>
-            </p>
-          </article>
-          <article className="card trust-block">
-            <h3>Request a Plan</h3>
-            <p>Share your procedure, budget, and timeline to receive a tailored next-step recommendation.</p>
-            <p>
-              <Link className="btn btn-primary" href="/contact">
-                Request free quote
-              </Link>
-            </p>
-          </article>
+          <PriceGap items={priceGapItems} fxNote={fxNote} />
         </div>
       </section>
 
-      <section className="section container">
-        <p className="section-kicker">Operator Desk</p>
-        <h2>Operator, Partnerships, and Responsibility Boundary</h2>
-        <article className="card trust-block">
-          {publishedCompanyIdentityItems.length ? (
-            publishedCompanyIdentityItems.map((item) => (
-              <p key={item.key}>
-                <strong>{item.label}:</strong> {item.value}
-              </p>
-            ))
-          ) : (
-            <p className="trust-note">{companyIdentityDisclosureNote}</p>
-          )}
-          <p>
-            <strong>Support channels:</strong>{" "}
-            <a href={`mailto:${companyProfile.supportEmail}`}>{companyProfile.supportEmail}</a>
-            {companyProfile.supportPhone && (
-              <>
-                {" "}|{" "}
-                <a href={telHref(companyProfile.supportPhone)}>{companyProfile.supportPhone}</a>
-              </>
-            )}
-          </p>
-          <p>
-            <strong>Operations desk:</strong> {companyProfile.operationsAddress}
-          </p>
-          <p>
-            <strong>Partnership model:</strong> {companyProfile.partnershipModel}
-          </p>
-          <p className="trust-note">
-            We are a non-clinical medical travel coordination service. Medical treatment is
-            provided by licensed hospitals and clinicians in China. We do not diagnose,
-            prescribe, or guarantee outcomes.
-          </p>
-          <p>
-            <Link href="/about">Open full company profile</Link>
-          </p>
-        </article>
-      </section>
-
-      <section className="section container">
-        <p className="section-kicker">Payments & Support</p>
-        <h2>How Fees, Hospital Billing, and Support Windows Work</h2>
-        <div className="card-grid three">
-          <article className="card trust-block">
-            <h3>How We Are Paid</h3>
-            <p>{companyProfile.serviceFeeSummary}</p>
-          </article>
-          <article className="card trust-block">
-            <h3>Who You Pay</h3>
-            <p>{companyProfile.treatmentPaymentSummary}</p>
-            <p className="trust-note">
-              This keeps hospital recommendations separate from commission-based incentives.
+      <section className="hospital-strip" aria-label="Partner hospitals">
+        <div className="container hospital-strip-inner">
+          <p className="hospital-strip-label">Treatment at JCI-accredited hospitals</p>
+          {featuredHospitals.map((hospital) => (
+            <p className="hospital-strip-item" key={hospital.slug}>
+              <strong>{hospital.name}</strong>
+              <span>
+                {cityName[hospital.city]}, accredited since {hospital.jciYear}
+              </span>
             </p>
-          </article>
-          <article className="card trust-block">
-            <h3>Support Hours</h3>
-            <p>{companyProfile.businessHours}</p>
-            <p>{companyProfile.activeClientSupportHours}</p>
-            <p className="trust-note">Urgent post-treatment concerns follow the published 15-minute escalation and 2-hour next-step guidance targets.</p>
-          </article>
-        </div>
-      </section>
-
-      <section className="section container">
-        <p className="section-kicker">Our Advantages</p>
-        <h2>Why Patients Choose Our Service</h2>
-        <p className="section-lede muted">
-          We are a coordination service built around speed, transparency, and verifiable
-          trust. China-specific advantages are highlighted with real evidence.
-        </p>
-        <div className="card-grid three">
-          <article className="card trust-block">
-            <p className="card-eyebrow">China Time Advantage</p>
-            <h3>Appointment Wait Is Often Negligible</h3>
-            <p>Most procedures can be scheduled quickly in China private pathways.</p>
-            <p className="home-adv-value">China: 1-5 days | UK/US/AU: weeks to months</p>
-            <p>
-              <Link href="/pricing">See appointment and treatment timeline table</Link>
-            </p>
-          </article>
-
-          <article className="card trust-block">
-            <p className="card-eyebrow">China Cost Advantage</p>
-            <h3>70-85% Typical Savings vs UK/US</h3>
-            <p>Clear quote scopes and one-click low/median/high total budget planning.</p>
-            <p className="home-adv-value">Treatment + flight + hotel + follow-up + extras</p>
-            <p>
-              <Link href="/cost-calculator">Open full cost calculator</Link>
-            </p>
-          </article>
-
-          <article className="card trust-block">
-            <p className="card-eyebrow">Verification Advantage</p>
-            <h3>Named Doctors, License IDs, Public Links</h3>
-            <p>Each partner profile includes latest verification date and scope boundary.</p>
-            <p className="home-adv-value">No anonymous provider claims</p>
-            <p>
-              <Link href="/verification">Open doctor and hospital verification</Link>
-            </p>
-          </article>
-
-          <article className="card trust-block">
-            <p className="card-eyebrow">Safety Advantage</p>
-            <h3>Post-Op SLA You Can Audit</h3>
-            <p>Red-flag escalation and clinical guidance windows are publicly committed.</p>
-            <p className="home-adv-value">15 min escalation | 2h care-path guidance</p>
-            <p>
-              <Link href="/care-sla">Read post-op SLA details</Link>
-            </p>
-          </article>
-
-          <article className="card trust-block">
-            <p className="card-eyebrow">Transparency Advantage</p>
-            <h3>Real Cases, Including Complications</h3>
-            <p>We publish full timelines, total costs, and complication management actions.</p>
-            <p className="home-adv-value">Not only success stories</p>
-            <p>
-              <Link href="/case-studies">Open real case center</Link>
-            </p>
-          </article>
-
-          <article className="card trust-block">
-            <p className="card-eyebrow">Service Advantage</p>
-            <h3>English Coordination from Inquiry to Follow-Up</h3>
-            <p>One team handles provider matching, travel flow, and continuity handoff.</p>
-            <p className="home-adv-value">Median first response: 17 minutes</p>
-            <p>
-              <Link href="/trust-dashboard">View monthly trust metrics</Link>
-            </p>
-          </article>
-        </div>
-      </section>
-
-      <section className="section container">
-        <p className="section-kicker">Feature Issue</p>
-        <div className="editorial-note">
-          <p>
-            Patients from the UK, Australia, and North America increasingly choose
-            China for quality care with lower out-of-pocket cost. We curate providers
-            based on standards, communication, and treatment fit.
-          </p>
-        </div>
-      </section>
-
-      <section className="section container">
-        <p className="section-kicker">Treatment Index</p>
-        <h2>Popular Procedures</h2>
-        <p className="muted section-lede">
-          Compare treatment costs and expected travel timelines for the most requested services.
-        </p>
-        <div className="card-grid three">
-          {procedures.slice(0, 6).map((procedure) => (
-            <ProcedureCard key={procedure.slug} procedure={procedure} />
           ))}
         </div>
       </section>
 
-      <section className="section container">
-        <p className="section-kicker">Provider Desk</p>
-        <h2>Featured Hospitals</h2>
-        <div className="card-grid three">
-          {hospitals.slice(0, 3).map((hospital) => (
-            <HospitalCard key={hospital.slug} hospital={hospital} />
-          ))}
-        </div>
+      <section className="section container" aria-labelledby="journey-title">
+        <h2 id="journey-title">How a treatment trip works</h2>
+        <p className="section-lede">
+          Most patients spend between two days and a week in China. Here is what happens, and
+          when.
+        </p>
+        <ol className="journey">
+          <li>
+            <span className="journey-when">Today</span>
+            <h3>Send your X-ray</h3>
+            <p>Upload an X-ray, scan or photos. No X-ray yet? Describe what is wrong.</p>
+          </li>
+          <li>
+            <span className="journey-when">Within 2 hours</span>
+            <h3>Get a plan and quote</h3>
+            <p>A coordinator matches you with a hospital and sends a written estimate.</p>
+          </li>
+          <li>
+            <span className="journey-when">Before you fly</span>
+            <h3>Book the trip</h3>
+            <p>We arrange the appointments, airport pickup and a hotel near the hospital.</p>
+          </li>
+          <li>
+            <span className="journey-when">In China</span>
+            <h3>Have the treatment</h3>
+            <p>English-speaking support at each appointment, and one person to message.</p>
+          </li>
+          <li>
+            <span className="journey-when">Back home</span>
+            <h3>Follow-up</h3>
+            <p>Video check-ins after you leave, and records shared with your own dentist.</p>
+          </li>
+        </ol>
       </section>
 
-      <section className="section container">
-        <p className="section-kicker">Real Outcomes</p>
-        <h2>Real Cases and Patient Voices</h2>
-        <p className="muted section-lede">
-          Read full case timelines with total spend and follow-up details, then compare with
-          disclosure-labeled patient stories and source notes.
-        </p>
-        <div className="card-grid two">
-          {featuredCases.map((item) => (
-            <CaseStudyCard key={item.slug} item={item} />
-          ))}
-        </div>
-        <div className="card-grid two case-quotes-grid">
-          {featuredQuotes.map((item) => (
-            <article className="card trust-block" key={item.id}>
-              <p className="card-eyebrow">
-                {item.country} | {item.procedure}
+      <section className="section home-prices" aria-labelledby="prices-title">
+        <div className="container">
+          <div className="home-prices-head">
+            <div>
+              <h2 id="prices-title">Typical prices</h2>
+              <p className="section-lede">
+                Hospital prices for a standard case, compared with typical private prices at
+                home. Your quote depends on your scans.
               </p>
-              <h3>{item.name}</h3>
-              <p>“{item.content}”</p>
-              <p className="trust-note">
-                {item.verified ? "Documented story" : "Source-pending submission"} |{" "}
-                {item.incentiveDisclosure}
-              </p>
-            </article>
-          ))}
-        </div>
-        <p className="case-links-row">
-          <Link href="/case-studies">Open full Real Case Center</Link> |{" "}
-          <Link href="/testimonials">Open all testimonials</Link>
-        </p>
-      </section>
+            </div>
+            <Link className="btn btn-secondary" href="/cost-calculator">
+              Estimate your total trip cost
+            </Link>
+          </div>
 
-      <section className="section container">
-        <p className="section-kicker">City Guide</p>
-        <h2>Shanghai & Beijing Medical Tourism Pages</h2>
-        <div className="card-grid two">
-          {cityGuides.map((guide) => {
-            const image = getCityGuideImage(guide.slug);
-
-            return (
-            <article className="card" key={guide.slug}>
-              <CardMedia src={image.src} alt={image.alt} />
-              <h3>
-                <Link href={`/${guide.slug}`}>{guide.title}</Link>
-              </h3>
-              <p>{guide.summary}</p>
-              <p>
-                <Link className="btn btn-secondary" href={`/${guide.slug}`}>
-                  Open City Guide
-                </Link>
-              </p>
-            </article>
-            );
-          })}
-        </div>
-      </section>
-
-      <section className="section container">
-        <p className="section-kicker">Country Planning Guides</p>
-        <h2>High-Intent Landing Pages by Market and Procedure</h2>
-        <p className="section-lede muted">
-          These pages answer country-specific search intent with the matching procedure,
-          price, wait-time, hospital, case-study, and FAQ links in one place.
-        </p>
-        <div className="card-grid three">
-          {marketGuideGroups.map(([country, pages]) => (
-            <article className="card trust-block" key={country}>
-              <p className="card-eyebrow">{country}</p>
-              <h3>{country} Treatment Guides</h3>
-              <ul className="trust-list">
-                {pages.map((page) => (
-                  <li key={page.slug}>
-                    <Link href={`/${page.slug}`}>{page.title}</Link>
-                  </li>
+          <div className="table-scroll">
+            <table className="home-price-table">
+              <thead>
+                <tr>
+                  <th scope="col">Treatment</th>
+                  <th scope="col" className="num">
+                    In China
+                  </th>
+                  <th scope="col" className="num">
+                    UK
+                  </th>
+                  <th scope="col" className="num">
+                    US
+                  </th>
+                  <th scope="col" className="num">
+                    Australia
+                  </th>
+                  <th scope="col">Time in China</th>
+                </tr>
+              </thead>
+              <tbody>
+                {procedures.map((procedure) => (
+                  <tr key={procedure.slug}>
+                    <th scope="row">
+                      <Link href={`/${procedure.slug}`}>
+                        {procedure.title.replace(" in China", "")}
+                      </Link>
+                    </th>
+                    <td className="num china" data-label="In China">
+                      {formatUsd(procedure.prices.chinaUsd)}
+                    </td>
+                    <td className="num home" data-label="UK">
+                      {formatUsd(procedure.prices.ukUsd)}
+                    </td>
+                    <td className="num home" data-label="US">
+                      {formatUsd(procedure.prices.usUsd)}
+                    </td>
+                    <td className="num home" data-label="Australia">
+                      {formatUsd(procedure.prices.auUsd)}
+                    </td>
+                    <td className="stay">
+                      {priceGapMeta[procedure.slug]?.stay || procedure.durationDays}
+                    </td>
+                  </tr>
                 ))}
+              </tbody>
+            </table>
+          </div>
+          <p className="home-prices-note">
+            All prices in US dollars so they can be compared. Flights and hotel are not included.
+          </p>
+        </div>
+      </section>
+
+      <section className="section container" aria-labelledby="hospitals-title">
+        <h2 id="hospitals-title">The hospitals we work with</h2>
+        <p className="section-lede">
+          Private international hospitals with English-speaking staff and Joint Commission
+          International accreditation. You choose the hospital; we explain the options.
+        </p>
+        <div className="home-hospitals">
+          {featuredHospitals.map((hospital) => (
+            <article className="home-hospital" key={hospital.slug}>
+              <figure>
+                <Image
+                  src={hospital.heroImageSrc}
+                  alt={hospital.heroImageAlt}
+                  width={800}
+                  height={600}
+                  sizes="(max-width: 980px) 100vw, 33vw"
+                />
+              </figure>
+              <p className="home-hospital-city">{cityName[hospital.city]}</p>
+              <h3>
+                <Link href={`/hospital/${hospital.slug}`}>{hospital.name}</Link>
+              </h3>
+              <p>{hospital.summary}</p>
+              <ul className="home-hospital-meta">
+                <li className="jci">
+                  <a href={hospital.jciVerifyUrl} target="_blank" rel="noopener noreferrer">
+                    JCI accredited since {hospital.jciYear}
+                  </a>
+                </li>
+                {hospital.englishStaff && <li>English-speaking staff</li>}
               </ul>
             </article>
           ))}
         </div>
+        <p className="case-links-row">
+          <Link href="/hospitals">All hospitals and departments</Link>
+        </p>
       </section>
 
-      <SiteDisclosurePanel />
+      {featuredCase && (
+        <section className="section container" aria-labelledby="case-title">
+          <h2 id="case-title">One patient&apos;s trip, with every cost</h2>
+          <div className="home-case">
+            <div>
+              <blockquote>&ldquo;{featuredCase.testimonial.quote}&rdquo;</blockquote>
+              <p className="home-case-who">
+                Patient from the {featuredCase.country === "United Kingdom" ? "UK" : featuredCase.country},
+                treated in {featuredCase.city}. {featuredCase.testimonial.incentiveDisclosure}
+              </p>
+              <p className="home-case-context">{featuredCase.patientContext}</p>
+              <p className="home-case-context">{featuredCase.outcome}</p>
+              <div className="home-case-links">
+                <Link href={`/case-studies/${featuredCase.slug}`}>Read the full day-by-day case</Link>
+                <Link href="/case-studies">More patient stories</Link>
+              </div>
+            </div>
+            <aside className="home-case-ledger" aria-label="Trip cost breakdown">
+              <h3>What the trip cost</h3>
+              <p>{featuredCase.title.split(": ").slice(-1)[0]}</p>
+              <dl>
+                <dt>Treatment</dt>
+                <dd>{formatUsd(featuredCase.costBreakdown.treatmentUsd)}</dd>
+                <dt>Flights and hotel</dt>
+                <dd>{formatUsd(featuredCase.costBreakdown.flightHotelUsd)}</dd>
+                <dt>Follow-up</dt>
+                <dd>{formatUsd(featuredCase.costBreakdown.followUpUsd)}</dd>
+                <dt>Other</dt>
+                <dd>{formatUsd(featuredCase.costBreakdown.extraUsd)}</dd>
+                <div className="total" style={{ display: "contents" }}>
+                  <dt>Total</dt>
+                  <dd>{formatUsd(caseTotal)}</dd>
+                </div>
+              </dl>
+            </aside>
+          </div>
+        </section>
+      )}
 
-      <section className="section container">
-        <div className="cta-box">
-          <h2>Get Your Personal Treatment Plan in 2 Hours</h2>
-          <p>
-            Submit your case details and receive provider recommendations, price estimates,
-            and suggested next steps.
+      <section className="section home-fees" aria-labelledby="fees-title">
+        <div className="container">
+          <h2 id="fees-title">How we are paid</h2>
+          <div className="home-fees-grid">
+            <div>
+              <h3>You pay the hospital directly</h3>
+              <p>Treatment fees go straight to the hospital, at the hospital&apos;s own prices.</p>
+            </div>
+            <div>
+              <h3>Our fee is separate</h3>
+              <p>
+                We charge a coordination fee for matching, translation, scheduling and travel
+                support, billed by us.
+              </p>
+            </div>
+            <div>
+              <h3>No hospital commission</h3>
+              <p>
+                Hospitals do not pay us for referrals, so the hospital we suggest is the one that
+                fits your case.
+              </p>
+            </div>
+          </div>
+          <p className="home-fees-note">
+            We are a travel and coordination service, not a clinic. Diagnosis and treatment are
+            provided by licensed hospitals and clinicians in China.{" "}
+            <Link href="/about">Who we are</Link>
           </p>
-          <InquiryForm />
+        </div>
+      </section>
+
+      <section className="section container home-faq" aria-labelledby="faq-title">
+        <div>
+          <h2 id="faq-title">Questions patients ask first</h2>
+          <p className="section-lede">
+            Something else on your mind? Write to{" "}
+            <a href={`mailto:${companyProfile.supportEmail}`}>{companyProfile.supportEmail}</a>.
+          </p>
+        </div>
+        <div className="faq-list">
+          {homeFaqs.map((faq) => (
+            <details className="faq-item" key={faq.question}>
+              <summary>{faq.question}</summary>
+              <p>
+                {faq.answer}
+                {faq.question === "Do I need a visa?" && (
+                  <>
+                    {" "}
+                    <Link href="/china-visa-free-medical-tourism">Read the visa guide</Link>.
+                  </>
+                )}
+              </p>
+            </details>
+          ))}
+        </div>
+      </section>
+
+      <section className="section home-quote" id="quote" aria-labelledby="quote-title">
+        <div className="container home-quote-inner">
+          <div>
+            <h2 id="quote-title">Get your treatment plan and quote</h2>
+            <p className="section-lede">
+              Free, with no obligation. The more you send, the more exact the quote.
+            </p>
+            <ol className="home-quote-steps">
+              <li>Tell us what you need and where you are travelling from.</li>
+              <li>Attach an X-ray, scan or photos if you have them.</li>
+              <li>We reply by your chosen channel, usually within 2 hours.</li>
+            </ol>
+          </div>
+          <div className="home-quote-form">
+            <InquiryForm />
+          </div>
+        </div>
+      </section>
+
+      <section className="container home-guides" aria-labelledby="guides-title">
+        <h2 id="guides-title" className="section-kicker">
+          Planning guides
+        </h2>
+        <div className="home-guides-grid">
+          <div>
+            <h3>Cities</h3>
+            <ul>
+              {cityGuides.map((guide) => (
+                <li key={guide.slug}>
+                  <Link href={`/${guide.slug}`}>{guide.title.split(" - ")[0]}</Link>
+                </li>
+              ))}
+              <li>
+                <Link href="/china-visa-free-medical-tourism">Visa-free entry</Link>
+              </li>
+            </ul>
+          </div>
+          {marketGuideGroups.map(([country, pages]) => (
+            <div key={country}>
+              <h3>From {country === "United Kingdom" ? "the UK" : country === "United States" ? "the US" : country}</h3>
+              <ul>
+                {pages.map((page) => (
+                  <li key={page.slug}>
+                    <Link href={`/${page.slug}`}>
+                      {page.title.split(":")[0].replace(/^[A-Z]{2} /, "")}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </div>
       </section>
     </>

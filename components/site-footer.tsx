@@ -18,11 +18,13 @@ export function SiteFooter() {
       <div className="container">
         <div className="footer-top">
           <div className="footer-brand">
-            <span className="footer-kicker">DentalTripChina.com</span>
-            <h2>Care, Travel, Clarity</h2>
+            <span className="footer-kicker">
+              <span className="logo-mark" aria-hidden="true">齿</span>
+              DentalTripChina
+            </span>
             <p>
-              World-class dental, LASIK, and health checkup planning in China with
-              English-speaking support.
+              We plan dental, eye and health-check trips to accredited hospitals in Shanghai
+              and Beijing, with English-speaking support from first message to follow-up.
             </p>
             <p>
               <strong>Email:</strong>{" "}
@@ -43,22 +45,22 @@ export function SiteFooter() {
               <Link href="/contact">Contact</Link>
             </li>
             <li>
-              <Link href="/case-studies">Case Center</Link>
+              <Link href="/case-studies">Patient stories</Link>
             </li>
             <li>
               <Link href="/verification">Verification</Link>
             </li>
             <li>
-              <Link href="/cost-calculator">Cost Calculator</Link>
+              <Link href="/cost-calculator">Cost calculator</Link>
             </li>
             <li>
-              <Link href="/china-visa-free-medical-tourism">Visa Guide</Link>
+              <Link href="/china-visa-free-medical-tourism">Visa-free entry</Link>
             </li>
             <li>
-              <Link href="/trust-center">Trust Center</Link>
+              <Link href="/trust-center">Trust center</Link>
             </li>
             <li>
-              <Link href="/trust-dashboard">Trust Dashboard</Link>
+              <Link href="/trust-dashboard">Trust dashboard</Link>
             </li>
             <li>
               <Link href="/blog">Blog</Link>
@@ -67,10 +69,10 @@ export function SiteFooter() {
               <Link href="/authors">Authors</Link>
             </li>
             <li>
-              <Link href="/editorial-policy">Editorial Policy</Link>
+              <Link href="/editorial-policy">Editorial policy</Link>
             </li>
             <li>
-              <Link href="/content-updates">Content Updates</Link>
+              <Link href="/content-updates">Content updates</Link>
             </li>
             <li>
               <Link href="/privacy">Privacy</Link>
@@ -79,7 +81,7 @@ export function SiteFooter() {
               <Link href="/terms">Terms</Link>
             </li>
             <li>
-              <Link href="/medical-disclaimer">Medical Disclaimer</Link>
+              <Link href="/medical-disclaimer">Medical disclaimer</Link>
             </li>
           </ul>
         </div>
